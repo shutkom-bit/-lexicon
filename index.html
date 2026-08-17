@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lexicon — тренажер словника</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBFAF7; --panel:#FFFFFF;
+    --ink:#161B33; --ink-soft:#565D7C; --faint:#8A90A8;
+    --line:#E8E4DB; --line-2:#F1EEE7;
+    --accent:#5B4FE0; --accent-ink:#3A2FB0;
+    --learned:#2E7D5B; --due:#C2703D;
+    --uk:#3A6BD6; --hu:#C24D63;
+    --shadow:0 1px 2px rgba(22,27,51,.04), 0 8px 24px rgba(22,27,51,.06);
+  }
+  *{box-sizing:border-box} html,body{margin:0}
+  body{background:var(--paper);color:var(--ink);font-family:'Inter',system-ui,sans-serif;font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:860px;margin:0 auto;padding:28px 20px 80px}
+  header{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+  .brand{display:flex;align-items:baseline;gap:10px}
+  .brand h1{font-family:'Fraunces',serif;font-weight:600;font-size:30px;letter-spacing:-.01em;margin:0}
+  .brand .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);transform:translateY(-3px)}
+  .brand small{color:var(--faint);font-size:12.5px;letter-spacing:.04em;text-transform:uppercase}
+  .stats{display:flex;gap:20px}
+  .stat{text-align:right}
+  .stat b{font-family:'Fraunces',serif;font-size:22px;font-weight:600;display:block;line-height:1}
+  .stat span{font-size:11px;color:var(--faint);letter-spacing:.03em;text-transform:uppercase}
+  .stat.due b{color:var(--due)} .stat.learned b{color:var(--learned)}
+  nav{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:24px}
+  nav button{background:none;border:none;font-family:inherit;font-size:14px;color:var(--ink-soft);padding:10px 16px 12px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;display:flex;align-items:center;gap:7px;transition:color .15s}
+  nav button .badge{background:var(--line);color:var(--ink-soft);border-radius:20px;font-size:11px;padding:1px 7px;font-weight:500}
+  nav button.on{color:var(--ink);border-bottom-color:var(--accent);font-weight:500}
+  nav button.on .badge{background:var(--accent);color:#fff}
+  nav button.due-hl .badge{background:var(--due);color:#fff}
+  .panel{display:none} .panel.on{display:block;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .addbox{padding:22px}
+  .addbox .row{display:flex;gap:10px;flex-wrap:wrap}
+  input[type=text]{font-family:inherit;font-size:15px;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:12px 14px;outline:none;transition:border .15s,box-shadow .15s}
+  input[type=text]:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(91,79,224,.12)}
+  #w-word{flex:2;min-width:180px;font-family:'Fraunces',serif;font-size:17px}
+  #w-topic{flex:1;min-width:130px}
+  .btn{font-family:inherit;font-size:14px;font-weight:500;border:none;border-radius:10px;padding:12px 20px;cursor:pointer;transition:transform .08s,background .15s}
+  .btn:active{transform:translateY(1px)}
+  .btn-primary{background:var(--accent);color:#fff} .btn-primary:hover{background:var(--accent-ink)}
+  .btn-primary:disabled{opacity:.55;cursor:wait}
+  .btn-ghost{background:var(--line-2);color:var(--ink-soft)} .btn-ghost:hover{background:var(--line)}
+  .hint{color:var(--faint);font-size:12.5px;margin-top:12px}
+  .preview{margin-top:18px;border-top:1px dashed var(--line);padding-top:18px;display:none}
+  .preview.show{display:block}
+  .entry{padding:18px 20px;border-bottom:1px solid var(--line-2);display:flex;gap:16px;align-items:flex-start}
+  .entry:last-child{border-bottom:none}
+  .entry .head{flex:1;min-width:0}
+  .headword{font-family:'Fraunces',serif;font-size:21px;font-weight:600;line-height:1.15}
+  .ipa{font-family:'Fraunces',serif;font-style:italic;color:var(--faint);font-size:15px;margin-left:8px}
+  .pos{color:var(--accent);font-size:12px;font-style:italic;margin-left:8px}
+  .tr{font-size:15px;margin-top:5px;display:flex;align-items:baseline;gap:8px}
+  .lang{font-size:10px;font-weight:600;letter-spacing:.05em;padding:2px 6px;border-radius:5px;flex-shrink:0;transform:translateY(-1px)}
+  .lang.ua{background:rgba(58,107,214,.12);color:var(--uk)}
+  .lang.hu{background:rgba(194,77,99,.12);color:var(--hu)}
+  .def{color:var(--ink-soft);font-size:13.5px;margin-top:6px}
+  .ex{color:var(--faint);font-size:13.5px;font-style:italic;margin-top:5px}
+  .entry .side{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0}
+  .box-pips{display:flex;gap:3px}
+  .pip{width:7px;height:7px;border-radius:2px;background:var(--line)}
+  .pip.f{background:var(--accent)} .pip.m{background:var(--learned)}
+  .tag{font-size:11px;letter-spacing:.03em;text-transform:uppercase;color:var(--faint)}
+  .tag.due{color:var(--due)}
+  .del{background:none;border:none;color:var(--faint);cursor:pointer;font-size:12px;padding:2px 4px} .del:hover{color:var(--due)}
+  .group-h{font-family:'Fraunces',serif;font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);padding:16px 20px 6px}
+  .dict-controls{display:flex;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+  .searchbar{flex:1;min-width:200px} .searchbar input{width:100%}
+  .seg{display:inline-flex;background:var(--line-2);border-radius:9px;padding:3px}
+  .seg button{border:none;background:none;font-family:inherit;font-size:13px;color:var(--ink-soft);padding:8px 14px;border-radius:7px;cursor:pointer}
+  .seg button.on{background:var(--panel);color:var(--ink);box-shadow:0 1px 2px rgba(22,27,51,.08)}
+  .stage{display:flex;flex-direction:column;align-items:center;gap:20px}
+  .flash{width:100%;max-width:520px;min-height:280px;background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);cursor:pointer;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:36px;transition:transform .12s}
+  .flash:active{transform:scale(.994)}
+  .flash .fw{font-family:'Fraunces',serif;font-size:40px;font-weight:600;line-height:1.1}
+  .flash .fipa{font-family:'Fraunces',serif;font-style:italic;color:var(--faint);font-size:19px;margin-top:8px}
+  .flash .flip-hint{position:absolute;bottom:16px;color:var(--faint);font-size:12px;letter-spacing:.03em}
+  .flash .ftr{font-family:'Fraunces',serif;font-size:28px;font-weight:600}
+  .flash .ftr .lang{font-family:'Inter',sans-serif;font-size:11px;vertical-align:middle;margin-right:8px}
+  .flash .fpos{color:var(--accent);font-style:italic;font-size:14px;margin-top:8px}
+  .flash .fdef{color:var(--ink-soft);font-size:14px;margin-top:14px;max-width:380px}
+  .flash .fex{color:var(--faint);font-style:italic;font-size:14px;margin-top:10px;max-width:380px}
+  .grade{display:flex;gap:10px;width:100%;max-width:520px}
+  .grade .btn{flex:1}
+  .btn-again{background:#FBEEE6;color:var(--due)} .btn-again:hover{background:#F6E0D2}
+  .btn-good{background:#E6F2EC;color:var(--learned)} .btn-good:hover{background:#D6ECE0}
+  .progress{width:100%;max-width:520px;height:5px;background:var(--line-2);border-radius:4px;overflow:hidden}
+  .progress i{display:block;height:100%;background:var(--accent);transition:width .3s}
+  .queue-meta{color:var(--faint);font-size:13px}
+  .quiz-top{display:flex;justify-content:center;margin-bottom:22px}
+  .q-word{font-family:'Fraunces',serif;font-size:32px;font-weight:600;text-align:center;margin-bottom:4px}
+  .q-sub{text-align:center;color:var(--faint);font-size:13px;margin-bottom:22px}
+  .opts{display:flex;flex-direction:column;gap:10px;max-width:520px;margin:0 auto}
+  .opt{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px;text-align:left;font-family:inherit;font-size:15px;color:var(--ink);cursor:pointer;transition:border .12s,background .12s}
+  .opt:hover{border-color:var(--accent)}
+  .opt.correct{border-color:var(--learned);background:#E6F2EC;color:var(--learned)}
+  .opt.wrong{border-color:var(--due);background:#FBEEE6;color:var(--due)}
+  .opt:disabled{cursor:default}
+  .empty{text-align:center;padding:60px 20px;color:var(--faint)}
+  .empty .big{font-family:'Fraunces',serif;font-size:22px;color:var(--ink-soft);margin-bottom:8px}
+  .center{display:flex;justify-content:center;margin-top:18px}
+  .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;display:inline-block;animation:spin .7s linear infinite;vertical-align:-2px;margin-right:8px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:10px;font-size:13.5px;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;max-width:90vw;text-align:center}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(-4px)}
+  .conn{font-size:11px;color:var(--faint);display:flex;align-items:center;gap:6px}
+  .conn .d{width:7px;height:7px;border-radius:50%;background:var(--faint)}
+  .conn.ok .d{background:var(--learned)} .conn.err .d{background:var(--due)}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><span class="dot"></span><h1>Lexicon</h1><small>тренажер словника</small></div>
+    <div class="stats">
+      <div class="stat"><b id="s-total">·</b><span>слів</span></div>
+      <div class="stat due"><b id="s-due">·</b><span>на повтор</span></div>
+      <div class="stat learned"><b id="s-mastered">·</b><span>засвоєно</span></div>
+    </div>
+  </header>
+
+  <nav>
+    <button data-tab="add" class="on">Додати</button>
+    <button data-tab="dict">Словник <span class="badge" id="b-dict">0</span></button>
+    <button data-tab="study" class="due-hl">Тренування <span class="badge" id="b-study">0</span></button>
+    <button data-tab="quiz">Тест</button>
+  </nav>
+
+  <section class="panel on" id="p-add">
+    <div class="card addbox">
+      <div class="row">
+        <input type="text" id="w-word" placeholder="Англійське слово або фраза…" autocomplete="off">
+        <input type="text" id="w-topic" placeholder="Тема (напр. Business)" autocomplete="off">
+        <button class="btn btn-primary" id="add-btn">Додати</button>
+      </div>
+      <div class="hint">AI визначить частину мови й допише переклад <b>українською та угорською</b>, транскрипцію, значення й приклад. Слова синхронізуються з хмарою — і сайт, і бот бачать одну базу.</div>
+      <div class="preview" id="preview"></div>
+    </div>
+    <div class="conn" id="conn" style="margin-top:14px"><span class="d"></span><span id="conn-t">Підключення до бази…</span></div>
+  </section>
+
+  <section class="panel" id="p-dict">
+    <div class="dict-controls">
+      <div class="searchbar"><input type="text" id="search" placeholder="Пошук за словом, перекладом чи темою…"></div>
+      <div class="seg" id="view-seg">
+        <button data-view="topic" class="on">За темою</button>
+        <button data-view="pos">За частиною мови</button>
+      </div>
+    </div>
+    <div class="card" id="dict-list"></div>
+  </section>
+
+  <section class="panel" id="p-study"><div id="study-body"></div></section>
+  <section class="panel" id="p-quiz"><div id="quiz-body"></div></section>
+</div>
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+import { getFirestore, collection, query, orderBy, onSnapshot, addDoc, doc, updateDoc, deleteDoc }
+  from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+/* ── Firebase (public client config — not a secret) ── */
+const firebaseConfig = {
+  apiKey: "AIzaSyBFP8Bp0qRWTyU3OD7kb4kFH9OK0laJGfQ",
+  authDomain: "lexicon-e6347.firebaseapp.com",
+  projectId: "lexicon-e6347",
+  storageBucket: "lexicon-e6347.firebasestorage.app",
+  messagingSenderId: "621331806360",
+  appId: "1:621331806360:web:5515c2cdcfc62e917eb8ed"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const COL = collection(db, "lexicon_words");
+
+/* ── state ── */
+const INTERVALS=[0,1,2,4,8,16];
+const POS_ORDER=['verb','noun','adjective','adverb','phrase','other'];
+const POS_LABEL={verb:'Дієслова',noun:'Іменники',adjective:'Прикметники',adverb:'Прислівники',phrase:'Фрази та вирази',other:'Інше'};
+let words=[], dictView='topic', quizLang='ua', activeTab='add';
+
+const isDue=w=>(w.due||0)<=Date.now();
+const isMastered=w=>(w.box||0)>=5;
+const esc=s=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2600);}
+function schedFields(w,ok){
+  const box=ok?Math.min(5,(w.box||0)+1):1;
+  return {box, reps:(w.reps||0)+(ok?1:0), lapses:(w.lapses||0)+(ok?0:1), due:Date.now()+(INTERVALS[box]??16)*86400000, last:Date.now()};
+}
+
+/* ── live sync from Firestore ── */
+function setConn(state,text){const c=document.getElementById('conn');c.className='conn '+state;document.getElementById('conn-t').textContent=text;}
+onSnapshot(query(COL, orderBy("created","desc")),
+  snap=>{ words=snap.docs.map(d=>({id:d.id,...d.data()})); setConn('ok','Синхронізовано · слів у хмарі: '+words.length); refreshStats(); if(activeTab==='dict') renderDict(); },
+  err=>{ console.error(err); setConn('err','Немає доступу до бази — перевір правила Firestore для lexicon_words'); toast('Firestore: доступ заборонено. Онови security rules.'); }
+);
+
+/* ── enrichment via serverless (/api/enrich) ── */
+async function enrich(word, topic){
+  const r=await fetch('/api/enrich',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({word,topic})});
+  if(!r.ok) throw new Error('enrich '+r.status);
+  return await r.json();
+}
+
+function refreshStats(){
+  const due=words.filter(isDue).length, mastered=words.filter(isMastered).length;
+  document.getElementById('s-total').textContent=words.length;
+  document.getElementById('s-due').textContent=due;
+  document.getElementById('s-mastered').textContent=mastered;
+  document.getElementById('b-dict').textContent=words.length;
+  document.getElementById('b-study').textContent=due;
+  document.querySelector('nav button[data-tab=study]').classList.toggle('due-hl',due>0);
+}
+
+/* ── ADD ── */
+async function doAdd(){
+  const wi=document.getElementById('w-word'), ti=document.getElementById('w-topic');
+  const word=wi.value.trim(); if(!word) return;
+  const topic=ti.value.trim()||'General';
+  const btn=document.getElementById('add-btn');
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Обробляю…';
+  let d;
+  try{ d=await enrich(word,topic); }
+  catch(e){ d={word,ipa:'',pos:'',pos_group:'other',translation_uk:'',translation_hu:'',definition:'',example:''}; toast('AI недоступний — додано без деталей'); }
+  const entry={
+    word:d.word||word, topic, ipa:d.ipa||'', pos:d.pos||'', pos_group:(POS_ORDER.includes(d.pos_group)?d.pos_group:'other'),
+    tr:d.translation_uk||'', tr_hu:d.translation_hu||'', def:d.definition||'', ex:d.example||'',
+    box:0, due:Date.now(), reps:0, lapses:0, created:Date.now()
+  };
+  try{ await addDoc(COL, entry); }
+  catch(e){ console.error(e); toast('Не вдалось записати в базу'); btn.disabled=false; btn.textContent='Додати'; return; }
+  const p=document.getElementById('preview'); p.className='preview show';
+  p.innerHTML=renderEntryInner({...entry,id:'preview'})+'<div class="hint" style="margin-top:12px">Додано в хмару. Введи наступне слово.</div>';
+  btn.disabled=false; btn.textContent='Додати';
+  wi.value=''; ti.value=topic; wi.focus();
+}
+
+/* ── DICTIONARY ── */
+function pips(box){let h='';for(let i=1;i<=5;i++){const c=box>=5?'m':(i<=box?'f':'');h+=`<span class="pip ${c}"></span>`;}return h;}
+function renderEntryInner(w){
+  const mastered=isMastered(w), due=isDue(w);
+  const tag=mastered?'<span class="tag" style="color:var(--learned)">засвоєно</span>':due?'<span class="tag due">на повтор</span>':'<span class="tag">у процесі</span>';
+  const delBtn=w.id==='preview'?'':`<button class="del" data-del="${w.id}">видалити</button>`;
+  return `<div class="entry">
+    <div class="head">
+      <div><span class="headword">${esc(w.word)}</span>${w.ipa?`<span class="ipa">${esc(w.ipa)}</span>`:''}${w.pos?`<span class="pos">${esc(w.pos)}</span>`:''}</div>
+      ${w.tr?`<div class="tr"><span class="lang ua">UA</span><span>${esc(w.tr)}</span></div>`:''}
+      ${w.tr_hu?`<div class="tr"><span class="lang hu">HU</span><span>${esc(w.tr_hu)}</span></div>`:''}
+      ${w.def?`<div class="def">${esc(w.def)}</div>`:''}
+      ${w.ex?`<div class="ex">${esc(w.ex)}</div>`:''}
+    </div>
+    <div class="side"><div class="box-pips">${pips(w.box)}</div>${tag}${delBtn}</div>
+  </div>`;
+}
+function renderDict(){
+  const q=(document.getElementById('search').value||'').toLowerCase().trim();
+  const list=document.getElementById('dict-list');
+  let items=words;
+  if(q) items=words.filter(w=>[w.word,w.tr,w.tr_hu,w.topic,w.def].some(f=>(f||'').toLowerCase().includes(q)));
+  if(!items.length){ list.innerHTML=`<div class="empty"><div class="big">${words.length?'Нічого не знайдено':'Словник порожній'}</div>${words.length?'':'Додай перше слово на вкладці «Додати» або через Telegram-бота.'}</div>`; return; }
+  const groups={};
+  if(dictView==='pos'){
+    items.forEach(w=>{const k=POS_ORDER.includes(w.pos_group)?w.pos_group:'other';(groups[k]=groups[k]||[]).push(w);});
+    POS_ORDER.filter(k=>groups[k]).forEach(()=>{});
+    list.innerHTML=POS_ORDER.filter(k=>groups[k]).map(k=>`<div class="group-h">${POS_LABEL[k]} · ${groups[k].length}</div>`+groups[k].map(renderEntryInner).join('')).join('');
+  } else {
+    items.forEach(w=>{(groups[w.topic||'General']=groups[w.topic||'General']||[]).push(w);});
+    list.innerHTML=Object.keys(groups).sort().map(t=>`<div class="group-h">${esc(t)} · ${groups[t].length}</div>`+groups[t].map(renderEntryInner).join('')).join('');
+  }
+}
+
+/* ── STUDY ── */
+let queue=[], qi=0, flipped=false;
+function startStudy(){ queue=words.filter(isDue).sort((a,b)=>(a.due||0)-(b.due||0)); qi=0; flipped=false; renderStudy(); }
+function renderStudy(){
+  const body=document.getElementById('study-body');
+  if(!queue.length){ body.innerHTML=`<div class="empty"><div class="big">Немає карток на повтор 🎉</div>${words.length?'Усе повторено на сьогодні.':'Спершу додай слова у словник.'}</div>`; return; }
+  if(qi>=queue.length){ body.innerHTML=`<div class="empty"><div class="big">Сесію завершено</div>Пройдено карток: ${queue.length}.</div><div class="center"><button class="btn btn-ghost" onclick="startStudy()">Перевірити чергу ще раз</button></div>`; refreshStats(); return; }
+  const w=queue[qi];
+  const front=`<div class="fw">${esc(w.word)}</div>${w.ipa?`<div class="fipa">${esc(w.ipa)}</div>`:''}<div class="flip-hint">натисни, щоб побачити переклад</div>`;
+  const back=`<div class="ftr"><span class="lang ua">UA</span>${esc(w.tr||'—')}</div>${w.tr_hu?`<div class="ftr" style="font-size:22px;margin-top:8px"><span class="lang hu">HU</span>${esc(w.tr_hu)}</div>`:''}${w.pos?`<div class="fpos">${esc(w.pos)}</div>`:''}${w.def?`<div class="fdef">${esc(w.def)}</div>`:''}${w.ex?`<div class="fex">${esc(w.ex)}</div>`:''}`;
+  body.innerHTML=`<div class="stage">
+    <div class="progress"><i style="width:${(qi/queue.length)*100}%"></i></div>
+    <div class="queue-meta">Картка ${qi+1} з ${queue.length}</div>
+    <div class="flash" id="flash">${flipped?back:front}</div>
+    <div class="grade" id="grade" style="visibility:${flipped?'visible':'hidden'}">
+      <button class="btn btn-again" data-grade="0">Ще не знаю</button>
+      <button class="btn btn-good" data-grade="1">Знаю</button>
+    </div></div>`;
+  document.getElementById('flash').onclick=()=>{ if(!flipped){ flipped=true; renderStudy(); } };
+  document.querySelectorAll('#grade [data-grade]').forEach(b=>b.onclick=async()=>{
+    const w=queue[qi], f=schedFields(w,b.dataset.grade==='1'); Object.assign(w,f);
+    try{ await updateDoc(doc(db,'lexicon_words',w.id), f); }catch(e){ console.error(e); }
+    qi++; flipped=false; renderStudy(); refreshStats();
+  });
+}
+
+/* ── QUIZ ── */
+function startQuiz(){
+  const body=document.getElementById('quiz-body');
+  const field=quizLang==='hu'?'tr_hu':'tr';
+  const pool=words.filter(w=>w[field]);
+  const seg=`<div class="quiz-top"><div class="seg" id="quiz-seg">
+      <button data-lang="ua" class="${quizLang==='ua'?'on':''}">Українською</button>
+      <button data-lang="hu" class="${quizLang==='hu'?'on':''}">Угорською</button></div></div>`;
+  if(pool.length<4){ body.innerHTML=seg+`<div class="empty"><div class="big">Замало слів для тесту</div>Потрібно щонайменше 4 слова з перекладом ${quizLang==='hu'?'угорською':'українською'}.</div>`; wireQuizSeg(); return; }
+  const w=pool[Math.floor(Math.random()*pool.length)];
+  const wrong=pool.filter(x=>x.id!==w.id).sort(()=>Math.random()-.5).slice(0,3);
+  const opts=[w,...wrong].sort(()=>Math.random()-.5);
+  body.innerHTML=seg+`
+    <div class="q-word">${esc(w.word)}</div>
+    <div class="q-sub">${w.ipa?esc(w.ipa)+' · ':''}обери переклад ${quizLang==='hu'?'угорською':'українською'}</div>
+    <div class="opts" id="opts">${opts.map(o=>`<button class="opt" data-id="${o.id}">${esc(o[field])}</button>`).join('')}</div>
+    <div class="center" id="q-next" style="visibility:hidden"><button class="btn btn-primary" onclick="startQuiz()">Наступне слово →</button></div>`;
+  wireQuizSeg();
+  document.querySelectorAll('#opts .opt').forEach(btn=>btn.onclick=async()=>{
+    const ok=btn.dataset.id===w.id;
+    document.querySelectorAll('#opts .opt').forEach(b=>{ b.disabled=true; if(b.dataset.id===w.id)b.classList.add('correct'); else if(b===btn)b.classList.add('wrong'); });
+    const f=schedFields(w,ok); Object.assign(w,f);
+    try{ await updateDoc(doc(db,'lexicon_words',w.id), f); }catch(e){ console.error(e); }
+    refreshStats();
+    document.getElementById('q-next').style.visibility='visible';
+  });
+}
+function wireQuizSeg(){ document.querySelectorAll('#quiz-seg button').forEach(b=>b.onclick=()=>{ quizLang=b.dataset.lang; startQuiz(); }); }
+
+/* ── tabs + wiring ── */
+function tab(name){
+  activeTab=name;
+  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.tab===name));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('on',p.id==='p-'+name));
+  if(name==='dict') renderDict();
+  if(name==='study') startStudy();
+  if(name==='quiz') startQuiz();
+}
+window.startStudy=startStudy; window.startQuiz=startQuiz;
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>tab(b.dataset.tab));
+document.getElementById('add-btn').onclick=doAdd;
+document.getElementById('w-word').addEventListener('keydown',e=>{if(e.key==='Enter')doAdd();});
+document.getElementById('w-topic').addEventListener('keydown',e=>{if(e.key==='Enter')doAdd();});
+document.getElementById('search').addEventListener('input',renderDict);
+document.querySelectorAll('#view-seg button').forEach(b=>b.onclick=()=>{ dictView=b.dataset.view; document.querySelectorAll('#view-seg button').forEach(x=>x.classList.toggle('on',x===b)); renderDict(); });
+document.getElementById('dict-list').addEventListener('click',async e=>{ const id=e.target.getAttribute('data-del'); if(!id)return; try{ await deleteDoc(doc(db,'lexicon_words',id)); }catch(err){ console.error(err); toast('Не вдалось видалити'); } });
+</script>
+</body>
+</html>

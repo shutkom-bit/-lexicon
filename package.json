@@ -1,0 +1,6 @@
+{
+  "name": "lexicon",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lexicon — English vocabulary trainer (Firestore + Vercel)"
+}

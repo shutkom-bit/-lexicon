@@ -1,0 +1,17 @@
+rules_version = '2';
+
+// Dedicated Lexicon project (lexicon-e6347) — safe to paste as the FULL ruleset,
+// since nothing else lives here.
+//
+// MVP: the site reads and writes the vocabulary directly (no login). Effectively
+// public, which is acceptable for a personal word list. Once the Telegram bot is
+// added, writes move server-side (Admin SDK bypasses these rules) and we switch
+// the site to read-only:  allow read: if true;  allow write: if false;
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /lexicon_words/{docId} {
+      allow read, write: if true;
+    }
+  }
+}
