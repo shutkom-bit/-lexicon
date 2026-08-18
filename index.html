@@ -20,15 +20,35 @@
   *{box-sizing:border-box} html,body{margin:0}
   body{background:var(--paper);color:var(--ink);font-family:'Inter',system-ui,sans-serif;font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
   .wrap{max-width:860px;margin:0 auto;padding:28px 20px 80px}
-  header{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+  /* login */
+  #login{min-height:100vh;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
+  #login .lbrand{display:flex;align-items:baseline;gap:10px;margin-bottom:8px}
+  #login .lbrand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);transform:translateY(-4px)}
+  #login h1{font-family:'Fraunces',serif;font-weight:600;font-size:44px;margin:0;letter-spacing:-.02em}
+  #login p{color:var(--ink-soft);max-width:400px;margin:6px 0 30px}
+  #login .feat{color:var(--faint);font-size:13.5px;margin-top:26px;max-width:420px;line-height:1.7}
+  .gbtn{display:inline-flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px 22px;font-family:inherit;font-size:15px;font-weight:500;color:var(--ink);cursor:pointer;box-shadow:var(--shadow);transition:transform .08s,border .15s}
+  .gbtn:hover{border-color:var(--accent)} .gbtn:active{transform:translateY(1px)}
+  .gbtn svg{width:20px;height:20px}
+  /* header */
+  #app{display:none}
+  header{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px}
   .brand{display:flex;align-items:baseline;gap:10px}
   .brand h1{font-family:'Fraunces',serif;font-weight:600;font-size:30px;letter-spacing:-.01em;margin:0}
   .brand .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);transform:translateY(-3px)}
   .brand small{color:var(--faint);font-size:12.5px;letter-spacing:.04em;text-transform:uppercase}
-  .stats{display:flex;gap:20px}
+  .usermenu{display:flex;align-items:center;gap:12px}
+  .plan-chip{font-size:12px;font-weight:500;padding:5px 11px;border-radius:20px;background:var(--line-2);color:var(--ink-soft)}
+  .plan-chip.pro{background:rgba(91,79,224,.12);color:var(--accent)}
+  .uchip{display:flex;align-items:center;gap:9px}
+  .uchip img{width:30px;height:30px;border-radius:50%;border:1px solid var(--line)}
+  .uchip .uname{font-size:13.5px;color:var(--ink-soft);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .signout{background:none;border:none;color:var(--faint);font-size:12.5px;cursor:pointer;padding:4px 6px;text-decoration:underline}
+  .signout:hover{color:var(--due)}
+  .statbar{display:flex;gap:20px;justify-content:flex-end;margin-bottom:20px}
   .stat{text-align:right}
-  .stat b{font-family:'Fraunces',serif;font-size:22px;font-weight:600;display:block;line-height:1}
-  .stat span{font-size:11px;color:var(--faint);letter-spacing:.03em;text-transform:uppercase}
+  .stat b{font-family:'Fraunces',serif;font-size:20px;font-weight:600;display:block;line-height:1}
+  .stat span{font-size:10.5px;color:var(--faint);letter-spacing:.03em;text-transform:uppercase}
   .stat.due b{color:var(--due)} .stat.learned b{color:var(--learned)}
   nav{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:24px}
   nav button{background:none;border:none;font-family:inherit;font-size:14px;color:var(--ink-soft);padding:10px 16px 12px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;display:flex;align-items:center;gap:7px;transition:color .15s}
@@ -51,6 +71,10 @@
   .btn-primary:disabled{opacity:.55;cursor:wait}
   .btn-ghost{background:var(--line-2);color:var(--ink-soft)} .btn-ghost:hover{background:var(--line)}
   .hint{color:var(--faint);font-size:12.5px;margin-top:12px}
+  .limit-meter{margin-top:14px;display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--ink-soft)}
+  .limit-meter .bar{flex:1;height:6px;background:var(--line-2);border-radius:4px;overflow:hidden;max-width:220px}
+  .limit-meter .bar i{display:block;height:100%;background:var(--accent);transition:width .3s}
+  .limit-meter .bar i.warn{background:var(--due)}
   .preview{margin-top:18px;border-top:1px dashed var(--line);padding-top:18px;display:none}
   .preview.show{display:block}
   .entry{padding:18px 20px;border-bottom:1px solid var(--line-2);display:flex;gap:16px;align-items:flex-start}
@@ -110,24 +134,53 @@
   .center{display:flex;justify-content:center;margin-top:18px}
   .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;display:inline-block;animation:spin .7s linear infinite;vertical-align:-2px;margin-right:8px}
   @keyframes spin{to{transform:rotate(360deg)}}
-  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:10px;font-size:13.5px;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;max-width:90vw;text-align:center}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:10px;font-size:13.5px;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;max-width:90vw;text-align:center;z-index:50}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(-4px)}
-  .conn{font-size:11px;color:var(--faint);display:flex;align-items:center;gap:6px}
+  .conn{font-size:11px;color:var(--faint);display:flex;align-items:center;gap:6px;margin-top:14px}
   .conn .d{width:7px;height:7px;border-radius:50%;background:var(--faint)}
   .conn.ok .d{background:var(--learned)} .conn.err .d{background:var(--due)}
+  /* paywall */
+  .modal-bg{position:fixed;inset:0;background:rgba(22,27,51,.4);display:none;align-items:center;justify-content:center;padding:24px;z-index:60}
+  .modal-bg.show{display:flex}
+  .modal{background:var(--panel);border-radius:18px;box-shadow:var(--shadow);max-width:420px;width:100%;padding:32px;text-align:center}
+  .modal h2{font-family:'Fraunces',serif;font-size:26px;margin:0 0 8px}
+  .modal p{color:var(--ink-soft);margin:0 0 8px}
+  .modal .price{font-family:'Fraunces',serif;font-size:34px;font-weight:600;margin:16px 0 4px}
+  .modal .price small{font-size:14px;color:var(--faint);font-weight:400}
+  .modal ul{text-align:left;color:var(--ink-soft);font-size:14px;line-height:1.9;margin:16px auto;max-width:280px;padding-left:20px}
+  .modal .close{margin-top:14px;background:none;border:none;color:var(--faint);font-size:13px;cursor:pointer;text-decoration:underline}
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
-<div class="wrap">
+
+<!-- LOGIN -->
+<div id="login">
+  <div class="lbrand"><span class="dot"></span><h1>Lexicon</h1></div>
+  <p>Твій особистий тренажер англійських слів із перекладом, тренуванням і тестами.</p>
+  <button class="gbtn" id="google-btn">
+    <svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+    Увійти через Google
+  </button>
+  <div class="feat">Безкоштовно: до 50 слів, тренування та тести.<br>Переклад визначає AI: транскрипція, частина мови, значення й приклад.</div>
+</div>
+
+<!-- APP -->
+<div id="app"><div class="wrap">
   <header>
     <div class="brand"><span class="dot"></span><h1>Lexicon</h1><small>тренажер словника</small></div>
-    <div class="stats">
-      <div class="stat"><b id="s-total">·</b><span>слів</span></div>
-      <div class="stat due"><b id="s-due">·</b><span>на повтор</span></div>
-      <div class="stat learned"><b id="s-mastered">·</b><span>засвоєно</span></div>
+    <div class="usermenu">
+      <span class="plan-chip" id="plan-chip">Free</span>
+      <div class="uchip"><img id="u-avatar" alt=""><span class="uname" id="u-name"></span></div>
+      <button class="signout" id="signout-btn">вийти</button>
     </div>
   </header>
+
+  <div class="statbar">
+    <div class="stat"><b id="s-total">·</b><span>слів</span></div>
+    <div class="stat due"><b id="s-due">·</b><span>на повтор</span></div>
+    <div class="stat learned"><b id="s-mastered">·</b><span>засвоєно</span></div>
+  </div>
 
   <nav>
     <button data-tab="add" class="on">Додати</button>
@@ -143,10 +196,11 @@
         <input type="text" id="w-topic" placeholder="Тема (напр. Business)" autocomplete="off">
         <button class="btn btn-primary" id="add-btn">Додати</button>
       </div>
-      <div class="hint">AI визначить частину мови й допише переклад <b>українською та угорською</b>, транскрипцію, значення й приклад. Слова синхронізуються з хмарою — і сайт, і бот бачать одну базу.</div>
+      <div class="hint">AI визначить частину мови й допише переклад <b>українською та угорською</b>, транскрипцію, значення й приклад.</div>
+      <div class="limit-meter" id="limit-meter"></div>
       <div class="preview" id="preview"></div>
     </div>
-    <div class="conn" id="conn" style="margin-top:14px"><span class="d"></span><span id="conn-t">Підключення до бази…</span></div>
+    <div class="conn" id="conn"><span class="d"></span><span id="conn-t">Підключення…</span></div>
   </section>
 
   <section class="panel" id="p-dict">
@@ -162,15 +216,35 @@
 
   <section class="panel" id="p-study"><div id="study-body"></div></section>
   <section class="panel" id="p-quiz"><div id="quiz-body"></div></section>
-</div>
+</div></div>
+
 <div class="toast" id="toast"></div>
+
+<!-- PAYWALL -->
+<div class="modal-bg" id="paywall">
+  <div class="modal">
+    <h2>Ліміт вичерпано</h2>
+    <p>Безкоштовний тариф — до <b id="pw-limit">50</b> слів. Ти вже їх використав.</p>
+    <div class="price">€12.99 <small>разово, назавжди</small></div>
+    <ul>
+      <li>Безлімітна кількість слів</li>
+      <li>Усі мови перекладу</li>
+      <li>Додавання через Telegram-бота</li>
+      <li>Повна аналітика прогресу</li>
+    </ul>
+    <button class="btn btn-primary" id="pw-buy" style="width:100%" disabled>Оформити Pro — скоро</button>
+    <button class="close" id="pw-close">Поки продовжу безкоштовно</button>
+  </div>
+</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
-import { getFirestore, collection, query, orderBy, onSnapshot, addDoc, doc, updateDoc, deleteDoc }
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+import { getFirestore, collection, doc, getDoc, setDoc, updateDoc, deleteDoc, addDoc,
+  onSnapshot, query, orderBy, increment }
   from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
-/* ── Firebase (public client config — not a secret) ── */
 const firebaseConfig = {
   apiKey: "AIzaSyBFP8Bp0qRWTyU3OD7kb4kFH9OK0laJGfQ",
   authDomain: "lexicon-e6347.firebaseapp.com",
@@ -180,36 +254,88 @@ const firebaseConfig = {
   appId: "1:621331806360:web:5515c2cdcfc62e917eb8ed"
 };
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 const db = getFirestore(app);
-const COL = collection(db, "lexicon_words");
+const provider = new GoogleAuthProvider();
 
-/* ── state ── */
+const FREE_LIMIT = 50;
 const INTERVALS=[0,1,2,4,8,16];
 const POS_ORDER=['verb','noun','adjective','adverb','phrase','other'];
 const POS_LABEL={verb:'Дієслова',noun:'Іменники',adjective:'Прикметники',adverb:'Прислівники',phrase:'Фрази та вирази',other:'Інше'};
+
+let user=null, profile=null, deckId=null;
 let words=[], dictView='topic', quizLang='ua', activeTab='add';
+let unsubWords=null, unsubProfile=null;
 
 const isDue=w=>(w.due||0)<=Date.now();
 const isMastered=w=>(w.box||0)>=5;
 const esc=s=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const trOf=(w,l)=>(w.tr&&w.tr[l])||'';
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2600);}
-function schedFields(w,ok){
-  const box=ok?Math.min(5,(w.box||0)+1):1;
-  return {box, reps:(w.reps||0)+(ok?1:0), lapses:(w.lapses||0)+(ok?0:1), due:Date.now()+(INTERVALS[box]??16)*86400000, last:Date.now()};
+function schedFields(w,ok){const box=ok?Math.min(5,(w.box||0)+1):1;return {box, reps:(w.reps||0)+(ok?1:0), lapses:(w.lapses||0)+(ok?0:1), due:Date.now()+(INTERVALS[box]??16)*86400000, last:Date.now()};}
+
+/* ── AUTH ── */
+document.getElementById('google-btn').onclick=async()=>{
+  try{ await signInWithPopup(auth, provider); }
+  catch(e){ console.error(e); toast('Не вдалось увійти: '+(e.code||e.message)); }
+};
+document.getElementById('signout-btn').onclick=()=>signOut(auth);
+
+onAuthStateChanged(auth, async (u)=>{
+  if(u){
+    user=u; deckId=u.uid;
+    document.getElementById('login').style.display='none';
+    document.getElementById('app').style.display='block';
+    document.getElementById('u-name').textContent=u.displayName||u.email||'';
+    if(u.photoURL) document.getElementById('u-avatar').src=u.photoURL;
+    await ensureProfile();
+    startSync();
+  } else {
+    teardown();
+    document.getElementById('app').style.display='none';
+    document.getElementById('login').style.display='flex';
+  }
+});
+
+function teardown(){
+  if(unsubWords){unsubWords();unsubWords=null;}
+  if(unsubProfile){unsubProfile();unsubProfile=null;}
+  user=null; profile=null; deckId=null; words=[];
 }
 
-/* ── live sync from Firestore ── */
-function setConn(state,text){const c=document.getElementById('conn');c.className='conn '+state;document.getElementById('conn-t').textContent=text;}
-onSnapshot(query(COL, orderBy("created","desc")),
-  snap=>{ words=snap.docs.map(d=>({id:d.id,...d.data()})); setConn('ok','Синхронізовано · слів у хмарі: '+words.length); refreshStats(); if(activeTab==='dict') renderDict(); },
-  err=>{ console.error(err); setConn('err','Немає доступу до бази — перевір правила Firestore для lexicon_words'); toast('Firestore: доступ заборонено. Онови security rules.'); }
-);
+async function ensureProfile(){
+  const uref=doc(db,'users',user.uid);
+  const usnap=await getDoc(uref);
+  if(!usnap.exists()){
+    await setDoc(uref,{displayName:user.displayName||'',email:user.email||'',photoURL:user.photoURL||'',nativeLang:'uk',plan:'free',wordCount:0,createdAt:Date.now()});
+    profile={plan:'free',wordCount:0,nativeLang:'uk'};
+  } else { profile=usnap.data(); }
+  const dref=doc(db,'decks',deckId);
+  const dsnap=await getDoc(dref);
+  if(!dsnap.exists()){
+    await setDoc(dref,{ownerUid:user.uid,name:'Мій словник',nativeLang:'uk',isDefault:true,shared:false,accessCode:null,createdAt:Date.now()});
+  }
+}
 
-/* ── enrichment via serverless (/api/enrich) ── */
-async function enrich(word, topic){
-  const r=await fetch('/api/enrich',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({word,topic})});
-  if(!r.ok) throw new Error('enrich '+r.status);
-  return await r.json();
+/* ── SYNC ── */
+function setConn(state,text){const c=document.getElementById('conn');c.className='conn '+state;document.getElementById('conn-t').textContent=text;}
+function startSync(){
+  const wcol=collection(db,'decks',deckId,'words');
+  unsubWords=onSnapshot(query(wcol, orderBy('created','desc')),
+    snap=>{ words=snap.docs.map(d=>({id:d.id,...d.data()})); setConn('ok','Синхронізовано · слів: '+words.length); refreshStats(); if(activeTab==='dict') renderDict(); },
+    err=>{ console.error(err); setConn('err','Немає доступу до бази — перевір правила Firestore'); }
+  );
+  unsubProfile=onSnapshot(doc(db,'users',user.uid), s=>{ if(s.exists()){ profile=s.data(); refreshPlanUI(); } });
+}
+
+function refreshPlanUI(){
+  const chip=document.getElementById('plan-chip');
+  const pro=profile&&profile.plan==='pro';
+  chip.textContent=pro?'Pro':'Free'; chip.classList.toggle('pro',pro);
+  const m=document.getElementById('limit-meter');
+  if(pro){ m.innerHTML='<span>План Pro — без обмежень.</span>'; return; }
+  const c=(profile&&profile.wordCount)||0, pct=Math.min(100,c/FREE_LIMIT*100);
+  m.innerHTML=`<span>Free · ${c} / ${FREE_LIMIT} слів</span><div class="bar"><i class="${pct>=80?'warn':''}" style="width:${pct}%"></i></div>`;
 }
 
 function refreshStats(){
@@ -220,10 +346,23 @@ function refreshStats(){
   document.getElementById('b-dict').textContent=words.length;
   document.getElementById('b-study').textContent=due;
   document.querySelector('nav button[data-tab=study]').classList.toggle('due-hl',due>0);
+  refreshPlanUI();
 }
+
+/* ── enrichment ── */
+async function enrich(word, topic){
+  const r=await fetch('/api/enrich',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({word,topic})});
+  if(!r.ok) throw new Error('enrich '+r.status);
+  return await r.json();
+}
+
+/* ── PAYWALL ── */
+function showPaywall(){ document.getElementById('pw-limit').textContent=FREE_LIMIT; document.getElementById('paywall').classList.add('show'); }
+document.getElementById('pw-close').onclick=()=>document.getElementById('paywall').classList.remove('show');
 
 /* ── ADD ── */
 async function doAdd(){
+  if(profile && profile.plan!=='pro' && (profile.wordCount||0) >= FREE_LIMIT){ showPaywall(); return; }
   const wi=document.getElementById('w-word'), ti=document.getElementById('w-topic');
   const word=wi.value.trim(); if(!word) return;
   const topic=ti.value.trim()||'General';
@@ -234,13 +373,15 @@ async function doAdd(){
   catch(e){ d={word,ipa:'',pos:'',pos_group:'other',translation_uk:'',translation_hu:'',definition:'',example:''}; toast('AI недоступний — додано без деталей'); }
   const entry={
     word:d.word||word, topic, ipa:d.ipa||'', pos:d.pos||'', pos_group:(POS_ORDER.includes(d.pos_group)?d.pos_group:'other'),
-    tr:d.translation_uk||'', tr_hu:d.translation_hu||'', def:d.definition||'', ex:d.example||'',
-    box:0, due:Date.now(), reps:0, lapses:0, created:Date.now()
+    tr:{uk:d.translation_uk||'', hu:d.translation_hu||''}, def:d.definition||'', ex:d.example||'',
+    ownerUid:user.uid, box:0, due:Date.now(), reps:0, lapses:0, created:Date.now()
   };
-  try{ await addDoc(COL, entry); }
-  catch(e){ console.error(e); toast('Не вдалось записати в базу'); btn.disabled=false; btn.textContent='Додати'; return; }
+  try{
+    await addDoc(collection(db,'decks',deckId,'words'), entry);
+    await updateDoc(doc(db,'users',user.uid), { wordCount: increment(1) });
+  }catch(e){ console.error(e); toast('Не вдалось записати'); btn.disabled=false; btn.textContent='Додати'; return; }
   const p=document.getElementById('preview'); p.className='preview show';
-  p.innerHTML=renderEntryInner({...entry,id:'preview'})+'<div class="hint" style="margin-top:12px">Додано в хмару. Введи наступне слово.</div>';
+  p.innerHTML=renderEntryInner({...entry,id:'preview'})+'<div class="hint" style="margin-top:12px">Додано. Введи наступне слово.</div>';
   btn.disabled=false; btn.textContent='Додати';
   wi.value=''; ti.value=topic; wi.focus();
 }
@@ -251,11 +392,12 @@ function renderEntryInner(w){
   const mastered=isMastered(w), due=isDue(w);
   const tag=mastered?'<span class="tag" style="color:var(--learned)">засвоєно</span>':due?'<span class="tag due">на повтор</span>':'<span class="tag">у процесі</span>';
   const delBtn=w.id==='preview'?'':`<button class="del" data-del="${w.id}">видалити</button>`;
+  const uk=trOf(w,'uk'), hu=trOf(w,'hu');
   return `<div class="entry">
     <div class="head">
       <div><span class="headword">${esc(w.word)}</span>${w.ipa?`<span class="ipa">${esc(w.ipa)}</span>`:''}${w.pos?`<span class="pos">${esc(w.pos)}</span>`:''}</div>
-      ${w.tr?`<div class="tr"><span class="lang ua">UA</span><span>${esc(w.tr)}</span></div>`:''}
-      ${w.tr_hu?`<div class="tr"><span class="lang hu">HU</span><span>${esc(w.tr_hu)}</span></div>`:''}
+      ${uk?`<div class="tr"><span class="lang ua">UA</span><span>${esc(uk)}</span></div>`:''}
+      ${hu?`<div class="tr"><span class="lang hu">HU</span><span>${esc(hu)}</span></div>`:''}
       ${w.def?`<div class="def">${esc(w.def)}</div>`:''}
       ${w.ex?`<div class="ex">${esc(w.ex)}</div>`:''}
     </div>
@@ -266,12 +408,11 @@ function renderDict(){
   const q=(document.getElementById('search').value||'').toLowerCase().trim();
   const list=document.getElementById('dict-list');
   let items=words;
-  if(q) items=words.filter(w=>[w.word,w.tr,w.tr_hu,w.topic,w.def].some(f=>(f||'').toLowerCase().includes(q)));
-  if(!items.length){ list.innerHTML=`<div class="empty"><div class="big">${words.length?'Нічого не знайдено':'Словник порожній'}</div>${words.length?'':'Додай перше слово на вкладці «Додати» або через Telegram-бота.'}</div>`; return; }
+  if(q) items=words.filter(w=>[w.word,trOf(w,'uk'),trOf(w,'hu'),w.topic,w.def].some(f=>(f||'').toLowerCase().includes(q)));
+  if(!items.length){ list.innerHTML=`<div class="empty"><div class="big">${words.length?'Нічого не знайдено':'Словник порожній'}</div>${words.length?'':'Додай перше слово на вкладці «Додати».'}</div>`; return; }
   const groups={};
   if(dictView==='pos'){
     items.forEach(w=>{const k=POS_ORDER.includes(w.pos_group)?w.pos_group:'other';(groups[k]=groups[k]||[]).push(w);});
-    POS_ORDER.filter(k=>groups[k]).forEach(()=>{});
     list.innerHTML=POS_ORDER.filter(k=>groups[k]).map(k=>`<div class="group-h">${POS_LABEL[k]} · ${groups[k].length}</div>`+groups[k].map(renderEntryInner).join('')).join('');
   } else {
     items.forEach(w=>{(groups[w.topic||'General']=groups[w.topic||'General']||[]).push(w);});
@@ -284,11 +425,11 @@ let queue=[], qi=0, flipped=false;
 function startStudy(){ queue=words.filter(isDue).sort((a,b)=>(a.due||0)-(b.due||0)); qi=0; flipped=false; renderStudy(); }
 function renderStudy(){
   const body=document.getElementById('study-body');
-  if(!queue.length){ body.innerHTML=`<div class="empty"><div class="big">Немає карток на повтор 🎉</div>${words.length?'Усе повторено на сьогодні.':'Спершу додай слова у словник.'}</div>`; return; }
-  if(qi>=queue.length){ body.innerHTML=`<div class="empty"><div class="big">Сесію завершено</div>Пройдено карток: ${queue.length}.</div><div class="center"><button class="btn btn-ghost" onclick="startStudy()">Перевірити чергу ще раз</button></div>`; refreshStats(); return; }
-  const w=queue[qi];
+  if(!queue.length){ body.innerHTML=`<div class="empty"><div class="big">Немає карток на повтор 🎉</div>${words.length?'Усе повторено на сьогодні.':'Спершу додай слова.'}</div>`; return; }
+  if(qi>=queue.length){ body.innerHTML=`<div class="empty"><div class="big">Сесію завершено</div>Пройдено: ${queue.length}.</div><div class="center"><button class="btn btn-ghost" onclick="startStudy()">Ще раз</button></div>`; refreshStats(); return; }
+  const w=queue[qi], uk=trOf(w,'uk'), hu=trOf(w,'hu');
   const front=`<div class="fw">${esc(w.word)}</div>${w.ipa?`<div class="fipa">${esc(w.ipa)}</div>`:''}<div class="flip-hint">натисни, щоб побачити переклад</div>`;
-  const back=`<div class="ftr"><span class="lang ua">UA</span>${esc(w.tr||'—')}</div>${w.tr_hu?`<div class="ftr" style="font-size:22px;margin-top:8px"><span class="lang hu">HU</span>${esc(w.tr_hu)}</div>`:''}${w.pos?`<div class="fpos">${esc(w.pos)}</div>`:''}${w.def?`<div class="fdef">${esc(w.def)}</div>`:''}${w.ex?`<div class="fex">${esc(w.ex)}</div>`:''}`;
+  const back=`<div class="ftr"><span class="lang ua">UA</span>${esc(uk||'—')}</div>${hu?`<div class="ftr" style="font-size:22px;margin-top:8px"><span class="lang hu">HU</span>${esc(hu)}</div>`:''}${w.pos?`<div class="fpos">${esc(w.pos)}</div>`:''}${w.def?`<div class="fdef">${esc(w.def)}</div>`:''}${w.ex?`<div class="fex">${esc(w.ex)}</div>`:''}`;
   body.innerHTML=`<div class="stage">
     <div class="progress"><i style="width:${(qi/queue.length)*100}%"></i></div>
     <div class="queue-meta">Картка ${qi+1} з ${queue.length}</div>
@@ -300,7 +441,7 @@ function renderStudy(){
   document.getElementById('flash').onclick=()=>{ if(!flipped){ flipped=true; renderStudy(); } };
   document.querySelectorAll('#grade [data-grade]').forEach(b=>b.onclick=async()=>{
     const w=queue[qi], f=schedFields(w,b.dataset.grade==='1'); Object.assign(w,f);
-    try{ await updateDoc(doc(db,'lexicon_words',w.id), f); }catch(e){ console.error(e); }
+    try{ await updateDoc(doc(db,'decks',deckId,'words',w.id), f); }catch(e){ console.error(e); }
     qi++; flipped=false; renderStudy(); refreshStats();
   });
 }
@@ -308,33 +449,32 @@ function renderStudy(){
 /* ── QUIZ ── */
 function startQuiz(){
   const body=document.getElementById('quiz-body');
-  const field=quizLang==='hu'?'tr_hu':'tr';
-  const pool=words.filter(w=>w[field]);
+  const pool=words.filter(w=>trOf(w,quizLang));
   const seg=`<div class="quiz-top"><div class="seg" id="quiz-seg">
-      <button data-lang="ua" class="${quizLang==='ua'?'on':''}">Українською</button>
+      <button data-lang="uk" class="${quizLang==='uk'?'on':''}">Українською</button>
       <button data-lang="hu" class="${quizLang==='hu'?'on':''}">Угорською</button></div></div>`;
-  if(pool.length<4){ body.innerHTML=seg+`<div class="empty"><div class="big">Замало слів для тесту</div>Потрібно щонайменше 4 слова з перекладом ${quizLang==='hu'?'угорською':'українською'}.</div>`; wireQuizSeg(); return; }
+  if(pool.length<4){ body.innerHTML=seg+`<div class="empty"><div class="big">Замало слів для тесту</div>Потрібно ≥4 слова з перекладом ${quizLang==='hu'?'угорською':'українською'}.</div>`; wireQuizSeg(); return; }
   const w=pool[Math.floor(Math.random()*pool.length)];
   const wrong=pool.filter(x=>x.id!==w.id).sort(()=>Math.random()-.5).slice(0,3);
   const opts=[w,...wrong].sort(()=>Math.random()-.5);
   body.innerHTML=seg+`
     <div class="q-word">${esc(w.word)}</div>
     <div class="q-sub">${w.ipa?esc(w.ipa)+' · ':''}обери переклад ${quizLang==='hu'?'угорською':'українською'}</div>
-    <div class="opts" id="opts">${opts.map(o=>`<button class="opt" data-id="${o.id}">${esc(o[field])}</button>`).join('')}</div>
-    <div class="center" id="q-next" style="visibility:hidden"><button class="btn btn-primary" onclick="startQuiz()">Наступне слово →</button></div>`;
+    <div class="opts" id="opts">${opts.map(o=>`<button class="opt" data-id="${o.id}">${esc(trOf(o,quizLang))}</button>`).join('')}</div>
+    <div class="center" id="q-next" style="visibility:hidden"><button class="btn btn-primary" onclick="startQuiz()">Наступне →</button></div>`;
   wireQuizSeg();
   document.querySelectorAll('#opts .opt').forEach(btn=>btn.onclick=async()=>{
     const ok=btn.dataset.id===w.id;
     document.querySelectorAll('#opts .opt').forEach(b=>{ b.disabled=true; if(b.dataset.id===w.id)b.classList.add('correct'); else if(b===btn)b.classList.add('wrong'); });
     const f=schedFields(w,ok); Object.assign(w,f);
-    try{ await updateDoc(doc(db,'lexicon_words',w.id), f); }catch(e){ console.error(e); }
+    try{ await updateDoc(doc(db,'decks',deckId,'words',w.id), f); }catch(e){ console.error(e); }
     refreshStats();
     document.getElementById('q-next').style.visibility='visible';
   });
 }
 function wireQuizSeg(){ document.querySelectorAll('#quiz-seg button').forEach(b=>b.onclick=()=>{ quizLang=b.dataset.lang; startQuiz(); }); }
 
-/* ── tabs + wiring ── */
+/* ── tabs ── */
 function tab(name){
   activeTab=name;
   document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.tab===name));
@@ -350,7 +490,11 @@ document.getElementById('w-word').addEventListener('keydown',e=>{if(e.key==='Ent
 document.getElementById('w-topic').addEventListener('keydown',e=>{if(e.key==='Enter')doAdd();});
 document.getElementById('search').addEventListener('input',renderDict);
 document.querySelectorAll('#view-seg button').forEach(b=>b.onclick=()=>{ dictView=b.dataset.view; document.querySelectorAll('#view-seg button').forEach(x=>x.classList.toggle('on',x===b)); renderDict(); });
-document.getElementById('dict-list').addEventListener('click',async e=>{ const id=e.target.getAttribute('data-del'); if(!id)return; try{ await deleteDoc(doc(db,'lexicon_words',id)); }catch(err){ console.error(err); toast('Не вдалось видалити'); } });
+document.getElementById('dict-list').addEventListener('click',async e=>{
+  const id=e.target.getAttribute('data-del'); if(!id)return;
+  try{ await deleteDoc(doc(db,'decks',deckId,'words',id)); await updateDoc(doc(db,'users',user.uid),{wordCount:increment(-1)}); }
+  catch(err){ console.error(err); toast('Не вдалось видалити'); }
+});
 </script>
 </body>
 </html>
