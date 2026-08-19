@@ -56,6 +56,7 @@
   nav button.on{color:var(--ink);border-bottom-color:var(--accent);font-weight:500}
   nav button.on .badge{background:var(--accent);color:#fff}
   nav button.due-hl .badge{background:var(--due);color:#fff}
+  nav button .ti{display:none}
   .panel{display:none} .panel.on{display:block;animation:fade .25s ease}
   @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
   .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
@@ -182,11 +183,14 @@
     .statbar{justify-content:space-between;gap:8px}
     .stat{flex:1;text-align:center}
     .stat b{font-size:22px}
-    /* tabs never cut off: shrink a bit + horizontal scroll fallback */
-    nav{overflow-x:auto;-webkit-overflow-scrolling:touch;gap:0;scrollbar-width:none}
-    nav::-webkit-scrollbar{display:none}
-    nav button{padding:10px 13px 12px;font-size:13.5px;white-space:nowrap;flex-shrink:0}
-    nav button .badge{padding:1px 6px}
+    /* bottom navigation bar on mobile — always visible, thumb-friendly */
+    nav{position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--panel);border-top:1px solid var(--line);border-bottom:none;margin:0;padding:6px 2px calc(6px + env(safe-area-inset-bottom));gap:0;justify-content:space-around;box-shadow:0 -2px 12px rgba(22,27,51,.05)}
+    nav button{flex:1;flex-direction:column;gap:3px;padding:6px 2px;font-size:10px;border-bottom:none!important;margin-bottom:0;position:relative;color:var(--faint)}
+    nav button.on{color:var(--accent)}
+    nav button .ti{display:block}
+    nav button .ti svg{width:23px;height:23px;display:block;margin:0 auto}
+    nav button .tl{white-space:nowrap;font-size:10px;line-height:1}
+    nav button .badge{position:absolute;top:2px;right:calc(50% - 20px);min-width:15px;height:15px;padding:0 4px;font-size:9px;display:flex;align-items:center;justify-content:center;line-height:1}
     .empty{min-height:38vh;padding:36px 16px}
   }
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -223,11 +227,11 @@
   </div>
 
   <nav>
-    <button data-tab="add" class="on">Додати</button>
-    <button data-tab="dict">Словник <span class="badge" id="b-dict">0</span></button>
-    <button data-tab="study" class="due-hl">Тренування <span class="badge" id="b-study">0</span></button>
-    <button data-tab="quiz">Тест</button>
-    <button data-tab="game">Гра</button>
+    <button data-tab="add" class="on"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span><span class="tl">Додати</span></button>
+    <button data-tab="dict"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span><span class="tl">Словник</span> <span class="badge" id="b-dict">0</span></button>
+    <button data-tab="study" class="due-hl"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span><span class="tl">Тренування</span> <span class="badge" id="b-study">0</span></button>
+    <button data-tab="quiz"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span><span class="tl">Тест</span></button>
+    <button data-tab="game"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span><span class="tl">Гра</span></button>
   </nav>
 
   <section class="panel on" id="p-add">
@@ -572,7 +576,7 @@ function wireQuizSeg(){ document.querySelectorAll('#quiz-seg button').forEach(b=
 
 /* ── GAME (60-second speed round) ── */
 const GAME_SECONDS=60;
-let gState='intro', gTimeStart=0, gTimer=null, gScore=0, gStreak=0, gBest=0, gCorrect=0, gWrong=0, gLastId=null, gLocked=false;
+let gState='intro', gTimeStart=0, gTimer=null, gScore=0, gStreak=0, gBest=0, gCorrect=0, gWrong=0, gLastId=null, gLocked=false, gNewRecord=false;
 const gamePool=()=>words.filter(w=>trOf(w,gameLang));
 function pickGameWord(pool){
   const cand=pool.filter(w=>w.id!==gLastId);
@@ -622,9 +626,16 @@ async function gameAnswer(btn,w){
     try{ await updateDoc(doc(db,'decks',deckId,'words',w.id), f); }catch(e){ console.error(e); }
     refreshStats();
   } else { gWrong++; gStreak=0; } // wrong does NOT punish progress
-  setTimeout(()=>{ if(gState==='playing') gameNext(); }, ok?260:650);
+  setTimeout(()=>{ if(gState==='playing') gameNext(); }, ok?550:950);
 }
-function endGame(){ if(gTimer){ clearInterval(gTimer); gTimer=null; } gState='over'; renderGame(); }
+async function endGame(){
+  if(gTimer){ clearInterval(gTimer); gTimer=null; }
+  gState='over';
+  gNewRecord=false;
+  const prevBest=(profile&&profile.bestScore)||0;
+  if(gScore>prevBest){ gNewRecord=true; try{ await updateDoc(doc(db,'users',user.uid),{bestScore:gScore}); }catch(e){ console.error(e); } }
+  renderGame();
+}
 function wireGameSeg(){ document.querySelectorAll('#game-seg button').forEach(b=>b.onclick=()=>{ gameLang=b.dataset.lang; if(gState==='playing') endGame(); renderGame(); }); }
 function renderGame(){
   const body=document.getElementById('game-body');
@@ -634,9 +645,11 @@ function renderGame(){
   if(gState==='playing') return; // gameNext renders the play screen
   if(gState==='over'){
     const total=gCorrect+gWrong, acc=total?Math.round(gCorrect/total*100):0;
+    const best=(profile&&profile.bestScore)||0;
     body.innerHTML=seg+`
+      ${gNewRecord?'<div style="text-align:center;color:var(--learned);font-weight:600;margin-bottom:4px">🏆 Новий рекорд!</div>':''}
       <div class="g-final">${gScore}</div>
-      <div class="g-final-sub">балів за ${GAME_SECONDS} сек · найкраща серія ${gBest} · точність ${acc}%</div>
+      <div class="g-final-sub">балів за ${GAME_SECONDS} сек · найкраща серія ${gBest} · точність ${acc}%<br><span style="color:var(--faint)">твій рекорд: ${best}</span></div>
       <div class="center"><button class="btn btn-primary" id="g-again">Ще раз</button></div>`;
     wireGameSeg(); document.getElementById('g-again').onclick=beginRound; return;
   }
@@ -647,6 +660,7 @@ function renderGame(){
   body.innerHTML=seg+`<div class="game-intro">
     <h2>Гра на швидкість</h2>
     <p>За ${GAME_SECONDS} секунд обери якнайбільше правильних перекладів. Серія (🔥) підвищує азарт, а правильні відповіді зараховуються у твій прогрес.</p>
+    ${(profile&&profile.bestScore)?`<p style="margin-top:-8px;color:var(--accent);font-weight:600">🏆 Твій рекорд: ${profile.bestScore}</p>`:''}
     <button class="btn btn-primary" id="g-start">Почати (${GAME_SECONDS} сек)</button>
   </div>`;
   wireGameSeg(); document.getElementById('g-start').onclick=beginRound;
