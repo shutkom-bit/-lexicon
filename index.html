@@ -89,6 +89,11 @@
   .lang.hu{background:rgba(194,77,99,.12);color:var(--hu)}
   .def{color:var(--ink-soft);font-size:13.5px;margin-top:6px}
   .ex{color:var(--faint);font-size:13.5px;font-style:italic;margin-top:5px}
+  .spk{background:none;border:none;cursor:pointer;color:var(--faint);padding:3px;border-radius:6px;vertical-align:middle;display:inline-flex;align-items:center;transition:color .15s,background .15s}
+  .spk:hover{color:var(--accent);background:var(--line-2)}
+  .spk:active{transform:scale(.9)}
+  .spk svg{width:16px;height:16px}
+  .flash .spk svg{width:24px;height:24px}
   .entry .side{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0}
   .box-pips{display:flex;gap:3px}
   .pip{width:7px;height:7px;border-radius:2px;background:var(--line)}
@@ -308,6 +313,17 @@ const isDue=w=>(w.due||0)<=Date.now();
 const isMastered=w=>(w.box||0)>=5;
 const esc=s=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const trOf=(w,l)=>(w.tr&&w.tr[l])||'';
+const SPK_SVG='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 10v4h4l5 5V5L7 10H3zm13.5 2a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12zM14 3.23v2.06a7 7 0 0 1 0 13.42v2.06a9 9 0 0 0 0-17.54z"/></svg>';
+const speakBtn=word=>`<button class="spk" data-speak="${esc(word)}" title="Прослухати" aria-label="Прослухати">${SPK_SVG}</button>`;
+function speak(text){
+  try{
+    if(!('speechSynthesis' in window)){ toast('Озвучка не підтримується у цьому браузері'); return; }
+    window.speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text);
+    u.lang='en-US'; u.rate=0.95;
+    window.speechSynthesis.speak(u);
+  }catch(e){ console.error(e); }
+}
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2600);}
 function schedFields(w,ok){const box=ok?Math.min(5,(w.box||0)+1):1;return {box, reps:(w.reps||0)+(ok?1:0), lapses:(w.lapses||0)+(ok?0:1), due:Date.now()+(INTERVALS[box]??16)*86400000, last:Date.now()};}
 
@@ -438,7 +454,7 @@ function renderEntryInner(w){
   const uk=trOf(w,'uk'), hu=trOf(w,'hu');
   return `<div class="entry">
     <div class="head">
-      <div><span class="headword">${esc(w.word)}</span>${w.ipa?`<span class="ipa">${esc(w.ipa)}</span>`:''}${w.pos?`<span class="pos">${esc(w.pos)}</span>`:''}</div>
+      <div><span class="headword">${esc(w.word)}</span>${speakBtn(w.word)}${w.ipa?`<span class="ipa">${esc(w.ipa)}</span>`:''}${w.pos?`<span class="pos">${esc(w.pos)}</span>`:''}</div>
       ${uk?`<div class="tr"><span class="lang ua">UA</span><span>${esc(uk)}</span></div>`:''}
       ${hu?`<div class="tr"><span class="lang hu">HU</span><span>${esc(hu)}</span></div>`:''}
       ${w.def?`<div class="def">${esc(w.def)}</div>`:''}
@@ -471,7 +487,7 @@ function renderStudy(){
   if(!queue.length){ body.innerHTML=`<div class="empty"><div class="big">Немає карток на повтор 🎉</div>${words.length?'Усе повторено на сьогодні.':'Спершу додай слова.'}</div>`; return; }
   if(qi>=queue.length){ body.innerHTML=`<div class="empty"><div class="big">Сесію завершено</div>Пройдено: ${queue.length}.</div><div class="center"><button class="btn btn-ghost" onclick="startStudy()">Ще раз</button></div>`; refreshStats(); return; }
   const w=queue[qi], uk=trOf(w,'uk'), hu=trOf(w,'hu');
-  const front=`<div class="fw">${esc(w.word)}</div>${w.ipa?`<div class="fipa">${esc(w.ipa)}</div>`:''}<div class="flip-hint">натисни, щоб побачити переклад</div>`;
+  const front=`<div class="fw">${esc(w.word)}</div>${w.ipa?`<div class="fipa">${esc(w.ipa)}</div>`:''}<div style="margin-top:12px">${speakBtn(w.word)}</div><div class="flip-hint">натисни, щоб побачити переклад</div>`;
   const back=`<div class="ftr"><span class="lang ua">UA</span>${esc(uk||'—')}</div>${hu?`<div class="ftr" style="font-size:22px;margin-top:8px"><span class="lang hu">HU</span>${esc(hu)}</div>`:''}${w.pos?`<div class="fpos">${esc(w.pos)}</div>`:''}${w.def?`<div class="fdef">${esc(w.def)}</div>`:''}${w.ex?`<div class="fex">${esc(w.ex)}</div>`:''}`;
   body.innerHTML=`<div class="stage">
     <div class="progress"><i style="width:${(qi/queue.length)*100}%"></i></div>
@@ -482,6 +498,7 @@ function renderStudy(){
       <button class="btn btn-good" data-grade="1">Знаю</button>
     </div></div>`;
   document.getElementById('flash').onclick=()=>{ if(!flipped){ flipped=true; renderStudy(); } };
+  const fspk=document.querySelector('#flash .spk'); if(fspk) fspk.onclick=(e)=>{ e.stopPropagation(); speak(w.word); };
   document.querySelectorAll('#grade [data-grade]').forEach(b=>b.onclick=async()=>{
     const w=queue[qi], f=schedFields(w,b.dataset.grade==='1'); Object.assign(w,f);
     try{ await updateDoc(doc(db,'decks',deckId,'words',w.id), f); }catch(e){ console.error(e); }
@@ -539,6 +556,11 @@ document.getElementById('dict-list').addEventListener('click',async e=>{
   // total enrichments ever created (lifetime), not the current dictionary size.
   try{ await deleteDoc(doc(db,'decks',deckId,'words',id)); }
   catch(err){ console.error(err); toast('Не вдалось видалити'); }
+});
+// Speaker buttons anywhere except the flashcard (which has its own handler)
+document.addEventListener('click',e=>{
+  const b=e.target.closest('.spk[data-speak]');
+  if(b && !b.closest('#flash')) speak(b.getAttribute('data-speak'));
 });
 
 /* ── Connect Telegram ── */
