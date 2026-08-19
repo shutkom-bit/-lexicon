@@ -126,6 +126,18 @@
   .progress i{display:block;height:100%;background:var(--accent);transition:width .3s}
   .queue-meta{color:var(--faint);font-size:13px}
   .quiz-top{display:flex;justify-content:center;margin-bottom:22px}
+  .game-hud{display:flex;justify-content:space-between;align-items:baseline;max-width:520px;margin:0 auto 10px}
+  .g-score{font-family:'Fraunces',serif;font-size:26px;font-weight:600}
+  .g-score small{font-family:'Inter',sans-serif;font-size:12px;color:var(--faint);font-weight:400;margin-left:4px}
+  .g-streak{color:var(--accent);font-weight:600;font-size:14px}
+  .g-timerbar{max-width:520px;margin:0 auto 22px;height:8px;background:var(--line-2);border-radius:5px;overflow:hidden}
+  .g-timerbar i{display:block;height:100%;background:var(--learned);transition:width .2s linear}
+  .g-timerbar i.low{background:var(--due)}
+  .game-intro{text-align:center;padding:10px}
+  .game-intro h2{font-family:'Fraunces',serif;font-size:28px;margin:0 0 10px}
+  .game-intro p{color:var(--ink-soft);max-width:430px;margin:0 auto 20px;line-height:1.6}
+  .g-final{font-family:'Fraunces',serif;font-size:52px;font-weight:600;text-align:center;line-height:1;color:var(--accent)}
+  .g-final-sub{text-align:center;color:var(--ink-soft);margin:8px 0 22px;font-size:15px}
   .q-word{font-family:'Fraunces',serif;font-size:32px;font-weight:600;text-align:center;margin-bottom:4px}
   .q-sub{text-align:center;color:var(--faint);font-size:13px;margin-bottom:22px}
   .opts{display:flex;flex-direction:column;gap:10px;max-width:520px;margin:0 auto}
@@ -215,6 +227,7 @@
     <button data-tab="dict">Словник <span class="badge" id="b-dict">0</span></button>
     <button data-tab="study" class="due-hl">Тренування <span class="badge" id="b-study">0</span></button>
     <button data-tab="quiz">Тест</button>
+    <button data-tab="game">Гра</button>
   </nav>
 
   <section class="panel on" id="p-add">
@@ -258,6 +271,7 @@
 
   <section class="panel" id="p-study"><div id="study-body"></div></section>
   <section class="panel" id="p-quiz"><div id="quiz-body"></div></section>
+  <section class="panel" id="p-game"><div id="game-body"></div></section>
 </div></div>
 
 <div class="toast" id="toast"></div>
@@ -306,7 +320,7 @@ const POS_ORDER=['verb','noun','adjective','adverb','phrase','other'];
 const POS_LABEL={verb:'Дієслова',noun:'Іменники',adjective:'Прикметники',adverb:'Прислівники',phrase:'Фрази та вирази',other:'Інше'};
 
 let user=null, profile=null, deckId=null;
-let words=[], dictView='topic', quizLang='ua', activeTab='add';
+let words=[], dictView='topic', quizLang='ua', gameLang='uk', activeTab='add';
 let unsubWords=null, unsubProfile=null;
 
 const isDue=w=>(w.due||0)<=Date.now();
@@ -556,14 +570,98 @@ function startQuiz(){
 }
 function wireQuizSeg(){ document.querySelectorAll('#quiz-seg button').forEach(b=>b.onclick=()=>{ quizLang=b.dataset.lang; startQuiz(); }); }
 
+/* ── GAME (60-second speed round) ── */
+const GAME_SECONDS=60;
+let gState='intro', gTimeStart=0, gTimer=null, gScore=0, gStreak=0, gBest=0, gCorrect=0, gWrong=0, gLastId=null, gLocked=false;
+const gamePool=()=>words.filter(w=>trOf(w,gameLang));
+function pickGameWord(pool){
+  const cand=pool.filter(w=>w.id!==gLastId);
+  const arr=cand.length?cand:pool;
+  const weights=arr.map(w=>Math.max(1,6-(w.box||0))); // weaker words (low box) picked more often
+  const total=weights.reduce((a,b)=>a+b,0); let r=Math.random()*total;
+  for(let i=0;i<arr.length;i++){ r-=weights[i]; if(r<=0) return arr[i]; }
+  return arr[arr.length-1];
+}
+function startGame(){ gState='intro'; renderGame(); }
+function beginRound(){
+  if(gamePool().length<4){ gState='intro'; renderGame(); return; }
+  gState='playing'; gScore=0; gStreak=0; gBest=0; gCorrect=0; gWrong=0; gLastId=null; gLocked=false;
+  gTimeStart=Date.now();
+  if(gTimer) clearInterval(gTimer);
+  gTimer=setInterval(gameTick,150);
+  gameNext();
+}
+function gameTick(){
+  const left=Math.max(0,GAME_SECONDS-(Date.now()-gTimeStart)/1000);
+  const bar=document.getElementById('g-bar');
+  if(bar){ bar.style.width=(left/GAME_SECONDS*100)+'%'; bar.classList.toggle('low',left<=10); }
+  if(left<=0) endGame();
+}
+function gameNext(){
+  if(gState!=='playing') return;
+  gLocked=false;
+  const pool=gamePool(), w=pickGameWord(pool); gLastId=w.id;
+  const wrong=pool.filter(x=>x.id!==w.id).sort(()=>Math.random()-.5).slice(0,3);
+  const opts=[w,...wrong].sort(()=>Math.random()-.5);
+  document.getElementById('game-body').innerHTML=`
+    <div class="game-hud"><div class="g-score">${gScore}<small>балів</small></div><div class="g-streak">${gStreak>1?'🔥 серія '+gStreak:''}</div></div>
+    <div class="g-timerbar"><i id="g-bar" style="width:100%"></i></div>
+    <div class="q-word">${esc(w.word)}</div>
+    <div class="q-sub">обери переклад ${gameLang==='hu'?'угорською':'українською'}</div>
+    <div class="opts" id="g-opts">${opts.map(o=>`<button class="opt" data-id="${o.id}">${esc(trOf(o,gameLang))}</button>`).join('')}</div>`;
+  gameTick();
+  document.querySelectorAll('#g-opts .opt').forEach(btn=>btn.onclick=()=>gameAnswer(btn,w));
+}
+async function gameAnswer(btn,w){
+  if(gLocked) return; gLocked=true;
+  const ok=btn.dataset.id===w.id;
+  document.querySelectorAll('#g-opts .opt').forEach(b=>{ b.disabled=true; if(b.dataset.id===w.id)b.classList.add('correct'); else if(b===btn)b.classList.add('wrong'); });
+  if(ok){
+    gScore++; gCorrect++; gStreak++; if(gStreak>gBest)gBest=gStreak;
+    const f=schedFields(w,true); Object.assign(w,f); // correct gently promotes in Leitner
+    try{ await updateDoc(doc(db,'decks',deckId,'words',w.id), f); }catch(e){ console.error(e); }
+    refreshStats();
+  } else { gWrong++; gStreak=0; } // wrong does NOT punish progress
+  setTimeout(()=>{ if(gState==='playing') gameNext(); }, ok?260:650);
+}
+function endGame(){ if(gTimer){ clearInterval(gTimer); gTimer=null; } gState='over'; renderGame(); }
+function wireGameSeg(){ document.querySelectorAll('#game-seg button').forEach(b=>b.onclick=()=>{ gameLang=b.dataset.lang; if(gState==='playing') endGame(); renderGame(); }); }
+function renderGame(){
+  const body=document.getElementById('game-body');
+  const seg=`<div class="quiz-top"><div class="seg" id="game-seg">
+      <button data-lang="uk" class="${gameLang==='uk'?'on':''}">Українською</button>
+      <button data-lang="hu" class="${gameLang==='hu'?'on':''}">Угорською</button></div></div>`;
+  if(gState==='playing') return; // gameNext renders the play screen
+  if(gState==='over'){
+    const total=gCorrect+gWrong, acc=total?Math.round(gCorrect/total*100):0;
+    body.innerHTML=seg+`
+      <div class="g-final">${gScore}</div>
+      <div class="g-final-sub">балів за ${GAME_SECONDS} сек · найкраща серія ${gBest} · точність ${acc}%</div>
+      <div class="center"><button class="btn btn-primary" id="g-again">Ще раз</button></div>`;
+    wireGameSeg(); document.getElementById('g-again').onclick=beginRound; return;
+  }
+  if(gamePool().length<4){
+    body.innerHTML=seg+`<div class="empty"><div class="big">Замало слів для гри</div>Потрібно ≥4 слова з перекладом ${gameLang==='hu'?'угорською':'українською'}.</div>`;
+    wireGameSeg(); return;
+  }
+  body.innerHTML=seg+`<div class="game-intro">
+    <h2>Гра на швидкість</h2>
+    <p>За ${GAME_SECONDS} секунд обери якнайбільше правильних перекладів. Серія (🔥) підвищує азарт, а правильні відповіді зараховуються у твій прогрес.</p>
+    <button class="btn btn-primary" id="g-start">Почати (${GAME_SECONDS} сек)</button>
+  </div>`;
+  wireGameSeg(); document.getElementById('g-start').onclick=beginRound;
+}
+
 /* ── tabs ── */
 function tab(name){
   activeTab=name;
+  if(name!=='game' && gTimer){ clearInterval(gTimer); gTimer=null; gState='intro'; } // stop game if leaving
   document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.tab===name));
   document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('on',p.id==='p-'+name));
   if(name==='dict') renderDict();
   if(name==='study') startStudy();
   if(name==='quiz') startQuiz();
+  if(name==='game') startGame();
 }
 window.startStudy=startStudy; window.startQuiz=startQuiz;
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>tab(b.dataset.tab));
