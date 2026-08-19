@@ -248,11 +248,34 @@
     nav button.on{color:var(--accent)}
     nav button .ti{display:block}
     nav button .ti svg{width:23px;height:23px;display:block;margin:0 auto}
-    nav button .tl{white-space:nowrap;font-size:10px;line-height:1}
+    nav button .tl{white-space:nowrap;font-size:9px;line-height:1}
+    nav button .ti svg{width:21px;height:21px}
     nav button .badge{position:absolute;top:2px;right:calc(50% - 20px);min-width:15px;height:15px;padding:0 4px;font-size:9px;display:flex;align-items:center;justify-content:center;line-height:1}
     .empty{min-height:38vh;padding:36px 16px}
   }
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+  /* progress dashboard */
+  .prog-streak{text-align:center;padding:14px 0 22px}
+  .prog-streak .ps-num{font-family:'Fraunces',serif;font-size:52px;font-weight:600;line-height:1;color:var(--due)}
+  .prog-streak .ps-lbl{color:var(--ink-soft);font-size:14px;margin-top:4px}
+  .prog-donut-wrap{display:flex;align-items:center;justify-content:center;gap:32px;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:24px;margin-bottom:16px}
+  .prog-donut{width:180px;height:180px;flex-shrink:0}
+  .prog-donut .pd-big{font-family:'Fraunces',serif;font-size:34px;font-weight:600;fill:var(--ink)}
+  .prog-donut .pd-sub{font-size:11px;fill:var(--faint);letter-spacing:.04em;text-transform:uppercase}
+  .prog-legend{display:flex;flex-direction:column;gap:10px;min-width:180px}
+  .pl-row{display:flex;align-items:center;gap:10px;font-size:14px}
+  .pl-dot{width:12px;height:12px;border-radius:4px;flex-shrink:0}
+  .pl-lbl{flex:1;color:var(--ink-soft)}
+  .pl-val{font-family:'Fraunces',serif;font-weight:600;font-size:16px}
+  .prog-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .pcard{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:16px;text-align:center}
+  .pcard b{font-family:'Fraunces',serif;font-size:26px;font-weight:600;display:block;line-height:1}
+  .pcard span{font-size:11px;color:var(--faint);letter-spacing:.02em;text-transform:uppercase}
+  @media (max-width:640px){
+    .prog-donut-wrap{gap:18px;padding:18px}
+    .prog-legend{min-width:150px}
+    .prog-cards{grid-template-columns:repeat(2,1fr)}
+  }
 </style>
 </head>
 <body>
@@ -346,6 +369,7 @@
     <button data-tab="study" class="due-hl"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span><span class="tl">Тренування</span> <span class="badge" id="b-study">0</span></button>
     <button data-tab="quiz"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span><span class="tl">Тест</span></button>
     <button data-tab="game"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span><span class="tl">Гра</span></button>
+    <button data-tab="progress"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span><span class="tl">Прогрес</span></button>
   </nav>
 
   <section class="panel on" id="p-add">
@@ -390,6 +414,7 @@
   <section class="panel" id="p-study"><div id="study-body"></div></section>
   <section class="panel" id="p-quiz"><div id="quiz-body"></div></section>
   <section class="panel" id="p-game"><div id="game-body"></div></section>
+  <section class="panel" id="p-progress"><div id="progress-body"></div></section>
 </div></div>
 
 <div class="toast" id="toast"></div>
@@ -527,6 +552,7 @@ onAuthStateChanged(auth, async (u)=>{
     if(u.photoURL) document.getElementById('u-avatar').src=u.photoURL;
     await ensureProfile();
     startSync();
+    touchStreak();
   } else {
     teardown();
     document.getElementById('app').style.display='none';
@@ -559,7 +585,7 @@ function setConn(state,text){const c=document.getElementById('conn');c.className
 function startSync(){
   const wcol=collection(db,'decks',deckId,'words');
   unsubWords=onSnapshot(query(wcol, orderBy('created','desc')),
-    snap=>{ words=snap.docs.map(d=>({id:d.id,...d.data()})); setConn('ok','Синхронізовано · слів: '+words.length); refreshStats(); if(activeTab==='dict') renderDict(); },
+    snap=>{ words=snap.docs.map(d=>({id:d.id,...d.data()})); setConn('ok','Синхронізовано · слів: '+words.length); refreshStats(); if(activeTab==='dict') renderDict(); if(activeTab==='progress') renderProgress(); },
     err=>{ console.error(err); setConn('err','Немає доступу до бази — перевір правила Firestore'); }
   );
   unsubProfile=onSnapshot(doc(db,'users',user.uid), s=>{ if(s.exists()){ profile=s.data(); refreshPlanUI(); } });
@@ -810,6 +836,51 @@ function renderGame(){
   wireGameSeg(); document.getElementById('g-start').onclick=beginRound;
 }
 
+/* ── PROGRESS dashboard ── */
+async function touchStreak(){
+  if(!profile||!user) return;
+  const today=new Date().toISOString().slice(0,10);
+  if(profile.lastActiveDay===today) return;
+  const yesterday=new Date(Date.now()-86400000).toISOString().slice(0,10);
+  const streak=(profile.lastActiveDay===yesterday?((profile.streak||0)+1):1);
+  profile.lastActiveDay=today; profile.streak=streak;
+  try{ await updateDoc(doc(db,'users',user.uid),{lastActiveDay:today,streak}); }catch(e){ console.error(e); }
+}
+function renderProgress(){
+  const body=document.getElementById('progress-body');
+  const total=words.length;
+  if(!total){ body.innerHTML=`<div class="empty"><div class="big">Ще немає даних</div>Додай слова — і тут з'явиться твій прогрес.</div>`; return; }
+  const b=[0,0,0,0,0,0]; words.forEach(w=>{ b[Math.min(5,Math.max(0,w.box||0))]++; });
+  const cats=[
+    {label:'Нові', val:b[0], color:'#C9C4B8'},
+    {label:'Вивчаю', val:b[1]+b[2], color:'var(--due)'},
+    {label:'Закріплюю', val:b[3]+b[4], color:'var(--accent)'},
+    {label:'Засвоєно', val:b[5], color:'var(--learned)'}
+  ];
+  const masteredPct=Math.round(b[5]/total*100);
+  const r=64, C=2*Math.PI*r; let off=0;
+  const segs=cats.filter(c=>c.val>0).map(c=>{
+    const len=c.val/total*C;
+    const s=`<circle cx="90" cy="90" r="${r}" fill="none" stroke="${c.color}" stroke-width="20" stroke-dasharray="${len.toFixed(2)} ${(C-len).toFixed(2)}" stroke-dashoffset="${(-off).toFixed(2)}" transform="rotate(-90 90 90)" stroke-linecap="butt"/>`;
+    off+=len; return s;
+  }).join('');
+  const streak=(profile&&profile.streak)||0;
+  const due=words.filter(isDue).length;
+  const best=(profile&&profile.bestScore)||0;
+  body.innerHTML=`
+    <div class="prog-streak"><div class="ps-num">🔥 ${streak}</div><div class="ps-lbl">${streak===1?'день':(streak>=2&&streak<=4?'дні':'днів')} поспіль</div></div>
+    <div class="prog-donut-wrap">
+      <svg viewBox="0 0 180 180" class="prog-donut">${segs}<text x="90" y="86" text-anchor="middle" class="pd-big">${masteredPct}%</text><text x="90" y="106" text-anchor="middle" class="pd-sub">засвоєно</text></svg>
+      <div class="prog-legend">${cats.map(c=>`<div class="pl-row"><span class="pl-dot" style="background:${c.color}"></span><span class="pl-lbl">${c.label}</span><span class="pl-val">${c.val}</span></div>`).join('')}</div>
+    </div>
+    <div class="prog-cards">
+      <div class="pcard"><b>${total}</b><span>усього слів</span></div>
+      <div class="pcard"><b>${b[5]}</b><span>засвоєно</span></div>
+      <div class="pcard"><b>${due}</b><span>на повтор</span></div>
+      <div class="pcard"><b>${best}</b><span>рекорд гри</span></div>
+    </div>`;
+}
+
 /* ── tabs ── */
 function tab(name){
   activeTab=name;
@@ -820,6 +891,7 @@ function tab(name){
   if(name==='study') startStudy();
   if(name==='quiz') startQuiz();
   if(name==='game') startGame();
+  if(name==='progress') renderProgress();
 }
 window.startStudy=startStudy; window.startQuiz=startQuiz;
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>tab(b.dataset.tab));
