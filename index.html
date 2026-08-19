@@ -315,12 +315,34 @@ const esc=s=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"
 const trOf=(w,l)=>(w.tr&&w.tr[l])||'';
 const SPK_SVG='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 10v4h4l5 5V5L7 10H3zm13.5 2a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12zM14 3.23v2.06a7 7 0 0 1 0 13.42v2.06a9 9 0 0 0 0-17.54z"/></svg>';
 const speakBtn=word=>`<button class="spk" data-speak="${esc(word)}" title="Прослухати" aria-label="Прослухати">${SPK_SVG}</button>`;
+let _voices=[];
+function loadVoices(){ try{ _voices=window.speechSynthesis.getVoices()||[]; }catch(e){ _voices=[]; } }
+if('speechSynthesis' in window){ loadVoices(); window.speechSynthesis.onvoiceschanged=loadVoices; }
+function pickEnVoice(){
+  if(!_voices.length) loadVoices();
+  const en=_voices.filter(v=>/^en(-|_|$)/i.test(v.lang));
+  if(!en.length) return null;
+  // Prefer higher-quality voices: enhanced/premium/natural/neural, then known good names.
+  const score=v=>{
+    const n=(v.name+' '+(v.voiceURI||'')).toLowerCase();
+    let s=0;
+    if(/enhanced|premium|natural|neural/.test(n)) s+=100;
+    if(/siri|google|ava|samantha|serena|allison|zoe|nathan|aaron/.test(n)) s+=40;
+    if(/en-us/i.test(v.lang)) s+=10;
+    if(/en-gb/i.test(v.lang)) s+=8;
+    if(v.localService) s+=2; // local = no lag, still fine
+    return s;
+  };
+  return en.slice().sort((a,b)=>score(b)-score(a))[0];
+}
 function speak(text){
   try{
     if(!('speechSynthesis' in window)){ toast('Озвучка не підтримується у цьому браузері'); return; }
     window.speechSynthesis.cancel();
     const u=new SpeechSynthesisUtterance(text);
-    u.lang='en-US'; u.rate=0.95;
+    const v=pickEnVoice();
+    if(v){ u.voice=v; u.lang=v.lang; } else { u.lang='en-US'; }
+    u.rate=0.95; u.pitch=1;
     window.speechSynthesis.speak(u);
   }catch(e){ console.error(e); }
 }
