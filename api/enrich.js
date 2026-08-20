@@ -25,9 +25,15 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  const { word, topic } = (req.body && typeof req.body === 'object') ? req.body : {};
+  const body = (req.body && typeof req.body === 'object') ? req.body : {};
+  const { word, topic, targetLang, nativeLang, native2 } = body;
   if (!word || !String(word).trim()) { res.status(400).json({ error: 'word is required' }); return; }
 
-  try { const out = await enrichWord(word, topic); res.status(200).json(out); }
+  // Only pass a langs object if the client actually specified languages.
+  // The current website sends none → enrichWord uses the legacy default
+  // (learn English → UA + HU), so behaviour is byte-for-byte unchanged.
+  const langs = (targetLang || nativeLang || native2) ? { targetLang, nativeLang, native2 } : undefined;
+
+  try { const out = await enrichWord(word, topic, langs); res.status(200).json(out); }
   catch (e) { res.status(500).json({ error: 'enrichment failed', detail: String(e && e.message || e) }); }
 };
