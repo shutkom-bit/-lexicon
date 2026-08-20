@@ -125,6 +125,11 @@
   .deck-item.active .di-check{opacity:1}
   .deck-item .di-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .deck-item.new{color:var(--accent);font-weight:500}
+  .deck-row{display:flex;align-items:center;gap:2px}
+  .deck-row .deck-item{flex:1;width:auto;min-width:0}
+  .deck-del{background:none;border:none;padding:8px;border-radius:8px;color:var(--faint);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s}
+  .deck-del svg{width:16px;height:16px}
+  .deck-del:hover{background:rgba(194,77,99,.10);color:var(--hu)}
   .deck-sep{height:1px;background:var(--line-2);margin:5px 4px}
   nav{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:24px}
   nav button{background:none;border:none;font-family:inherit;font-size:14px;color:var(--ink-soft);padding:10px 16px 12px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;display:flex;align-items:center;gap:7px;transition:color .15s}
@@ -498,7 +503,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
   from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
-import { getFirestore, collection, doc, getDoc, setDoc, updateDoc, deleteDoc, addDoc,
+import { getFirestore, collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, addDoc, writeBatch,
   onSnapshot, query, where, orderBy, increment }
   from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
@@ -752,12 +757,17 @@ function renderDeckSwitcher(){
   if(pairEl) pairEl.textContent=active?deckPairLabel(active):'';
   const menu=document.getElementById('deck-menu');
   if(!menu) return;
-  const rows=decks.map(d=>`
-    <button class="deck-item ${d.id===activeDeckId?'active':''}" data-deck="${esc(d.id)}">
-      <svg class="di-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-      <span class="di-name">${esc(d.name||'Без назви')}</span>
-      <span class="di-pair">${deckPairLabel(d)}</span>
-    </button>`).join('');
+  const rows=decks.map(d=>{
+    const del=(d.isDefault||d.id===user.uid)?'':
+      `<button class="deck-del" data-deck-del="${esc(d.id)}" title="Видалити набір" aria-label="Видалити набір"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>`;
+    return `<div class="deck-row">
+      <button class="deck-item ${d.id===activeDeckId?'active':''}" data-deck="${esc(d.id)}">
+        <svg class="di-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        <span class="di-name">${esc(d.name||'Без назви')}</span>
+        <span class="di-pair">${deckPairLabel(d)}</span>
+      </button>${del}
+    </div>`;
+  }).join('');
   menu.innerHTML=rows+`<div class="deck-sep"></div>
     <button class="deck-item new" data-deck-new="1">
       <svg class="di-check" style="opacity:1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -789,6 +799,31 @@ async function createDeck(name,langs){
     toast('Набір «'+clean+'» створено');
     tab('add');
   }catch(e){ console.error(e); toast('Не вдалось створити набір'); }
+}
+
+async function deleteDeck(id){
+  const d=decks.find(x=>x.id===id);
+  if(!d) return;
+  if(d.isDefault || id===user.uid){ toast('Основний набір видалити не можна'); return; }
+  if(!confirm(`Видалити набір «${d.name||'Без назви'}» разом з усіма його словами? Дію не можна скасувати.`)) return;
+  toggleDeckMenu(false);
+  try{
+    // if we're viewing the deck being deleted, switch to the default first
+    if(activeDeckId===id){
+      const fb=(decks.find(x=>x.isDefault)||decks.find(x=>x.id!==id)||{}).id || user.uid;
+      setActiveDeck(fb);
+    }
+    // Firestore does NOT cascade: delete the deck's words, then the deck doc, in one batch.
+    // Non-default decks always carry ownerUid on each word → owner-scoped query is allowed
+    // by the rules and needs no composite index. wordCount is NOT decremented (lifetime limit).
+    const wcol=collection(db,'decks',id,'words');
+    const snap=await getDocs(query(wcol, where('ownerUid','==',user.uid)));
+    const batch=writeBatch(db);
+    snap.forEach(s=>batch.delete(s.ref));
+    batch.delete(doc(db,'decks',id));
+    await batch.commit();
+    toast('Набір видалено');
+  }catch(e){ console.error(e); toast('Не вдалось видалити набір'); }
 }
 
 function refreshPlanUI(){
@@ -1132,6 +1167,8 @@ document.getElementById('tg-gen').onclick=async()=>{
 /* ── Deck switcher wiring ── */
 document.getElementById('deck-switch').onclick=e=>{ e.stopPropagation(); toggleDeckMenu(); };
 document.getElementById('deck-menu').onclick=e=>{
+  const del=e.target.closest('[data-deck-del]');
+  if(del){ e.stopPropagation(); deleteDeck(del.getAttribute('data-deck-del')); return; }
   const add=e.target.closest('[data-deck-new]');
   const pick=e.target.closest('[data-deck]');
   toggleDeckMenu(false);
