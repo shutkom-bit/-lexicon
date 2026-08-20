@@ -653,8 +653,21 @@ function subscribeWords(){
   if(unsubWords){ unsubWords(); unsubWords=null; }
   try{ localStorage.setItem(deckKey(), activeDeckId); }catch(e){}
   const wcol=collection(db,'decks',activeDeckId,'words');
-  unsubWords=onSnapshot(query(wcol, orderBy('created','desc')),
-    snap=>{ words=snap.docs.map(d=>({id:d.id,...d.data()})); setConn('ok','Синхронізовано · слів: '+words.length); refreshStats(); if(activeTab==='dict') renderDict(); if(activeTab==='progress') renderProgress(); },
+  // Firestore evaluates list rules statically. For the DEFAULT deck (id == uid) the rule
+  // short-circuits on `deckId == uid`, so an unconstrained ordered query is allowed and
+  // returns every word (incl. legacy ones without ownerUid) — keep behaviour identical.
+  // For OTHER decks (auto-id) the rule reduces to `resource.data.ownerUid == uid`, so the
+  // query MUST carry where('ownerUid','==',uid) or Firestore rejects the whole list.
+  const q = (activeDeckId===user.uid)
+    ? query(wcol, orderBy('created','desc'))
+    : query(wcol, where('ownerUid','==',user.uid));
+  unsubWords=onSnapshot(q,
+    snap=>{
+      words=snap.docs.map(d=>({id:d.id,...d.data()}));
+      words.sort((a,b)=>(b.created||0)-(a.created||0)); // uniform newest-first (no composite index needed)
+      setConn('ok','Синхронізовано · слів: '+words.length);
+      refreshStats(); if(activeTab==='dict') renderDict(); if(activeTab==='progress') renderProgress();
+    },
     err=>{ console.error(err); setConn('err','Немає доступу до бази — перевір правила Firestore'); }
   );
 }
