@@ -161,9 +161,20 @@
   .ipa{font-family:'Fraunces',serif;font-style:italic;color:var(--faint);font-size:15px;margin-left:8px}
   .pos{color:var(--accent);font-size:12px;font-style:italic;margin-left:8px}
   .tr{font-size:15px;margin-top:5px;display:flex;align-items:baseline;gap:8px}
-  .lang{font-size:10px;font-weight:600;letter-spacing:.05em;padding:2px 6px;border-radius:5px;flex-shrink:0;transform:translateY(-1px)}
-  .lang.ua{background:rgba(58,107,214,.12);color:var(--uk)}
+  .lang{font-size:10px;font-weight:600;letter-spacing:.05em;padding:2px 6px;border-radius:5px;flex-shrink:0;transform:translateY(-1px);background:rgba(107,92,74,.12);color:var(--ink-soft)}
+  .lang.ua,.lang.uk{background:rgba(58,107,214,.12);color:var(--uk)}
   .lang.hu{background:rgba(194,77,99,.12);color:var(--hu)}
+  /* deck creation: language pair selects */
+  .modal select{font-family:inherit;font-size:15px;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:11px 12px;outline:none;width:100%;cursor:pointer;transition:border .15s,box-shadow .15s}
+  .modal select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(91,79,224,.12)}
+  .deck-lang-row{display:flex;align-items:flex-end;gap:10px;margin-top:16px;text-align:left}
+  .deck-lang-row .dl-field{flex:1;min-width:0}
+  .deck-lang-row .dl-lbl{font-size:12px;color:var(--faint);margin:0 0 5px 2px;font-weight:500}
+  .deck-lang-row .dl-arrow{color:var(--faint);font-size:18px;padding-bottom:11px}
+  .deck-n2-toggle{display:flex;align-items:center;gap:8px;margin-top:14px;font-size:13.5px;color:var(--ink-soft);cursor:pointer;text-align:left}
+  .deck-n2-toggle input{width:16px;height:16px;accent-color:var(--accent);cursor:pointer}
+  .deck-pair{font-size:11px;color:var(--faint);font-weight:500;letter-spacing:.02em}
+  .deck-item .di-pair{font-size:11px;color:var(--faint);margin-left:8px;flex-shrink:0}
   .def{color:var(--ink-soft);font-size:13.5px;margin-top:6px}
   .ex{color:var(--faint);font-size:13.5px;font-style:italic;margin-top:5px}
   .spk{background:none;border:none;cursor:pointer;color:var(--faint);padding:3px;border-radius:6px;vertical-align:middle;display:inline-flex;align-items:center;transition:color .15s,background .15s}
@@ -378,6 +389,7 @@
     <button class="deck-switch" id="deck-switch" aria-haspopup="true" aria-expanded="false">
       <svg class="deck-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
       <span class="deck-name" id="deck-name">Мій словник</span>
+      <span class="deck-pair" id="deck-pair"></span>
       <svg class="deck-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
     </button>
     <div class="deck-menu" id="deck-menu"></div>
@@ -447,11 +459,18 @@
 
 <!-- NEW DECK -->
 <div class="modal-bg" id="deck-modal">
-  <div class="modal" style="max-width:380px">
+  <div class="modal" style="max-width:400px">
     <h2>Новий набір</h2>
-    <p>Окремий словник зі своїми словами й тренуваннями.</p>
-    <input type="text" id="deck-name-input" placeholder="Назва (напр. «Робота»)" autocomplete="off" maxlength="40" style="width:100%;margin-top:14px;text-align:center">
-    <div style="display:flex;gap:10px;margin-top:20px">
+    <p>Окремий словник зі своєю мовною парою.</p>
+    <input type="text" id="deck-name-input" placeholder="Назва (напр. «Робота»)" autocomplete="off" maxlength="40" style="width:100%;margin-top:14px">
+    <div class="deck-lang-row">
+      <div class="dl-field"><div class="dl-lbl">Вивчаю</div><select id="deck-target"></select></div>
+      <span class="dl-arrow">→</span>
+      <div class="dl-field"><div class="dl-lbl">Переклад</div><select id="deck-native"></select></div>
+    </div>
+    <label class="deck-n2-toggle"><input type="checkbox" id="deck-native2-on"> Додати другу мову перекладу</label>
+    <div class="dl-field" id="deck-native2-wrap" style="display:none;margin-top:10px"><div class="dl-lbl">Друга мова перекладу</div><select id="deck-native2"></select></div>
+    <div style="display:flex;gap:10px;margin-top:22px">
       <button class="btn btn-ghost" id="deck-cancel" style="flex:1">Скасувати</button>
       <button class="btn btn-primary" id="deck-create" style="flex:1">Створити</button>
     </div>
@@ -501,6 +520,22 @@ const INTERVALS=[0,1,2,4,8,16];
 const POS_ORDER=['verb','noun','adjective','adverb','phrase','other'];
 const POS_LABEL={verb:'Дієслова',noun:'Іменники',adjective:'Прикметники',adverb:'Прислівники',phrase:'Фрази та вирази',other:'Інше'};
 
+/* Supported languages. code=Firestore key, label=nominative (selects), inst=instrumental ("переклад <inst>"). */
+const LANGS=[
+  {code:'en',label:'Англійська',inst:'англійською'},
+  {code:'uk',label:'Українська',inst:'українською'},
+  {code:'hu',label:'Угорська',inst:'угорською'},
+  {code:'fr',label:'Французька',inst:'французькою'},
+  {code:'es',label:'Іспанська',inst:'іспанською'},
+  {code:'it',label:'Італійська',inst:'італійською'},
+  {code:'pl',label:'Польська',inst:'польською'},
+  {code:'de',label:'Німецька',inst:'німецькою'}
+];
+const LANG_OK=c=>LANGS.some(l=>l.code===c);
+const langLabel=c=>{const l=LANGS.find(x=>x.code===c);return l?l.label:(c||'').toUpperCase();};
+const langInst=c=>{const l=LANGS.find(x=>x.code===c);return l?l.inst:(c||'');};
+const langBadge=c=>c==='uk'?'UA':(c||'').toUpperCase();
+
 let user=null, profile=null;
 let decks=[], activeDeckId=null;
 let words=[], dictView='topic', quizLang='ua', gameLang='uk', activeTab='add';
@@ -510,6 +545,26 @@ const isDue=w=>(w.due||0)<=Date.now();
 const isMastered=w=>(w.box||0)>=5;
 const esc=s=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const trOf=(w,l)=>(w.tr&&w.tr[l])||'';
+/* Active deck language pair (with legacy-safe defaults en→uk). */
+const activeDeck=()=>decks.find(d=>d.id===activeDeckId)||{};
+const deckTarget=d=>((d||activeDeck()).targetLang)||'en';
+function deckNatives(d){
+  d=d||activeDeck();
+  const n1=d.nativeLang||'uk', arr=[n1];
+  if(d.native2 && d.native2!==n1) arr.push(d.native2);
+  return arr;
+}
+const deckPairLabel=d=>langBadge(deckTarget(d))+' → '+deckNatives(d).map(langBadge).join('·');
+/* keep quiz/game language valid for the active deck */
+function ensureQuizLang(){ const n=deckNatives(); if(!n.includes(quizLang)) quizLang=n[0]; }
+function ensureGameLang(){ const n=deckNatives(); if(!n.includes(gameLang)) gameLang=n[0]; }
+/* language toggle for quiz/game; hidden when the deck has a single translation language */
+function langSeg(id,current,natives){
+  if(natives.length<2) return '';
+  return `<div class="quiz-top"><div class="seg" id="${id}">`+
+    natives.map(c=>`<button data-lang="${c}" class="${current===c?'on':''}">${langLabel(c)}</button>`).join('')+
+    `</div></div>`;
+}
 const SPK_SVG='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 10v4h4l5 5V5L7 10H3zm13.5 2a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12zM14 3.23v2.06a7 7 0 0 1 0 13.42v2.06a9 9 0 0 0 0-17.54z"/></svg>';
 const speakBtn=word=>`<button class="spk" data-speak="${esc(word)}" title="Прослухати" aria-label="Прослухати">${SPK_SVG}</button>`;
 let _voices=[];
@@ -617,7 +672,13 @@ async function ensureProfile(){
   const dref=doc(db,'decks',user.uid);
   const dsnap=await getDoc(dref);
   if(!dsnap.exists()){
-    await setDoc(dref,{ownerUid:user.uid,name:'Мій словник',nativeLang:'uk',isDefault:true,shared:false,accessCode:null,createdAt:Date.now()});
+    // brand-new default deck: learn English → Ukrainian (generic default, no second language)
+    await setDoc(dref,{ownerUid:user.uid,name:'Мій словник',targetLang:'en',nativeLang:'uk',native2:'',isDefault:true,shared:false,accessCode:null,createdAt:Date.now()});
+  } else if(!dsnap.data().targetLang){
+    // 5.2 retrofit: legacy default deck predates language pairs. Fill it as en→uk+hu
+    // so existing UA+HU cards keep showing both translations exactly as before.
+    const dd=dsnap.data();
+    await updateDoc(dref,{targetLang:'en',nativeLang:dd.nativeLang||'uk',native2:'hu'});
   }
 }
 
@@ -687,12 +748,15 @@ function renderDeckSwitcher(){
   const active=decks.find(d=>d.id===activeDeckId);
   const nameEl=document.getElementById('deck-name');
   if(nameEl) nameEl.textContent=(active&&active.name)||'Мій словник';
+  const pairEl=document.getElementById('deck-pair');
+  if(pairEl) pairEl.textContent=active?deckPairLabel(active):'';
   const menu=document.getElementById('deck-menu');
   if(!menu) return;
   const rows=decks.map(d=>`
     <button class="deck-item ${d.id===activeDeckId?'active':''}" data-deck="${esc(d.id)}">
       <svg class="di-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
       <span class="di-name">${esc(d.name||'Без назви')}</span>
+      <span class="di-pair">${deckPairLabel(d)}</span>
     </button>`).join('');
   menu.innerHTML=rows+`<div class="deck-sep"></div>
     <button class="deck-item new" data-deck-new="1">
@@ -709,11 +773,15 @@ function toggleDeckMenu(open){
   sw.setAttribute('aria-expanded',willOpen?'true':'false');
 }
 
-async function createDeck(name){
+async function createDeck(name,langs){
   const clean=(name||'').trim() || 'Новий набір';
+  langs=langs||{};
+  const targetLang=LANG_OK(langs.targetLang)?langs.targetLang:'en';
+  const nativeLang=LANG_OK(langs.nativeLang)?langs.nativeLang:'uk';
+  const native2=(LANG_OK(langs.native2)&&langs.native2!==nativeLang)?langs.native2:'';
   try{
     const ref=await addDoc(collection(db,'decks'),{
-      ownerUid:user.uid, name:clean, nativeLang:'uk',
+      ownerUid:user.uid, name:clean, targetLang, nativeLang, native2,
       isDefault:false, shared:false, accessCode:null, createdAt:Date.now()
     });
     // onSnapshot(decks) will pick it up; switch to it right away
@@ -747,7 +815,10 @@ function refreshStats(){
 /* ── enrichment ── */
 async function enrich(word, topic){
   const token=await user.getIdToken();
-  const r=await fetch('/api/enrich',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({word,topic})});
+  const d=activeDeck();
+  const natives=deckNatives(d);
+  const payload={word,topic,targetLang:deckTarget(d),nativeLang:natives[0],native2:natives[1]||''};
+  const r=await fetch('/api/enrich',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify(payload)});
   if(r.status===403){ const e=new Error('limit'); e.limit=true; throw e; }
   if(!r.ok) throw new Error('enrich '+r.status);
   return await r.json();
@@ -769,12 +840,12 @@ async function doAdd(){
   try{ d=await enrich(word,topic); }
   catch(e){
     if(e.limit){ btn.disabled=false; btn.textContent='Додати'; showPaywall(); return; }
-    d={word,ipa:'',pos:'',pos_group:'other',translation_uk:'',translation_hu:'',definition:'',example:'',topic:topic||'General'}; toast('AI недоступний — додано без деталей');
+    d={word,ipa:'',pos:'',pos_group:'other',tr:{},definition:'',example:'',topic:topic||'General'}; toast('AI недоступний — додано без деталей');
   }
   const finalTopic=(d.topic&&d.topic.trim())||topic||'General';
   const entry={
     word:d.word||word, topic:finalTopic, ipa:d.ipa||'', pos:d.pos||'', pos_group:(POS_ORDER.includes(d.pos_group)?d.pos_group:'other'),
-    tr:{uk:d.translation_uk||'', hu:d.translation_hu||''}, def:d.definition||'', ex:d.example||'',
+    tr:(d.tr&&typeof d.tr==='object')?d.tr:{}, def:d.definition||'', ex:d.example||'',
     ownerUid:user.uid, box:0, due:Date.now(), reps:0, lapses:0, created:Date.now()
   };
   try{
@@ -793,12 +864,11 @@ function renderEntryInner(w){
   const mastered=isMastered(w), due=isDue(w);
   const tag=mastered?'<span class="tag" style="color:var(--learned)">засвоєно</span>':due?'<span class="tag due">на повтор</span>':'<span class="tag">у процесі</span>';
   const delBtn=w.id==='preview'?'':`<button class="del" data-del="${w.id}">видалити</button>`;
-  const uk=trOf(w,'uk'), hu=trOf(w,'hu');
+  const trLines=deckNatives().map(code=>{const v=trOf(w,code);return v?`<div class="tr"><span class="lang ${code}">${langBadge(code)}</span><span>${esc(v)}</span></div>`:'';}).join('');
   return `<div class="entry">
     <div class="head">
       <div><span class="headword">${esc(w.word)}</span>${speakBtn(w.word)}${w.ipa?`<span class="ipa">${esc(w.ipa)}</span>`:''}${w.pos?`<span class="pos">${esc(w.pos)}</span>`:''}</div>
-      ${uk?`<div class="tr"><span class="lang ua">UA</span><span>${esc(uk)}</span></div>`:''}
-      ${hu?`<div class="tr"><span class="lang hu">HU</span><span>${esc(hu)}</span></div>`:''}
+      ${trLines}
       ${w.def?`<div class="def">${esc(w.def)}</div>`:''}
       ${w.ex?`<div class="ex">${esc(w.ex)}</div>`:''}
     </div>
@@ -809,7 +879,7 @@ function renderDict(){
   const q=(document.getElementById('search').value||'').toLowerCase().trim();
   const list=document.getElementById('dict-list');
   let items=words;
-  if(q) items=words.filter(w=>[w.word,trOf(w,'uk'),trOf(w,'hu'),w.topic,w.def].some(f=>(f||'').toLowerCase().includes(q)));
+  if(q){ const nat=deckNatives(); items=words.filter(w=>[w.word,...nat.map(c=>trOf(w,c)),w.topic,w.def].some(f=>(f||'').toLowerCase().includes(q))); }
   if(!items.length){ list.innerHTML=`<div class="empty"><div class="big">${words.length?'Нічого не знайдено':'Словник порожній'}</div>${words.length?'':'Додай перше слово на вкладці «Додати».'}</div>`; return; }
   const groups={};
   if(dictView==='pos'){
@@ -828,9 +898,10 @@ function renderStudy(){
   const body=document.getElementById('study-body');
   if(!queue.length){ body.innerHTML=`<div class="empty"><div class="big">Немає карток на повтор 🎉</div>${words.length?'Усе повторено на сьогодні.':'Спершу додай слова.'}</div>`; return; }
   if(qi>=queue.length){ body.innerHTML=`<div class="empty"><div class="big">Сесію завершено</div>Пройдено: ${queue.length}.</div><div class="center"><button class="btn btn-ghost" onclick="startStudy()">Ще раз</button></div>`; refreshStats(); return; }
-  const w=queue[qi], uk=trOf(w,'uk'), hu=trOf(w,'hu');
+  const w=queue[qi], nat=deckNatives();
   const front=`<div class="fw">${esc(w.word)}</div>${w.ipa?`<div class="fipa">${esc(w.ipa)}</div>`:''}<div style="margin-top:12px">${speakBtn(w.word)}</div><div class="flip-hint">натисни, щоб побачити переклад</div>`;
-  const back=`<div class="ftr"><span class="lang ua">UA</span>${esc(uk||'—')}</div>${hu?`<div class="ftr" style="font-size:22px;margin-top:8px"><span class="lang hu">HU</span>${esc(hu)}</div>`:''}${w.pos?`<div class="fpos">${esc(w.pos)}</div>`:''}${w.def?`<div class="fdef">${esc(w.def)}</div>`:''}${w.ex?`<div class="fex">${esc(w.ex)}</div>`:''}`;
+  const trBack=nat.map((code,i)=>{const v=trOf(w,code); if(i===0) return `<div class="ftr"><span class="lang ${code}">${langBadge(code)}</span>${esc(v||'—')}</div>`; return v?`<div class="ftr" style="font-size:22px;margin-top:8px"><span class="lang ${code}">${langBadge(code)}</span>${esc(v)}</div>`:'';}).join('');
+  const back=`${trBack}${w.pos?`<div class="fpos">${esc(w.pos)}</div>`:''}${w.def?`<div class="fdef">${esc(w.def)}</div>`:''}${w.ex?`<div class="fex">${esc(w.ex)}</div>`:''}`;
   body.innerHTML=`<div class="stage">
     <div class="progress"><i style="width:${(qi/queue.length)*100}%"></i></div>
     <div class="queue-meta">Картка ${qi+1} з ${queue.length}</div>
@@ -851,17 +922,16 @@ function renderStudy(){
 /* ── QUIZ ── */
 function startQuiz(){
   const body=document.getElementById('quiz-body');
+  ensureQuizLang();
+  const seg=langSeg('quiz-seg',quizLang,deckNatives());
   const pool=words.filter(w=>trOf(w,quizLang));
-  const seg=`<div class="quiz-top"><div class="seg" id="quiz-seg">
-      <button data-lang="uk" class="${quizLang==='uk'?'on':''}">Українською</button>
-      <button data-lang="hu" class="${quizLang==='hu'?'on':''}">Угорською</button></div></div>`;
-  if(pool.length<4){ body.innerHTML=seg+`<div class="empty"><div class="big">Замало слів для тесту</div>Потрібно ≥4 слова з перекладом ${quizLang==='hu'?'угорською':'українською'}.</div>`; wireQuizSeg(); return; }
+  if(pool.length<4){ body.innerHTML=seg+`<div class="empty"><div class="big">Замало слів для тесту</div>Потрібно ≥4 слова з перекладом ${langInst(quizLang)}.</div>`; wireQuizSeg(); return; }
   const w=pool[Math.floor(Math.random()*pool.length)];
   const wrong=pool.filter(x=>x.id!==w.id).sort(()=>Math.random()-.5).slice(0,3);
   const opts=[w,...wrong].sort(()=>Math.random()-.5);
   body.innerHTML=seg+`
     <div class="q-word">${esc(w.word)}</div>
-    <div class="q-sub">${w.ipa?esc(w.ipa)+' · ':''}обери переклад ${quizLang==='hu'?'угорською':'українською'}</div>
+    <div class="q-sub">${w.ipa?esc(w.ipa)+' · ':''}обери переклад ${langInst(quizLang)}</div>
     <div class="opts" id="opts">${opts.map(o=>`<button class="opt" data-id="${o.id}">${esc(trOf(o,quizLang))}</button>`).join('')}</div>
     <div class="center" id="q-next" style="visibility:hidden"><button class="btn btn-primary" onclick="startQuiz()">Наступне →</button></div>`;
   wireQuizSeg();
@@ -890,6 +960,7 @@ function pickGameWord(pool){
 }
 function startGame(){ gState='intro'; renderGame(); }
 function beginRound(){
+  ensureGameLang();
   if(gamePool().length<4){ gState='intro'; renderGame(); return; }
   gState='playing'; gScore=0; gStreak=0; gBest=0; gCorrect=0; gWrong=0; gLastId=null; gLocked=false;
   gTimeStart=Date.now();
@@ -913,7 +984,7 @@ function gameNext(){
     <div class="game-hud"><div class="g-score">${gScore}<small>балів</small></div><div class="g-streak">${gStreak>1?'🔥 серія '+gStreak:''}</div></div>
     <div class="g-timerbar"><i id="g-bar" style="width:100%"></i></div>
     <div class="q-word">${esc(w.word)}</div>
-    <div class="q-sub">обери переклад ${gameLang==='hu'?'угорською':'українською'}</div>
+    <div class="q-sub">обери переклад ${langInst(gameLang)}</div>
     <div class="opts" id="g-opts">${opts.map(o=>`<button class="opt" data-id="${o.id}">${esc(trOf(o,gameLang))}</button>`).join('')}</div>`;
   gameTick();
   document.querySelectorAll('#g-opts .opt').forEach(btn=>btn.onclick=()=>gameAnswer(btn,w));
@@ -941,9 +1012,8 @@ async function endGame(){
 function wireGameSeg(){ document.querySelectorAll('#game-seg button').forEach(b=>b.onclick=()=>{ gameLang=b.dataset.lang; if(gState==='playing') endGame(); renderGame(); }); }
 function renderGame(){
   const body=document.getElementById('game-body');
-  const seg=`<div class="quiz-top"><div class="seg" id="game-seg">
-      <button data-lang="uk" class="${gameLang==='uk'?'on':''}">Українською</button>
-      <button data-lang="hu" class="${gameLang==='hu'?'on':''}">Угорською</button></div></div>`;
+  ensureGameLang();
+  const seg=langSeg('game-seg',gameLang,deckNatives());
   if(gState==='playing') return; // gameNext renders the play screen
   if(gState==='over'){
     const total=gCorrect+gWrong, acc=total?Math.round(gCorrect/total*100):0;
@@ -956,7 +1026,7 @@ function renderGame(){
     wireGameSeg(); document.getElementById('g-again').onclick=beginRound; return;
   }
   if(gamePool().length<4){
-    body.innerHTML=seg+`<div class="empty"><div class="big">Замало слів для гри</div>Потрібно ≥4 слова з перекладом ${gameLang==='hu'?'угорською':'українською'}.</div>`;
+    body.innerHTML=seg+`<div class="empty"><div class="big">Замало слів для гри</div>Потрібно ≥4 слова з перекладом ${langInst(gameLang)}.</div>`;
     wireGameSeg(); return;
   }
   body.innerHTML=seg+`<div class="game-intro">
@@ -1070,15 +1140,29 @@ document.getElementById('deck-menu').onclick=e=>{
 };
 document.addEventListener('click',e=>{ if(!e.target.closest('.deckbar')) toggleDeckMenu(false); });
 
+function fillLangSelect(sel,selected){ sel.innerHTML=LANGS.map(l=>`<option value="${l.code}"${l.code===selected?' selected':''}>${l.label}</option>`).join(''); }
+function deckModalLangs(){
+  const t=document.getElementById('deck-target').value;
+  const n=document.getElementById('deck-native').value;
+  const on=document.getElementById('deck-native2-on').checked;
+  const n2=on?document.getElementById('deck-native2').value:'';
+  return {targetLang:t,nativeLang:n,native2:n2};
+}
 function openDeckModal(){
   const inp=document.getElementById('deck-name-input'); inp.value='';
+  fillLangSelect(document.getElementById('deck-target'),'en');
+  fillLangSelect(document.getElementById('deck-native'),'uk');
+  fillLangSelect(document.getElementById('deck-native2'),'hu');
+  document.getElementById('deck-native2-on').checked=false;
+  document.getElementById('deck-native2-wrap').style.display='none';
   document.getElementById('deck-modal').classList.add('show');
   setTimeout(()=>inp.focus(),50);
 }
 function closeDeckModal(){ document.getElementById('deck-modal').classList.remove('show'); }
 document.getElementById('deck-cancel').onclick=closeDeckModal;
-document.getElementById('deck-create').onclick=()=>{ const v=document.getElementById('deck-name-input').value; closeDeckModal(); createDeck(v); };
-document.getElementById('deck-name-input').addEventListener('keydown',e=>{ if(e.key==='Enter'){ const v=e.target.value; closeDeckModal(); createDeck(v); } });
+document.getElementById('deck-native2-on').addEventListener('change',e=>{ document.getElementById('deck-native2-wrap').style.display=e.target.checked?'block':'none'; });
+document.getElementById('deck-create').onclick=()=>{ const v=document.getElementById('deck-name-input').value; const langs=deckModalLangs(); closeDeckModal(); createDeck(v,langs); };
+document.getElementById('deck-name-input').addEventListener('keydown',e=>{ if(e.key==='Enter'){ const v=e.target.value; const langs=deckModalLangs(); closeDeckModal(); createDeck(v,langs); } });
 document.getElementById('deck-modal').addEventListener('click',e=>{ if(e.target.id==='deck-modal') closeDeckModal(); });
 </script>
 </body>
