@@ -258,6 +258,18 @@
   .tg-steps{color:var(--ink-soft);font-size:13px;line-height:1.7;margin-top:8px}
   .tg-steps code{background:var(--line-2);padding:2px 7px;border-radius:5px;font-family:ui-monospace,monospace;font-size:12.5px}
   /* paywall */
+  .deck-item.cat .di-cat-emoji{font-size:15px;width:16px;text-align:center;flex-shrink:0}
+  .cat-list{margin-top:14px;max-height:52vh;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+  .cat-loading{color:var(--faint);text-align:center;padding:18px}
+  .cat-row{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:12px}
+  .cat-emoji{font-size:24px;flex-shrink:0;line-height:1}
+  .cat-meta{flex:1;min-width:0}
+  .cat-name{font-weight:600;color:var(--ink);font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .cat-sub{font-size:12.5px;color:var(--faint);margin-top:2px}
+  .cat-add{flex-shrink:0;background:var(--accent);color:#fff;border:none;border-radius:9px;padding:9px 16px;font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;transition:opacity .15s}
+  .cat-add:hover{opacity:.9}
+  .cat-add:disabled{opacity:.55;cursor:default}
+  .cat-add.have{background:none;color:var(--accent);border:1px solid var(--line)}
   .modal-bg{position:fixed;inset:0;background:rgba(22,27,51,.4);display:none;align-items:center;justify-content:center;padding:24px;z-index:60}
   .modal-bg.show{display:flex}
   .modal{background:var(--panel);border-radius:18px;box-shadow:var(--shadow);max-width:420px;width:100%;padding:32px;text-align:center}
@@ -478,6 +490,18 @@
     <div style="display:flex;gap:10px;margin-top:22px">
       <button class="btn btn-ghost" id="deck-cancel" style="flex:1">Скасувати</button>
       <button class="btn btn-primary" id="deck-create" style="flex:1">Створити</button>
+    </div>
+  </div>
+</div>
+
+<!-- CATALOG (ready-made packs) -->
+<div class="modal-bg" id="catalog-modal">
+  <div class="modal" style="max-width:440px">
+    <h2>📚 Готові набори</h2>
+    <p>Готові словнички — додай одним тапом. Слова з них не рахуються в ліміт.</p>
+    <div id="catalog-list" class="cat-list"><div class="cat-loading">Завантаження…</div></div>
+    <div style="display:flex;margin-top:18px">
+      <button class="btn btn-ghost" id="catalog-close" style="flex:1">Закрити</button>
     </div>
   </div>
 </div>
@@ -772,6 +796,10 @@ function renderDeckSwitcher(){
     <button class="deck-item new" data-deck-new="1">
       <svg class="di-check" style="opacity:1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       <span class="di-name">Новий набір</span>
+    </button>
+    <button class="deck-item cat" data-catalog="1">
+      <span class="di-cat-emoji">📚</span>
+      <span class="di-name">Готові набори</span>
     </button>`;
 }
 
@@ -824,6 +852,70 @@ async function deleteDeck(id){
     await batch.commit();
     toast('Набір видалено');
   }catch(e){ console.error(e); toast('Не вдалось видалити набір'); }
+}
+
+/* ── Ready-made catalog packs ── */
+let catalogPacks=[];
+function closeCatalogModal(){ document.getElementById('catalog-modal').classList.remove('show'); }
+async function openCatalogModal(){
+  const list=document.getElementById('catalog-list');
+  document.getElementById('catalog-modal').classList.add('show');
+  if(catalogPacks.length){ renderCatalogList(); return; }
+  list.innerHTML='<div class="cat-loading">Завантаження…</div>';
+  try{
+    const snap=await getDocs(query(collection(db,'catalog'), orderBy('order')));
+    catalogPacks=snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderCatalogList();
+  }catch(e){ console.error(e); list.innerHTML='<div class="cat-loading">Не вдалось завантажити набори.</div>'; }
+}
+function renderCatalogList(){
+  const list=document.getElementById('catalog-list');
+  if(!catalogPacks.length){ list.innerHTML='<div class="cat-loading">Поки що порожньо.</div>'; return; }
+  list.innerHTML=catalogPacks.map(p=>{
+    const have=decks.some(d=>d.fromCatalog===p.id);
+    const cnt=p.count||(p.words?p.words.length:0);
+    const pair=langBadge(p.targetLang||'en')+'→'+langBadge(p.nativeLang||'uk')+(p.native2?'·'+langBadge(p.native2):'');
+    return `<div class="cat-row">
+      <span class="cat-emoji">${esc(p.emoji||'📘')}</span>
+      <div class="cat-meta">
+        <div class="cat-name">${esc(p.name||p.id)}</div>
+        <div class="cat-sub">${cnt} слів · ${pair}${have?' · вже додано':''}</div>
+      </div>
+      <button class="cat-add${have?' have':''}" data-pack="${esc(p.id)}">${have?'Додати ще':'Додати'}</button>
+    </div>`;
+  }).join('');
+}
+async function addPack(packId){
+  const btn=document.querySelector('#catalog-list [data-pack="'+packId+'"]');
+  if(btn){ btn.disabled=true; btn.textContent='Додаю…'; }
+  try{
+    const snap=await getDoc(doc(db,'catalog',packId));
+    if(!snap.exists()){ toast('Набір не знайдено'); if(btn){btn.disabled=false;btn.textContent='Додати';} return; }
+    const p=snap.data();
+    const words=Array.isArray(p.words)?p.words:[];
+    const deckRef=await addDoc(collection(db,'decks'),{
+      ownerUid:user.uid, name:p.name||'Набір',
+      targetLang:p.targetLang||'en', nativeLang:p.nativeLang||'uk', native2:p.native2||'',
+      isDefault:false, shared:false, accessCode:null, createdAt:Date.now(), fromCatalog:packId
+    });
+    const now=Date.now();
+    const wcol=collection(db,'decks',deckRef.id,'words');
+    const batch=writeBatch(db);
+    words.forEach((w,i)=>{
+      batch.set(doc(wcol),{
+        word:w.word||'', topic:p.name||'', ipa:w.ipa||'', pos:w.pos||'',
+        pos_group:(POS_ORDER.includes(w.pos_group)?w.pos_group:'other'),
+        tr:(w.tr&&typeof w.tr==='object')?w.tr:{}, def:w.def||'', ex:w.ex||'',
+        ownerUid:user.uid, box:0, due:now, reps:0, lapses:0, created:now-i
+      });
+    });
+    await batch.commit();
+    // NOTE: wordCount is intentionally NOT incremented — catalog words are free (loss-leader).
+    closeCatalogModal();
+    activeDeckId=deckRef.id; subscribeWords(); renderDeckSwitcher();
+    toast('Набір «'+(p.name||'набір')+'» додано');
+    tab('dict');
+  }catch(e){ console.error(e); toast('Не вдалось додати набір'); if(btn){ btn.disabled=false; btn.textContent='Додати'; } }
 }
 
 function refreshPlanUI(){
@@ -1169,9 +1261,11 @@ document.getElementById('deck-switch').onclick=e=>{ e.stopPropagation(); toggleD
 document.getElementById('deck-menu').onclick=e=>{
   const del=e.target.closest('[data-deck-del]');
   if(del){ e.stopPropagation(); deleteDeck(del.getAttribute('data-deck-del')); return; }
+  const cat=e.target.closest('[data-catalog]');
   const add=e.target.closest('[data-deck-new]');
   const pick=e.target.closest('[data-deck]');
   toggleDeckMenu(false);
+  if(cat){ openCatalogModal(); return; }
   if(add){ openDeckModal(); return; }
   if(pick){ setActiveDeck(pick.getAttribute('data-deck')); }
 };
@@ -1201,6 +1295,9 @@ document.getElementById('deck-native2-on').addEventListener('change',e=>{ docume
 document.getElementById('deck-create').onclick=()=>{ const v=document.getElementById('deck-name-input').value; const langs=deckModalLangs(); closeDeckModal(); createDeck(v,langs); };
 document.getElementById('deck-name-input').addEventListener('keydown',e=>{ if(e.key==='Enter'){ const v=e.target.value; const langs=deckModalLangs(); closeDeckModal(); createDeck(v,langs); } });
 document.getElementById('deck-modal').addEventListener('click',e=>{ if(e.target.id==='deck-modal') closeDeckModal(); });
+document.getElementById('catalog-close').onclick=closeCatalogModal;
+document.getElementById('catalog-modal').addEventListener('click',e=>{ if(e.target.id==='catalog-modal') closeCatalogModal(); });
+document.getElementById('catalog-list').addEventListener('click',e=>{ const b=e.target.closest('[data-pack]'); if(b) addPack(b.getAttribute('data-pack')); });
 </script>
 </body>
 </html>
