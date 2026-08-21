@@ -1,0 +1,26 @@
+{
+  "id": "travel",
+  "emoji": "✈️",
+  "name": "Подорожі",
+  "targetLang": "en",
+  "nativeLang": "uk",
+  "native2": "",
+  "order": 7,
+  "words": [
+    { "word": "airport",  "ipa": "/ˈeəpɔːt/",   "pos": "noun", "pos_group": "noun", "tr": { "uk": "аеропорт" },       "def": "a place where planes take off and land",          "ex": "We arrived at the airport two hours early." },
+    { "word": "flight",   "ipa": "/flaɪt/",     "pos": "noun", "pos_group": "noun", "tr": { "uk": "рейс, політ" },    "def": "a journey made by air in a plane",                "ex": "Our flight leaves at six in the morning." },
+    { "word": "ticket",   "ipa": "/ˈtɪkɪt/",    "pos": "noun", "pos_group": "noun", "tr": { "uk": "квиток" },        "def": "a paper or card that lets you travel or enter",   "ex": "I booked two tickets to Rome." },
+    { "word": "passport", "ipa": "/ˈpɑːspɔːt/", "pos": "noun", "pos_group": "noun", "tr": { "uk": "паспорт" },       "def": "an official document for travelling to other countries", "ex": "Don't forget your passport at the airport." },
+    { "word": "luggage",  "ipa": "/ˈlʌɡɪdʒ/",   "pos": "noun", "pos_group": "noun", "tr": { "uk": "багаж" },         "def": "the bags and cases you take when travelling",     "ex": "My luggage was too heavy." },
+    { "word": "hotel",    "ipa": "/həʊˈtɛl/",   "pos": "noun", "pos_group": "noun", "tr": { "uk": "готель" },        "def": "a building where you pay to stay and sleep",      "ex": "We stayed at a small hotel near the beach." },
+    { "word": "map",      "ipa": "/mæp/",       "pos": "noun", "pos_group": "noun", "tr": { "uk": "карта" },         "def": "a drawing of an area showing roads and places",   "ex": "Let's check the map to find the museum." },
+    { "word": "train",    "ipa": "/treɪn/",     "pos": "noun", "pos_group": "noun", "tr": { "uk": "поїзд" },         "def": "a line of connected vehicles that runs on rails",  "ex": "The train to London leaves from platform two." },
+    { "word": "bus",      "ipa": "/bʌs/",       "pos": "noun", "pos_group": "noun", "tr": { "uk": "автобус" },       "def": "a large road vehicle that carries many passengers", "ex": "Take the number 5 bus to the centre." },
+    { "word": "station",  "ipa": "/ˈsteɪʃən/",  "pos": "noun", "pos_group": "noun", "tr": { "uk": "станція, вокзал" },"def": "a place where trains or buses stop",             "ex": "I'll meet you at the station." },
+    { "word": "road",     "ipa": "/rəʊd/",      "pos": "noun", "pos_group": "noun", "tr": { "uk": "дорога" },        "def": "a hard surface built for vehicles to travel on",  "ex": "This road goes straight to the coast." },
+    { "word": "car",      "ipa": "/kɑːr/",      "pos": "noun", "pos_group": "noun", "tr": { "uk": "автомобіль, машина" },"def": "a road vehicle with an engine and four wheels", "ex": "We rented a car for the trip." },
+    { "word": "city",     "ipa": "/ˈsɪti/",     "pos": "noun", "pos_group": "noun", "tr": { "uk": "місто" },         "def": "a large and important town",                      "ex": "Paris is a beautiful city." },
+    { "word": "beach",    "ipa": "/biːtʃ/",     "pos": "noun", "pos_group": "noun", "tr": { "uk": "пляж" },          "def": "an area of sand or stones next to the sea",       "ex": "We spent the whole day on the beach." },
+    { "word": "trip",     "ipa": "/trɪp/",      "pos": "noun", "pos_group": "noun", "tr": { "uk": "поїздка, подорож" },"def": "a journey to a place and back",                  "ex": "They took a trip to the mountains." }
+  ]
+}
