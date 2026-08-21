@@ -1,0 +1,26 @@
+{
+  "id": "home",
+  "emoji": "🛋️",
+  "name": "Дім і меблі",
+  "targetLang": "en",
+  "nativeLang": "uk",
+  "native2": "",
+  "order": 3,
+  "words": [
+    { "word": "room",   "ipa": "/ruːm/",       "pos": "noun", "pos_group": "noun", "tr": { "uk": "кімната" }, "def": "a separate space inside a building with walls",    "ex": "There are three rooms in our flat." },
+    { "word": "door",   "ipa": "/dɔːr/",       "pos": "noun", "pos_group": "noun", "tr": { "uk": "двері" },   "def": "the part you open to enter or leave a room",       "ex": "Please close the door behind you." },
+    { "word": "window", "ipa": "/ˈwɪn.dəʊ/",   "pos": "noun", "pos_group": "noun", "tr": { "uk": "вікно" },   "def": "an opening in a wall filled with glass",           "ex": "Open the window to let in fresh air." },
+    { "word": "wall",   "ipa": "/wɔːl/",       "pos": "noun", "pos_group": "noun", "tr": { "uk": "стіна" },   "def": "an upright structure that divides or encloses a space", "ex": "There is a picture on the wall." },
+    { "word": "floor",  "ipa": "/flɔːr/",      "pos": "noun", "pos_group": "noun", "tr": { "uk": "підлога" }, "def": "the flat surface you walk on inside a room",       "ex": "The kids sat on the floor to play." },
+    { "word": "kitchen","ipa": "/ˈkɪtʃ.ɪn/",   "pos": "noun", "pos_group": "noun", "tr": { "uk": "кухня" },   "def": "the room where food is prepared and cooked",       "ex": "She is making dinner in the kitchen." },
+    { "word": "table",  "ipa": "/ˈteɪ.bəl/",   "pos": "noun", "pos_group": "noun", "tr": { "uk": "стіл" },    "def": "a piece of furniture with a flat top and legs",    "ex": "Put the plates on the table." },
+    { "word": "chair",  "ipa": "/tʃɛər/",      "pos": "noun", "pos_group": "noun", "tr": { "uk": "стілець" }, "def": "a seat for one person, with a back and legs",      "ex": "Pull up a chair and sit with us." },
+    { "word": "bed",    "ipa": "/bɛd/",        "pos": "noun", "pos_group": "noun", "tr": { "uk": "ліжко" },   "def": "a piece of furniture that you sleep on",           "ex": "I go to bed around eleven o'clock." },
+    { "word": "sofa",   "ipa": "/ˈsəʊ.fə/",    "pos": "noun", "pos_group": "noun", "tr": { "uk": "диван" },   "def": "a long soft seat for two or more people",          "ex": "We watched a film on the sofa." },
+    { "word": "lamp",   "ipa": "/læmp/",       "pos": "noun", "pos_group": "noun", "tr": { "uk": "лампа" },   "def": "a device that gives light",                        "ex": "Turn on the lamp; it's getting dark." },
+    { "word": "shelf",  "ipa": "/ʃɛlf/",       "pos": "noun", "pos_group": "noun", "tr": { "uk": "полиця" },  "def": "a flat board on a wall for holding things",        "ex": "The books are on the top shelf." },
+    { "word": "mirror", "ipa": "/ˈmɪr.ər/",    "pos": "noun", "pos_group": "noun", "tr": { "uk": "дзеркало" },"def": "a glass surface that shows your reflection",       "ex": "She looked at herself in the mirror." },
+    { "word": "clock",  "ipa": "/klɒk/",       "pos": "noun", "pos_group": "noun", "tr": { "uk": "годинник (настінний)" }, "def": "a device that shows the time",           "ex": "The clock on the wall is ten minutes fast." },
+    { "word": "key",    "ipa": "/kiː/",        "pos": "noun", "pos_group": "noun", "tr": { "uk": "ключ" },    "def": "a small metal object used to open a lock",         "ex": "I can't find my house keys." }
+  ]
+}
