@@ -13,6 +13,7 @@ const { getDb } = require('../lib/core');
 
 const PACKS = [
   require('../packs/question.json'),
+  require('../packs/prepositions.json'),
   require('../packs/body.json'),
   require('../packs/food.json'),
   require('../packs/home.json'),
