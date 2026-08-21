@@ -1,0 +1,31 @@
+{
+  "id": "verbs",
+  "emoji": "🏃",
+  "name": "Топ-дієслова",
+  "targetLang": "en",
+  "nativeLang": "uk",
+  "native2": "",
+  "order": 5,
+  "words": [
+    { "word": "be",    "ipa": "/biː/",     "pos": "verb", "pos_group": "verb", "tr": { "uk": "бути" },                  "def": "to exist or to have a particular quality",        "ex": "I want to be a doctor one day." },
+    { "word": "have",  "ipa": "/hæv/",     "pos": "verb", "pos_group": "verb", "tr": { "uk": "мати" },                  "def": "to own or hold something",                        "ex": "They have two children." },
+    { "word": "do",    "ipa": "/duː/",     "pos": "verb", "pos_group": "verb", "tr": { "uk": "робити" },                "def": "to perform an action or a task",                  "ex": "What do you do on weekends?" },
+    { "word": "go",    "ipa": "/ɡəʊ/",     "pos": "verb", "pos_group": "verb", "tr": { "uk": "йти, їхати" },            "def": "to move or travel to another place",              "ex": "We go to the gym every morning." },
+    { "word": "get",   "ipa": "/ɡɛt/",     "pos": "verb", "pos_group": "verb", "tr": { "uk": "отримувати, діставати" },"def": "to receive or obtain something",                  "ex": "Did you get my message?" },
+    { "word": "make",  "ipa": "/meɪk/",    "pos": "verb", "pos_group": "verb", "tr": { "uk": "робити, виготовляти" },  "def": "to create or produce something",                  "ex": "She made a cake for the party." },
+    { "word": "know",  "ipa": "/nəʊ/",     "pos": "verb", "pos_group": "verb", "tr": { "uk": "знати" },                "def": "to have information or understanding in your mind", "ex": "I know the answer to that question." },
+    { "word": "think", "ipa": "/θɪŋk/",    "pos": "verb", "pos_group": "verb", "tr": { "uk": "думати" },               "def": "to use your mind to consider something",          "ex": "I think it will rain today." },
+    { "word": "take",  "ipa": "/teɪk/",    "pos": "verb", "pos_group": "verb", "tr": { "uk": "брати" },                "def": "to hold something and move it, or to accept it",  "ex": "Take an umbrella; it looks like rain." },
+    { "word": "see",   "ipa": "/siː/",     "pos": "verb", "pos_group": "verb", "tr": { "uk": "бачити" },               "def": "to notice something using your eyes",             "ex": "Can you see the mountains from here?" },
+    { "word": "come",  "ipa": "/kʌm/",     "pos": "verb", "pos_group": "verb", "tr": { "uk": "приходити" },            "def": "to move towards the speaker or a place",          "ex": "Come here and look at this." },
+    { "word": "want",  "ipa": "/wɒnt/",    "pos": "verb", "pos_group": "verb", "tr": { "uk": "хотіти" },               "def": "to wish for or desire something",                 "ex": "I want a cup of tea." },
+    { "word": "use",   "ipa": "/juːz/",    "pos": "verb", "pos_group": "verb", "tr": { "uk": "використовувати" },      "def": "to do something with a tool or object",           "ex": "Can I use your phone for a minute?" },
+    { "word": "find",  "ipa": "/faɪnd/",   "pos": "verb", "pos_group": "verb", "tr": { "uk": "знаходити" },            "def": "to discover something after looking for it",      "ex": "I can't find my keys." },
+    { "word": "give",  "ipa": "/ɡɪv/",     "pos": "verb", "pos_group": "verb", "tr": { "uk": "давати" },               "def": "to hand something to someone",                    "ex": "Give me the book, please." },
+    { "word": "tell",  "ipa": "/tɛl/",     "pos": "verb", "pos_group": "verb", "tr": { "uk": "казати, розповідати" },  "def": "to give information to someone by speaking",      "ex": "Tell me what happened." },
+    { "word": "work",  "ipa": "/wɜːk/",    "pos": "verb", "pos_group": "verb", "tr": { "uk": "працювати" },            "def": "to do a job, usually to earn money",              "ex": "She works at a hospital." },
+    { "word": "call",  "ipa": "/kɔːl/",    "pos": "verb", "pos_group": "verb", "tr": { "uk": "дзвонити, називати" },   "def": "to telephone someone, or to give a name",         "ex": "I will call you tonight." },
+    { "word": "try",   "ipa": "/traɪ/",    "pos": "verb", "pos_group": "verb", "tr": { "uk": "намагатися, пробувати" },"def": "to make an effort to do something",               "ex": "Try to finish it before lunch." },
+    { "word": "ask",   "ipa": "/ɑːsk/",    "pos": "verb", "pos_group": "verb", "tr": { "uk": "питати, просити" },      "def": "to say a question, or to request something",      "ex": "Ask her where the station is." }
+  ]
+}
