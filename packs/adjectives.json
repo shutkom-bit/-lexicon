@@ -1,0 +1,31 @@
+{
+  "id": "adjectives",
+  "emoji": "🎨",
+  "name": "Топ-прикметники",
+  "targetLang": "en",
+  "nativeLang": "uk",
+  "native2": "",
+  "order": 6,
+  "words": [
+    { "word": "good",      "ipa": "/ɡʊd/",           "pos": "adjective", "pos_group": "adjective", "tr": { "uk": "добрий, хороший" }, "def": "of a high quality or pleasant",              "ex": "This is a really good book." },
+    { "word": "bad",       "ipa": "/bæd/",           "pos": "adjective", "pos_group": "adjective", "tr": { "uk": "поганий" },        "def": "of low quality or unpleasant",               "ex": "The weather was bad all week." },
+    { "word": "new",       "ipa": "/njuː/",          "pos": "adjective", "pos_group": "adjective", "tr": { "uk": "новий" },          "def": "made or bought recently; not old",           "ex": "She bought a new phone." },
+    { "word": "old",       "ipa": "/əʊld/",          "pos": "adjective", "pos_group": "adjective", "tr": { "uk": "старий" },         "def": "having existed for a long time",             "ex": "They live in an old house." },
+    { "word": "big",       "ipa": "/bɪɡ/",           "pos": "adjective", "pos_group": "adjective", "tr": { "uk": "великий" },        "def": "large in size or amount",                    "ex": "They have a big garden." },
+    { "word": "small",     "ipa": "/smɔːl/",         "pos": "adjective", "pos_group": "adjective", "tr": { "uk": "малий, маленький" },"def": "little in size or amount",                  "ex": "It's a small but cosy flat." },
+    { "word": "long",      "ipa": "/lɒŋ/",           "pos": "adjective", "pos_group": "adjective", "tr": { "uk": "довгий" },         "def": "measuring a lot from one end to the other",  "ex": "She has long hair." },
+    { "word": "short",     "ipa": "/ʃɔːt/",          "pos": "adjective", "pos_group": "adjective", "tr": { "uk": "короткий, низький" },"def": "small in length, distance, or height",     "ex": "It was a short trip." },
+    { "word": "high",      "ipa": "/haɪ/",           "pos": "adjective", "pos_group": "adjective", "tr": { "uk": "високий" },        "def": "far above the ground or above average",      "ex": "The prices here are very high." },
+    { "word": "low",       "ipa": "/ləʊ/",           "pos": "adjective", "pos_group": "adjective", "tr": { "uk": "низький" },        "def": "not far above the ground or below average",  "ex": "Speak in a low voice, please." },
+    { "word": "hot",       "ipa": "/hɒt/",           "pos": "adjective", "pos_group": "adjective", "tr": { "uk": "гарячий, спекотний" },"def": "having a high temperature",               "ex": "Be careful, the soup is hot." },
+    { "word": "cold",      "ipa": "/kəʊld/",         "pos": "adjective", "pos_group": "adjective", "tr": { "uk": "холодний" },       "def": "having a low temperature",                   "ex": "It's cold outside today." },
+    { "word": "easy",      "ipa": "/ˈiːzi/",         "pos": "adjective", "pos_group": "adjective", "tr": { "uk": "легкий, простий" },"def": "not difficult to do",                        "ex": "The test was quite easy." },
+    { "word": "hard",      "ipa": "/hɑːd/",          "pos": "adjective", "pos_group": "adjective", "tr": { "uk": "важкий, твердий" },"def": "difficult to do, or firm and solid",         "ex": "This exercise is really hard." },
+    { "word": "early",     "ipa": "/ˈɜːli/",         "pos": "adjective", "pos_group": "adjective", "tr": { "uk": "ранній" },         "def": "happening near the beginning of a period",   "ex": "I caught an early train." },
+    { "word": "late",      "ipa": "/leɪt/",          "pos": "adjective", "pos_group": "adjective", "tr": { "uk": "пізній" },         "def": "happening after the usual or expected time", "ex": "Sorry I'm late for the meeting." },
+    { "word": "happy",     "ipa": "/ˈhæpi/",         "pos": "adjective", "pos_group": "adjective", "tr": { "uk": "щасливий" },       "def": "feeling or showing pleasure",                "ex": "She looked happy at the party." },
+    { "word": "sad",       "ipa": "/sæd/",           "pos": "adjective", "pos_group": "adjective", "tr": { "uk": "сумний" },         "def": "feeling or showing unhappiness",             "ex": "He felt sad after the film." },
+    { "word": "beautiful", "ipa": "/ˈbjuːtɪfəl/",    "pos": "adjective", "pos_group": "adjective", "tr": { "uk": "гарний, красивий" },"def": "very pleasant to look at",                  "ex": "What a beautiful sunset!" },
+    { "word": "important", "ipa": "/ɪmˈpɔːtənt/",    "pos": "adjective", "pos_group": "adjective", "tr": { "uk": "важливий" },       "def": "having a big effect or great value",         "ex": "This is an important decision." }
+  ]
+}
