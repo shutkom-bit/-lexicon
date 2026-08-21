@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lexicon — тренажер словника</title>
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#FBFAF7">
+<meta name="apple-mobile-web-app-title" content="Lexicon">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -129,6 +135,10 @@
   .deck-row .deck-item{flex:1;width:auto;min-width:0}
   .deck-del{background:none;border:none;padding:8px;border-radius:8px;color:var(--faint);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s}
   .deck-del svg{width:16px;height:16px}
+  .deck-del:hover{background:var(--line-2);color:var(--due)}
+  .deck-share{background:none;border:none;padding:8px;border-radius:8px;color:var(--faint);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s}
+  .deck-share svg{width:16px;height:16px}
+  .deck-share:hover{background:var(--line-2);color:var(--accent)}
   .deck-del:hover{background:rgba(194,77,99,.10);color:var(--hu)}
   .deck-sep{height:1px;background:var(--line-2);margin:5px 4px}
   nav{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:24px}
@@ -257,6 +267,10 @@
   .tg-code{font-family:'Fraunces',serif;font-size:30px;font-weight:600;letter-spacing:.12em;color:var(--accent);margin:12px 0 4px;text-align:center}
   .tg-steps{color:var(--ink-soft);font-size:13px;line-height:1.7;margin-top:8px}
   .tg-steps code{background:var(--line-2);padding:2px 7px;border-radius:5px;font-family:ui-monospace,monospace;font-size:12.5px}
+  .share-link{display:flex;gap:8px;align-items:center;margin-top:10px}
+  .share-link input{flex:1;font-family:ui-monospace,monospace;font-size:12.5px;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:9px;padding:10px 11px;outline:none;overflow:hidden;text-overflow:ellipsis}
+  .share-actions{display:flex;flex-direction:column;gap:8px;margin-top:16px}
+  .share-danger{background:none;border:none;color:var(--due);font-size:13px;cursor:pointer;text-decoration:underline;margin-top:4px}
   /* paywall */
   .deck-item.cat .di-cat-emoji{font-size:15px;width:16px;text-align:center;flex-shrink:0}
   .cat-list{margin-top:14px;max-height:52vh;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
@@ -502,6 +516,17 @@
     <div id="catalog-list" class="cat-list"><div class="cat-loading">Завантаження…</div></div>
     <div style="display:flex;margin-top:18px">
       <button class="btn btn-ghost" id="catalog-close" style="flex:1">Закрити</button>
+    </div>
+  </div>
+</div>
+
+<!-- SHARE WITH STUDENTS -->
+<div class="modal-bg" id="share-modal">
+  <div class="modal" style="max-width:420px">
+    <h2>👩‍🏫 Поділитися з учнями</h2>
+    <div id="share-body"></div>
+    <div style="display:flex;margin-top:18px">
+      <button class="btn btn-ghost" id="share-close" style="flex:1">Закрити</button>
     </div>
   </div>
 </div>
@@ -782,6 +807,8 @@ function renderDeckSwitcher(){
   const menu=document.getElementById('deck-menu');
   if(!menu) return;
   const rows=decks.map(d=>{
+    const share=(d.isDefault||d.id===user.uid)?'':
+      `<button class="deck-share" data-deck-share="${esc(d.id)}" title="Поділитися з учнями" aria-label="Поділитися з учнями"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></button>`;
     const del=(d.isDefault||d.id===user.uid)?'':
       `<button class="deck-del" data-deck-del="${esc(d.id)}" title="Видалити набір" aria-label="Видалити набір"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>`;
     return `<div class="deck-row">
@@ -789,7 +816,7 @@ function renderDeckSwitcher(){
         <svg class="di-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
         <span class="di-name">${esc(d.name||'Без назви')}</span>
         <span class="di-pair">${deckPairLabel(d)}</span>
-      </button>${del}
+      </button>${share}${del}
     </div>`;
   }).join('');
   menu.innerHTML=rows+`<div class="deck-sep"></div>
@@ -916,6 +943,81 @@ async function addPack(packId){
     toast('Набір «'+(p.name||'набір')+'» додано');
     tab('dict');
   }catch(e){ console.error(e); toast('Не вдалось додати набір'); if(btn){ btn.disabled=false; btn.textContent='Додати'; } }
+}
+
+/* ── Share deck with students (teacher side, variant A: code-gated snapshot) ── */
+let currentShare={id:null,code:null};
+function genShareCode(){ return (Math.random().toString(36).slice(2,6)+Math.random().toString(36).slice(2,6)).toUpperCase(); }
+function shareLink(code){ return location.origin + '/?join=' + code; }
+
+async function buildSnapshot(deck, code){
+  // owner-scoped read of THIS deck's words (5.1-safe, no index — same pattern as deleteDeck)
+  const wcol=collection(db,'decks',deck.id,'words');
+  const snap=await getDocs(query(wcol, where('ownerUid','==',user.uid)));
+  const words=snap.docs.map(sd=>{ const w=sd.data(); return {
+    word:w.word||'', ipa:w.ipa||'', pos:w.pos||'',
+    pos_group:(POS_ORDER.includes(w.pos_group)?w.pos_group:'other'),
+    tr:(w.tr&&typeof w.tr==='object')?w.tr:{}, def:w.def||'', ex:w.ex||''
+  };});
+  await setDoc(doc(db,'sharedSets',code),{
+    ownerUid:user.uid, deckId:deck.id, emoji:'👩‍🏫', name:deck.name||'Набір вчителя',
+    targetLang:deck.targetLang||'en', nativeLang:deck.nativeLang||'uk', native2:deck.native2||'',
+    count:words.length, words, updatedAt:Date.now()
+  });
+  return words.length;
+}
+
+async function shareDeck(id){
+  const d=decks.find(x=>x.id===id);
+  if(!d || d.isDefault || id===user.uid){ toast('Ділитися можна лише власним набором'); return; }
+  currentShare={id, code:d.accessCode||null};
+  openShareModal(d, currentShare.code, true);
+  try{
+    const code=d.accessCode || genShareCode();
+    const n=await buildSnapshot(d, code);
+    if(d.accessCode!==code || !d.shared){ await updateDoc(doc(db,'decks',id),{shared:true, accessCode:code}); }
+    currentShare={id, code};
+    openShareModal(d, code, false, n);
+  }catch(e){ console.error(e); toast('Не вдалось поділитися набором'); closeShareModal(); }
+}
+
+async function refreshShare(){
+  const d=decks.find(x=>x.id===currentShare.id); const code=currentShare.code;
+  if(!d || !code) return;
+  const btn=document.getElementById('share-refresh'); if(btn){ btn.disabled=true; btn.textContent='Оновлюю…'; }
+  try{ const n=await buildSnapshot(d, code); toast('Копію оновлено ('+n+' слів)'); openShareModal(d, code, false, n); }
+  catch(e){ console.error(e); toast('Не вдалось оновити копію'); if(btn){ btn.disabled=false; btn.textContent='Оновити слова в копії'; } }
+}
+
+async function unshareDeck(){
+  const d=decks.find(x=>x.id===currentShare.id); if(!d) return;
+  if(!confirm('Припинити ділитися набором «'+(d.name||'')+'»? Посилання перестане працювати. Учні, які вже додали набір собі, свою копію збережуть.')) return;
+  try{
+    if(currentShare.code){ await deleteDoc(doc(db,'sharedSets',currentShare.code)); }
+    await updateDoc(doc(db,'decks',d.id),{shared:false, accessCode:null});
+    toast('Ділення припинено'); closeShareModal();
+  }catch(e){ console.error(e); toast('Не вдалось припинити'); }
+}
+
+function openShareModal(deck, code, loading, count){
+  const body=document.getElementById('share-body');
+  if(loading || !code){ body.innerHTML='<p>Готую посилання…</p>'; }
+  else{
+    const link=shareLink(code);
+    body.innerHTML=
+      '<p>Надішли учням це посилання — вони відкриють набір і додадуть його собі одним тапом.</p>'
+      +'<div class="tg-code">'+esc(code)+'</div>'
+      +'<div class="share-link"><input id="share-url" readonly value="'+esc(link)+'"><button class="btn btn-primary" id="share-copy" style="padding:10px 14px">Копіювати</button></div>'
+      +'<div class="tg-steps">Учень також може ввести цей код вручну на сайті. '+(typeof count==='number'?('У копії зараз <b>'+count+'</b> слів.'):'')+'</div>'
+      +'<div class="share-actions"><button class="btn btn-ghost" id="share-refresh">Оновити слова в копії</button></div>'
+      +'<button class="share-danger" id="share-stop">Припинити ділитися</button>';
+  }
+  document.getElementById('share-modal').classList.add('show');
+}
+function closeShareModal(){ document.getElementById('share-modal').classList.remove('show'); }
+async function copyText(t){
+  try{ await navigator.clipboard.writeText(t); toast('Скопійовано'); }
+  catch(e){ const i=document.getElementById('share-url'); if(i){ i.focus(); i.select(); try{ document.execCommand('copy'); toast('Скопійовано'); }catch(_){ toast('Скопіюй вручну'); } } }
 }
 
 function refreshPlanUI(){
@@ -1261,6 +1363,8 @@ document.getElementById('deck-switch').onclick=e=>{ e.stopPropagation(); toggleD
 document.getElementById('deck-menu').onclick=e=>{
   const del=e.target.closest('[data-deck-del]');
   if(del){ e.stopPropagation(); deleteDeck(del.getAttribute('data-deck-del')); return; }
+  const shr=e.target.closest('[data-deck-share]');
+  if(shr){ e.stopPropagation(); toggleDeckMenu(false); shareDeck(shr.getAttribute('data-deck-share')); return; }
   const cat=e.target.closest('[data-catalog]');
   const add=e.target.closest('[data-deck-new]');
   const pick=e.target.closest('[data-deck]');
@@ -1298,6 +1402,13 @@ document.getElementById('deck-modal').addEventListener('click',e=>{ if(e.target.
 document.getElementById('catalog-close').onclick=closeCatalogModal;
 document.getElementById('catalog-modal').addEventListener('click',e=>{ if(e.target.id==='catalog-modal') closeCatalogModal(); });
 document.getElementById('catalog-list').addEventListener('click',e=>{ const b=e.target.closest('[data-pack]'); if(b) addPack(b.getAttribute('data-pack')); });
+document.getElementById('share-close').onclick=closeShareModal;
+document.getElementById('share-modal').addEventListener('click',e=>{ if(e.target.id==='share-modal') closeShareModal(); });
+document.getElementById('share-body').addEventListener('click',e=>{
+  if(e.target.closest('#share-copy')){ const i=document.getElementById('share-url'); copyText(i?i.value:shareLink(currentShare.code)); return; }
+  if(e.target.closest('#share-refresh')){ refreshShare(); return; }
+  if(e.target.closest('#share-stop')){ unshareDeck(); return; }
+});
 </script>
 </body>
 </html>
