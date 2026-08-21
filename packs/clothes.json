@@ -1,0 +1,25 @@
+{
+  "id": "clothes",
+  "emoji": "👕",
+  "name": "Одяг",
+  "targetLang": "en",
+  "nativeLang": "uk",
+  "native2": "",
+  "order": 4,
+  "words": [
+    { "word": "shirt",    "ipa": "/ʃɜːt/",        "pos": "noun", "pos_group": "noun", "tr": { "uk": "сорочка" },   "def": "a piece of clothing for the upper body, with a collar", "ex": "He wore a white shirt to the interview." },
+    { "word": "trousers", "ipa": "/ˈtraʊ.zəz/",   "pos": "noun", "pos_group": "noun", "tr": { "uk": "штани" },     "def": "clothing that covers the legs, one part for each leg", "ex": "These trousers are a little too long." },
+    { "word": "dress",    "ipa": "/drɛs/",        "pos": "noun", "pos_group": "noun", "tr": { "uk": "сукня" },     "def": "a one-piece garment worn mainly by women",          "ex": "She bought a red dress for the party." },
+    { "word": "skirt",    "ipa": "/skɜːt/",       "pos": "noun", "pos_group": "noun", "tr": { "uk": "спідниця" },  "def": "a garment that hangs from the waist over the legs", "ex": "She wore a long summer skirt." },
+    { "word": "coat",     "ipa": "/kəʊt/",        "pos": "noun", "pos_group": "noun", "tr": { "uk": "пальто" },    "def": "a warm piece of clothing worn outdoors over others", "ex": "Take your coat; it's cold outside." },
+    { "word": "jacket",   "ipa": "/ˈdʒæk.ɪt/",    "pos": "noun", "pos_group": "noun", "tr": { "uk": "куртка" },    "def": "a short coat for the upper body",                   "ex": "He put on a leather jacket." },
+    { "word": "sweater",  "ipa": "/ˈswɛt.ər/",    "pos": "noun", "pos_group": "noun", "tr": { "uk": "светр" },     "def": "a warm knitted piece of clothing for the upper body", "ex": "Wear a sweater; it's chilly today." },
+    { "word": "hat",      "ipa": "/hæt/",         "pos": "noun", "pos_group": "noun", "tr": { "uk": "капелюх" },   "def": "a covering worn on the head",                       "ex": "She wore a straw hat in the sun." },
+    { "word": "scarf",    "ipa": "/skɑːf/",       "pos": "noun", "pos_group": "noun", "tr": { "uk": "шарф" },      "def": "a piece of cloth worn around the neck for warmth",  "ex": "He wrapped a wool scarf around his neck." },
+    { "word": "glove",    "ipa": "/ɡlʌv/",        "pos": "noun", "pos_group": "noun", "tr": { "uk": "рукавичка" }, "def": "a covering for the hand with parts for each finger", "ex": "Put on your gloves; it's freezing." },
+    { "word": "belt",     "ipa": "/bɛlt/",        "pos": "noun", "pos_group": "noun", "tr": { "uk": "пояс, ремінь" }, "def": "a strip of leather or cloth worn around the waist", "ex": "He tightened his belt one notch." },
+    { "word": "shoe",     "ipa": "/ʃuː/",         "pos": "noun", "pos_group": "noun", "tr": { "uk": "туфля, черевик" }, "def": "a covering for the foot, usually of leather",     "ex": "I need a new pair of shoes." },
+    { "word": "boot",     "ipa": "/buːt/",        "pos": "noun", "pos_group": "noun", "tr": { "uk": "чобіт" },     "def": "a shoe that covers the foot and part of the leg",   "ex": "She wore boots in the snow." },
+    { "word": "sock",     "ipa": "/sɒk/",         "pos": "noun", "pos_group": "noun", "tr": { "uk": "шкарпетка" }, "def": "a soft covering for the foot worn inside a shoe",   "ex": "One of my socks has a hole in it." }
+  ]
+}
