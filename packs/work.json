@@ -1,0 +1,26 @@
+{
+  "id": "work",
+  "emoji": "💼",
+  "name": "Робота",
+  "targetLang": "en",
+  "nativeLang": "uk",
+  "native2": "",
+  "order": 8,
+  "words": [
+    { "word": "job",      "ipa": "/dʒɒb/",         "pos": "noun", "pos_group": "noun", "tr": { "uk": "робота, посада" },     "def": "the work a person does regularly to earn money",  "ex": "She got a new job in marketing." },
+    { "word": "office",   "ipa": "/ˈɒfɪs/",        "pos": "noun", "pos_group": "noun", "tr": { "uk": "офіс" },              "def": "a room or building where people work at desks",   "ex": "I go to the office three days a week." },
+    { "word": "meeting",  "ipa": "/ˈmiːtɪŋ/",      "pos": "noun", "pos_group": "noun", "tr": { "uk": "зустріч, нарада" },   "def": "an event where people come together to talk",     "ex": "The meeting starts at ten o'clock." },
+    { "word": "email",    "ipa": "/ˈiːmeɪl/",      "pos": "noun", "pos_group": "noun", "tr": { "uk": "електронний лист" },  "def": "a message sent from one computer to another",     "ex": "I'll send you the details by email." },
+    { "word": "boss",     "ipa": "/bɒs/",          "pos": "noun", "pos_group": "noun", "tr": { "uk": "начальник, керівник" },"def": "the person who is in charge of others at work",  "ex": "My boss approved the plan." },
+    { "word": "salary",   "ipa": "/ˈsæləri/",      "pos": "noun", "pos_group": "noun", "tr": { "uk": "зарплата" },          "def": "the money you are paid each month for your job",   "ex": "They offered her a good salary." },
+    { "word": "computer", "ipa": "/kəmˈpjuːtər/",  "pos": "noun", "pos_group": "noun", "tr": { "uk": "комп'ютер" },         "def": "an electronic machine for storing and processing data", "ex": "My computer is running slowly today." },
+    { "word": "project",  "ipa": "/ˈprɒdʒɛkt/",    "pos": "noun", "pos_group": "noun", "tr": { "uk": "проєкт" },           "def": "a planned piece of work with a specific goal",    "ex": "We finished the project on time." },
+    { "word": "deadline", "ipa": "/ˈdɛdlaɪn/",     "pos": "noun", "pos_group": "noun", "tr": { "uk": "дедлайн, кінцевий термін" },"def": "the latest time by which something must be done", "ex": "The deadline is next Friday." },
+    { "word": "team",     "ipa": "/tiːm/",         "pos": "noun", "pos_group": "noun", "tr": { "uk": "команда" },          "def": "a group of people who work together",             "ex": "Our team is small but strong." },
+    { "word": "phone",    "ipa": "/fəʊn/",         "pos": "noun", "pos_group": "noun", "tr": { "uk": "телефон" },          "def": "a device used to speak to people far away",       "ex": "He answered the phone quickly." },
+    { "word": "report",   "ipa": "/rɪˈpɔːt/",      "pos": "noun", "pos_group": "noun", "tr": { "uk": "звіт" },             "def": "a written or spoken account of something",        "ex": "Please send me the report by Monday." },
+    { "word": "colleague","ipa": "/ˈkɒliːɡ/",      "pos": "noun", "pos_group": "noun", "tr": { "uk": "колега" },           "def": "a person you work with",                          "ex": "My colleague helped me finish the task." },
+    { "word": "company",  "ipa": "/ˈkʌmpəni/",     "pos": "noun", "pos_group": "noun", "tr": { "uk": "компанія, фірма" },  "def": "a business that makes or sells goods or services", "ex": "She works for a large tech company." },
+    { "word": "task",     "ipa": "/tɑːsk/",        "pos": "noun", "pos_group": "noun", "tr": { "uk": "завдання" },         "def": "a piece of work that must be done",               "ex": "I have three tasks to finish today." }
+  ]
+}
