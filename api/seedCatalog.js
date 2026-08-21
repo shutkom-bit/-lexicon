@@ -12,11 +12,15 @@
 const { getDb } = require('../lib/core');
 
 const PACKS = [
+  require('../packs/question.json'),
   require('../packs/body.json'),
   require('../packs/food.json'),
   require('../packs/home.json'),
-  require('../packs/clothes.json')
-  // next batch: verbs, adjectives, travel, work
+  require('../packs/clothes.json'),
+  require('../packs/verbs.json'),
+  require('../packs/adjectives.json'),
+  require('../packs/travel.json'),
+  require('../packs/work.json')
 ];
 
 module.exports = async function handler(req, res) {
