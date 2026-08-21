@@ -1,0 +1,26 @@
+{
+  "id": "question",
+  "emoji": "❓",
+  "name": "Питальні слова",
+  "targetLang": "en",
+  "nativeLang": "uk",
+  "native2": "",
+  "order": 0,
+  "words": [
+    { "word": "what",      "ipa": "/wɒt/",              "pos": "pronoun", "pos_group": "other",  "tr": { "uk": "що" },                        "def": "used to ask about a thing or an action",           "ex": "What is your name?" },
+    { "word": "who",       "ipa": "/huː/",              "pos": "pronoun", "pos_group": "other",  "tr": { "uk": "хто" },                       "def": "used to ask about a person",                       "ex": "Who is that man over there?" },
+    { "word": "which",     "ipa": "/wɪtʃ/",             "pos": "determiner", "pos_group": "other", "tr": { "uk": "який, котрий" },             "def": "used to ask about one thing from a group",         "ex": "Which colour do you prefer?" },
+    { "word": "whose",     "ipa": "/huːz/",             "pos": "pronoun", "pos_group": "other",  "tr": { "uk": "чий" },                       "def": "used to ask who something belongs to",             "ex": "Whose bag is this?" },
+    { "word": "whom",      "ipa": "/huːm/",             "pos": "pronoun", "pos_group": "other",  "tr": { "uk": "кого, кому" },                "def": "formal word used to ask about the object person",  "ex": "To whom should I speak?" },
+    { "word": "where",     "ipa": "/weər/",             "pos": "adverb",  "pos_group": "adverb", "tr": { "uk": "де, куди" },                  "def": "used to ask about a place",                        "ex": "Where do you live?" },
+    { "word": "when",      "ipa": "/wɛn/",              "pos": "adverb",  "pos_group": "adverb", "tr": { "uk": "коли" },                      "def": "used to ask about a time",                         "ex": "When does the film start?" },
+    { "word": "why",       "ipa": "/waɪ/",              "pos": "adverb",  "pos_group": "adverb", "tr": { "uk": "чому, навіщо" },              "def": "used to ask about a reason",                       "ex": "Why are you late?" },
+    { "word": "how",       "ipa": "/haʊ/",              "pos": "adverb",  "pos_group": "adverb", "tr": { "uk": "як, яким чином" },            "def": "used to ask about the way something happens",      "ex": "How do you make this dish?" },
+    { "word": "how many",  "ipa": "/ˌhaʊ ˈmɛni/",       "pos": "phrase",  "pos_group": "phrase", "tr": { "uk": "скільки (для злічуваних)" },  "def": "used to ask about the number of countable things", "ex": "How many people are coming?" },
+    { "word": "how much",  "ipa": "/ˌhaʊ ˈmʌtʃ/",       "pos": "phrase",  "pos_group": "phrase", "tr": { "uk": "скільки (незлічуване, ціна)" },"def": "used to ask about amount or price",               "ex": "How much does it cost?" },
+    { "word": "how long",  "ipa": "/ˌhaʊ ˈlɒŋ/",        "pos": "phrase",  "pos_group": "phrase", "tr": { "uk": "як довго, скільки часу" },    "def": "used to ask about a length of time",               "ex": "How long have you lived here?" },
+    { "word": "how often", "ipa": "/ˌhaʊ ˈɒf.ən/",      "pos": "phrase",  "pos_group": "phrase", "tr": { "uk": "як часто" },                  "def": "used to ask about frequency",                      "ex": "How often do you exercise?" },
+    { "word": "what time", "ipa": "/ˌwɒt ˈtaɪm/",       "pos": "phrase",  "pos_group": "phrase", "tr": { "uk": "о котрій годині" },           "def": "used to ask about a specific time of day",         "ex": "What time is the meeting?" },
+    { "word": "how old",   "ipa": "/ˌhaʊ ˈəʊld/",       "pos": "phrase",  "pos_group": "phrase", "tr": { "uk": "скільки років" },             "def": "used to ask about age",                            "ex": "How old is your brother?" }
+  ]
+}
