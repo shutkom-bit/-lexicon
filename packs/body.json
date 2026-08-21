@@ -1,0 +1,26 @@
+{
+  "id": "body",
+  "emoji": "🧍",
+  "name": "Тіло",
+  "targetLang": "en",
+  "nativeLang": "uk",
+  "native2": "",
+  "order": 1,
+  "words": [
+    { "word": "head",   "ipa": "/hɛd/",         "pos": "noun", "pos_group": "noun", "tr": { "uk": "голова" },  "def": "the top part of the body, above the neck",        "ex": "He turned his head to look at me." },
+    { "word": "hair",   "ipa": "/hɛər/",        "pos": "noun", "pos_group": "noun", "tr": { "uk": "волосся" }, "def": "the thin threads that grow on a person's head",    "ex": "She has long dark hair." },
+    { "word": "eye",    "ipa": "/aɪ/",          "pos": "noun", "pos_group": "noun", "tr": { "uk": "око" },     "def": "the part of the body used for seeing",             "ex": "Close your eyes and relax." },
+    { "word": "ear",    "ipa": "/ɪər/",         "pos": "noun", "pos_group": "noun", "tr": { "uk": "вухо" },    "def": "the part of the body used for hearing",            "ex": "The music was so loud it hurt my ears." },
+    { "word": "nose",   "ipa": "/nəʊz/",        "pos": "noun", "pos_group": "noun", "tr": { "uk": "ніс" },     "def": "the part of the face used for smelling and breathing", "ex": "The dog has a cold, wet nose." },
+    { "word": "mouth",  "ipa": "/maʊθ/",        "pos": "noun", "pos_group": "noun", "tr": { "uk": "рот" },     "def": "the part of the face used for eating and speaking", "ex": "Don't talk with your mouth full." },
+    { "word": "tooth",  "ipa": "/tuːθ/",        "pos": "noun", "pos_group": "noun", "tr": { "uk": "зуб" },     "def": "one of the hard white parts in the mouth",         "ex": "Brush your teeth twice a day." },
+    { "word": "neck",   "ipa": "/nɛk/",         "pos": "noun", "pos_group": "noun", "tr": { "uk": "шия" },     "def": "the part of the body joining the head to the shoulders", "ex": "She wore a scarf around her neck." },
+    { "word": "arm",    "ipa": "/ɑːm/",         "pos": "noun", "pos_group": "noun", "tr": { "uk": "рука (від плеча)" }, "def": "the long part of the body from the shoulder to the hand", "ex": "He broke his arm playing football." },
+    { "word": "hand",   "ipa": "/hænd/",        "pos": "noun", "pos_group": "noun", "tr": { "uk": "рука (кисть)" },    "def": "the part of the body at the end of the arm",       "ex": "Wash your hands before dinner." },
+    { "word": "finger", "ipa": "/ˈfɪŋ.ɡər/",    "pos": "noun", "pos_group": "noun", "tr": { "uk": "палець (на руці)" }, "def": "one of the five long parts on the hand",           "ex": "She pointed at the map with her finger." },
+    { "word": "leg",    "ipa": "/lɛɡ/",         "pos": "noun", "pos_group": "noun", "tr": { "uk": "нога" },    "def": "one of the parts of the body used for walking",    "ex": "My legs are tired after the long walk." },
+    { "word": "foot",   "ipa": "/fʊt/",         "pos": "noun", "pos_group": "noun", "tr": { "uk": "ступня" },  "def": "the part of the body at the end of the leg",       "ex": "These shoes hurt my feet." },
+    { "word": "heart",  "ipa": "/hɑːt/",        "pos": "noun", "pos_group": "noun", "tr": { "uk": "серце" },   "def": "the organ that pumps blood around the body",       "ex": "Running is good for your heart." },
+    { "word": "back",   "ipa": "/bæk/",         "pos": "noun", "pos_group": "noun", "tr": { "uk": "спина" },   "def": "the rear part of the body from neck to hips",      "ex": "He hurt his back lifting the box." }
+  ]
+}
