@@ -506,6 +506,19 @@
   </div>
 </div>
 
+<!-- SHARE DECK (teacher → student) -->
+<div class="modal-bg" id="share-modal">
+  <div class="modal" style="max-width:440px">
+    <h2>🔗 Поділитися набором</h2>
+    <p id="share-sub">Дай цей код учням — вони введуть його й отримають копію набору собі.</p>
+    <div class="tg-code" id="share-code">——————</div>
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button class="btn btn-primary" id="share-copy" style="flex:1">Скопіювати код</button>
+      <button class="btn btn-ghost" id="share-close" style="flex:1">Закрити</button>
+    </div>
+  </div>
+</div>
+
 <!-- PAYWALL -->
 <div class="modal-bg" id="paywall">
   <div class="modal">
@@ -800,6 +813,10 @@ function renderDeckSwitcher(){
     <button class="deck-item cat" data-catalog="1">
       <span class="di-cat-emoji">📚</span>
       <span class="di-name">Готові набори</span>
+    </button>
+    <button class="deck-item cat" data-deck-share="1">
+      <span class="di-cat-emoji">🔗</span>
+      <span class="di-name">Поділитися набором</span>
     </button>`;
 }
 
@@ -917,6 +934,43 @@ async function addPack(packId){
     tab('dict');
   }catch(e){ console.error(e); toast('Не вдалось додати набір'); if(btn){ btn.disabled=false; btn.textContent='Додати'; } }
 }
+
+/* ── Share a deck (teacher → student, clone-on-join) ── */
+function genShareCode(){ return Math.random().toString(36).slice(2,8).toUpperCase(); }
+
+async function shareActiveDeck(){
+  if(!user) return;
+  const d=activeDeck();
+  if(!d || !d.id){ toast('Спершу відкрий набір'); return; }
+  if(!words.length){ toast('Набір порожній — нема чим ділитися'); return; }
+  // Знімок слів у формі каталогу (без SRS-полів).
+  const snapshot=words.map(w=>({
+    word:w.word||'', ipa:w.ipa||'', pos:w.pos||'',
+    pos_group:(POS_ORDER.includes(w.pos_group)?w.pos_group:'other'),
+    tr:(w.tr&&typeof w.tr==='object')?w.tr:{}, def:w.def||'', ex:w.ex||''
+  }));
+  const wasShared=!!d.shareCode;
+  const code=d.shareCode || genShareCode();
+  const payload={
+    code, ownerUid:user.uid, ownerName:(user.displayName||''),
+    sourceDeckId:d.id, name:d.name||'Набір', emoji:'📗',
+    targetLang:deckTarget(d), nativeLang:(deckNatives(d)[0]||'uk'), native2:(deckNatives(d)[1]||''),
+    count:snapshot.length, words:snapshot, updatedAt:Date.now()
+  };
+  if(!wasShared) payload.createdAt=Date.now();
+  try{
+    await setDoc(doc(db,'sharedPacks',code), payload, { merge:true });
+    if(!wasShared){ await updateDoc(doc(db,'decks',d.id), { shareCode:code }); }
+    openShareModal(d.name||'Набір', code, snapshot.length, wasShared);
+  }catch(e){ console.error(e); toast('Не вдалось поділитися набором'); }
+}
+function openShareModal(name, code, count, wasShared){
+  document.getElementById('share-code').textContent=code;
+  document.getElementById('share-sub').innerHTML=
+    `Набір «<b>${esc(name)}</b>» (${count} слів) ${wasShared?'оновлено':'опубліковано'}. Дай цей код учням — вони введуть його в «Приєднатися за кодом» і отримають копію собі.`;
+  document.getElementById('share-modal').classList.add('show');
+}
+function closeShareModal(){ document.getElementById('share-modal').classList.remove('show'); }
 
 function refreshPlanUI(){
   const chip=document.getElementById('plan-chip');
@@ -1284,10 +1338,12 @@ document.getElementById('deck-menu').onclick=e=>{
   const del=e.target.closest('[data-deck-del]');
   if(del){ e.stopPropagation(); deleteDeck(del.getAttribute('data-deck-del')); return; }
   const cat=e.target.closest('[data-catalog]');
+  const share=e.target.closest('[data-deck-share]');
   const add=e.target.closest('[data-deck-new]');
   const pick=e.target.closest('[data-deck]');
   toggleDeckMenu(false);
   if(cat){ openCatalogModal(); return; }
+  if(share){ shareActiveDeck(); return; }
   if(add){ openDeckModal(); return; }
   if(pick){ setActiveDeck(pick.getAttribute('data-deck')); }
 };
@@ -1320,6 +1376,13 @@ document.getElementById('deck-modal').addEventListener('click',e=>{ if(e.target.
 document.getElementById('catalog-close').onclick=closeCatalogModal;
 document.getElementById('catalog-modal').addEventListener('click',e=>{ if(e.target.id==='catalog-modal') closeCatalogModal(); });
 document.getElementById('catalog-list').addEventListener('click',e=>{ const b=e.target.closest('[data-pack]'); if(b) addPack(b.getAttribute('data-pack')); });
+document.getElementById('share-close').onclick=closeShareModal;
+document.getElementById('share-modal').addEventListener('click',e=>{ if(e.target.id==='share-modal') closeShareModal(); });
+document.getElementById('share-copy').onclick=async()=>{
+  const code=document.getElementById('share-code').textContent;
+  try{ await navigator.clipboard.writeText(code); toast('Код скопійовано'); }
+  catch(e){ toast('Скопіюй код вручну: '+code); }
+};
 </script>
 </body>
 </html>
