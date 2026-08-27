@@ -519,6 +519,19 @@
   </div>
 </div>
 
+<!-- JOIN BY CODE (student) -->
+<div class="modal-bg" id="join-modal">
+  <div class="modal" style="max-width:440px">
+    <h2>🔑 Приєднатися за кодом</h2>
+    <p>Введи код набору, який дав тобі вчитель. Набір скопіюється до твоїх — безкоштовно, не рахується в ліміт.</p>
+    <input type="text" id="join-code" placeholder="Напр. A3F9K2" autocomplete="off" maxlength="8" style="width:100%;margin-top:14px;text-transform:uppercase;letter-spacing:3px;font-weight:700;text-align:center">
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button class="btn btn-primary" id="join-go" style="flex:1">Приєднатися</button>
+      <button class="btn btn-ghost" id="join-cancel" style="flex:1">Скасувати</button>
+    </div>
+  </div>
+</div>
+
 <!-- PAYWALL -->
 <div class="modal-bg" id="paywall">
   <div class="modal">
@@ -817,6 +830,10 @@ function renderDeckSwitcher(){
     <button class="deck-item cat" data-deck-share="1">
       <span class="di-cat-emoji">🔗</span>
       <span class="di-name">Поділитися набором</span>
+    </button>
+    <button class="deck-item cat" data-deck-join="1">
+      <span class="di-cat-emoji">🔑</span>
+      <span class="di-name">Приєднатися за кодом</span>
     </button>`;
 }
 
@@ -971,6 +988,52 @@ function openShareModal(name, code, count, wasShared){
   document.getElementById('share-modal').classList.add('show');
 }
 function closeShareModal(){ document.getElementById('share-modal').classList.remove('show'); }
+
+/* ── Join a shared deck by code (student side) ── */
+function openJoinModal(){
+  const inp=document.getElementById('join-code'); inp.value='';
+  document.getElementById('join-modal').classList.add('show');
+  setTimeout(()=>inp.focus(),50);
+}
+function closeJoinModal(){ document.getElementById('join-modal').classList.remove('show'); }
+
+async function joinByCode(rawCode){
+  const code=(rawCode||'').trim().toUpperCase();
+  if(!code){ toast('Введи код'); return; }
+  const btn=document.getElementById('join-go');
+  if(btn){ btn.disabled=true; btn.textContent='Додаю…'; }
+  const reset=()=>{ if(btn){ btn.disabled=false; btn.textContent='Приєднатися'; } };
+  try{
+    const snap=await getDoc(doc(db,'sharedPacks',code));
+    if(!snap.exists()){ toast('Набір за цим кодом не знайдено'); reset(); return; }
+    const p=snap.data();
+    if(p.ownerUid===user.uid){ toast('Це твій власний набір'); reset(); return; }
+    const src=Array.isArray(p.words)?p.words:[];
+    if(!src.length){ toast('У наборі немає слів'); reset(); return; }
+    const deckRef=await addDoc(collection(db,'decks'),{
+      ownerUid:user.uid, name:p.name||'Набір від вчителя',
+      targetLang:p.targetLang||'en', nativeLang:p.nativeLang||'uk', native2:p.native2||'',
+      isDefault:false, shared:false, accessCode:null, createdAt:Date.now(), fromShared:code
+    });
+    const now=Date.now();
+    const wcol=collection(db,'decks',deckRef.id,'words');
+    const batch=writeBatch(db);
+    src.forEach((w,i)=>{
+      batch.set(doc(wcol),{
+        word:w.word||'', topic:p.name||'', ipa:w.ipa||'', pos:w.pos||'',
+        pos_group:(POS_ORDER.includes(w.pos_group)?w.pos_group:'other'),
+        tr:(w.tr&&typeof w.tr==='object')?w.tr:{}, def:w.def||'', ex:w.ex||'',
+        ownerUid:user.uid, box:0, due:now, reps:0, lapses:0, created:now-i
+      });
+    });
+    await batch.commit();
+    // wordCount НЕ інкрементуємо — як каталог: клон уже збагачених слів не витрачає AI.
+    closeJoinModal();
+    activeDeckId=deckRef.id; subscribeWords(); renderDeckSwitcher();
+    toast('Набір «'+(p.name||'набір')+'» додано');
+    tab('dict');
+  }catch(e){ console.error(e); toast('Не вдалось приєднатися'); reset(); }
+}
 
 function refreshPlanUI(){
   const chip=document.getElementById('plan-chip');
@@ -1339,11 +1402,13 @@ document.getElementById('deck-menu').onclick=e=>{
   if(del){ e.stopPropagation(); deleteDeck(del.getAttribute('data-deck-del')); return; }
   const cat=e.target.closest('[data-catalog]');
   const share=e.target.closest('[data-deck-share]');
+  const join=e.target.closest('[data-deck-join]');
   const add=e.target.closest('[data-deck-new]');
   const pick=e.target.closest('[data-deck]');
   toggleDeckMenu(false);
   if(cat){ openCatalogModal(); return; }
   if(share){ shareActiveDeck(); return; }
+  if(join){ openJoinModal(); return; }
   if(add){ openDeckModal(); return; }
   if(pick){ setActiveDeck(pick.getAttribute('data-deck')); }
 };
@@ -1383,6 +1448,10 @@ document.getElementById('share-copy').onclick=async()=>{
   try{ await navigator.clipboard.writeText(code); toast('Код скопійовано'); }
   catch(e){ toast('Скопіюй код вручну: '+code); }
 };
+document.getElementById('join-cancel').onclick=closeJoinModal;
+document.getElementById('join-modal').addEventListener('click',e=>{ if(e.target.id==='join-modal') closeJoinModal(); });
+document.getElementById('join-go').onclick=()=>joinByCode(document.getElementById('join-code').value);
+document.getElementById('join-code').addEventListener('keydown',e=>{ if(e.key==='Enter') joinByCode(e.target.value); });
 </script>
 </body>
 </html>
