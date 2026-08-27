@@ -1014,12 +1014,14 @@ async function joinByCode(rawCode){
   const src=Array.isArray(p.words)?p.words:[];
   if(!src.length){ toast('У наборі немає слів'); reset(); return; }
   // Фаза 2 — запис копії собі
+  let newDeckId;
   try{
     const deckRef=await addDoc(collection(db,'decks'),{
       ownerUid:user.uid, name:p.name||'Набір від вчителя',
       targetLang:p.targetLang||'en', nativeLang:p.nativeLang||'uk', native2:p.native2||'',
       isDefault:false, shared:false, accessCode:null, createdAt:Date.now(), fromShared:code
     });
+    newDeckId=deckRef.id;
     const now=Date.now();
     const wcol=collection(db,'decks',deckRef.id,'words');
     const batch=writeBatch(db);
@@ -1033,11 +1035,16 @@ async function joinByCode(rawCode){
     });
     await batch.commit();
     // wordCount НЕ інкрементуємо — як каталог: клон уже збагачених слів не витрачає AI.
+  }catch(e){ console.error('join write',e); toast('Запис набору не вдався: '+(e.code||e.message||e)); reset(); return; }
+
+  // Успіх: дані вже в базі. Оновлення екрана НЕ може позначати операцію як провал —
+  // якщо тут щось спіткнеться, застосунок сам підхопить новий набір через onSnapshot деків.
+  try{
     closeJoinModal();
-    activeDeckId=deckRef.id; subscribeWords(); renderDeckSwitcher();
-    toast('Набір «'+(p.name||'набір')+'» додано');
+    activeDeckId=newDeckId; subscribeWords(); renderDeckSwitcher();
     tab('dict');
-  }catch(e){ console.error('join write',e); toast('Запис набору не вдався: '+(e.code||e.message||e)); reset(); }
+  }catch(e){ console.error('join ui refresh (не критично)',e); }
+  toast('Набір «'+(p.name||'набір')+'» додано');
 }
 
 function refreshPlanUI(){
