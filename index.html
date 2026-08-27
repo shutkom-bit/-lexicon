@@ -1003,13 +1003,18 @@ async function joinByCode(rawCode){
   const btn=document.getElementById('join-go');
   if(btn){ btn.disabled=true; btn.textContent='Додаю…'; }
   const reset=()=>{ if(btn){ btn.disabled=false; btn.textContent='Приєднатися'; } };
+  let p;
+  // Фаза 1 — читання коду
   try{
     const snap=await getDoc(doc(db,'sharedPacks',code));
     if(!snap.exists()){ toast('Набір за цим кодом не знайдено'); reset(); return; }
-    const p=snap.data();
-    if(p.ownerUid===user.uid){ toast('Це твій власний набір'); reset(); return; }
-    const src=Array.isArray(p.words)?p.words:[];
-    if(!src.length){ toast('У наборі немає слів'); reset(); return; }
+    p=snap.data();
+  }catch(e){ console.error('join read',e); toast('Читання коду не вдалось: '+(e.code||e.message||e)); reset(); return; }
+  if(p.ownerUid===user.uid){ toast('Це твій власний набір'); reset(); return; }
+  const src=Array.isArray(p.words)?p.words:[];
+  if(!src.length){ toast('У наборі немає слів'); reset(); return; }
+  // Фаза 2 — запис копії собі
+  try{
     const deckRef=await addDoc(collection(db,'decks'),{
       ownerUid:user.uid, name:p.name||'Набір від вчителя',
       targetLang:p.targetLang||'en', nativeLang:p.nativeLang||'uk', native2:p.native2||'',
@@ -1032,7 +1037,7 @@ async function joinByCode(rawCode){
     activeDeckId=deckRef.id; subscribeWords(); renderDeckSwitcher();
     toast('Набір «'+(p.name||'набір')+'» додано');
     tab('dict');
-  }catch(e){ console.error(e); toast('Не вдалось приєднатися'); reset(); }
+  }catch(e){ console.error('join write',e); toast('Запис набору не вдався: '+(e.code||e.message||e)); reset(); }
 }
 
 function refreshPlanUI(){
