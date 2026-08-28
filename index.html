@@ -385,6 +385,8 @@
     <span>© Lexicon · тренажер словника</span>
     <div class="flinks">
       <a href="#how">Як працює</a>
+      <a href="/privacy.html">Приватність</a>
+      <a href="/terms.html">Умови</a>
       <a class="tg-link" href="https://t.me/Mik_lexicon_bot" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8l-1.57 7.4c-.12.53-.43.66-.87.41l-2.4-1.77-1.16 1.11c-.13.13-.24.24-.48.24l.17-2.43 4.42-3.99c.19-.17-.04-.27-.3-.1L8.4 13.06l-2.36-.74c-.51-.16-.52-.51.11-.76l9.22-3.56c.43-.16.8.1.66.8z"/></svg>Telegram-бот</a>
     </div>
   </footer>
@@ -470,6 +472,14 @@
   <section class="panel" id="p-quiz"><div id="quiz-body"></div></section>
   <section class="panel" id="p-game"><div id="game-body"></div></section>
   <section class="panel" id="p-progress"><div id="progress-body"></div></section>
+
+  <footer class="app-foot" style="text-align:center;padding:26px 16px 96px;color:var(--faint);font-size:13px">
+    <a href="#" id="about-link" style="color:inherit;text-decoration:none">Про застосунок</a>
+    <span style="opacity:.45;margin:0 8px">·</span>
+    <a href="/privacy.html" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">Приватність</a>
+    <span style="opacity:.45;margin:0 8px">·</span>
+    <a href="/terms.html" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">Умови</a>
+  </footer>
 </div></div>
 
 <div class="toast" id="toast"></div>
@@ -529,6 +539,34 @@
       <button class="btn btn-primary" id="join-go" style="flex:1">Приєднатися</button>
       <button class="btn btn-ghost" id="join-cancel" style="flex:1">Скасувати</button>
     </div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<div class="modal-bg" id="about-modal">
+  <div class="modal" style="max-width:460px">
+    <h2>Про Lexicon</h2>
+    <p><b>Lexicon</b> — застосунок для вивчення слів. Додаєш слово → ШІ дає переклад, транскрипцію й приклад; тренуєш інтервальними повтореннями, тестом і грою на швидкість.</p>
+    <p>Слова групуються в набори під різні мовні пари. Є готові стартові набори, спільні набори за кодом (для вчителів та учнів), Telegram-бот і озвучка.</p>
+    <div style="display:flex;gap:16px;margin-top:14px">
+      <a href="/privacy.html" target="_blank" rel="noopener">Приватність</a>
+      <a href="/terms.html" target="_blank" rel="noopener">Умови</a>
+    </div>
+    <button class="btn btn-ghost" id="about-close" style="width:100%;margin-top:18px">Закрити</button>
+  </div>
+</div>
+
+<!-- CONSENT (first login) -->
+<div class="modal-bg" id="consent-modal">
+  <div class="modal" style="max-width:440px">
+    <h2>Ласкаво просимо 👋</h2>
+    <p>Перш ніж почати: користуючись Lexicon, ти погоджуєшся з <a href="/privacy.html" target="_blank" rel="noopener">Політикою приватності</a> та <a href="/terms.html" target="_blank" rel="noopener">Умовами користування</a>.</p>
+    <p style="color:var(--ink-soft);font-size:14px">Коротко: слова, які ти додаєш, надсилаються ШІ-сервісу (DeepSeek) для перекладу. Не вводь чутливих особистих даних.</p>
+    <label style="display:flex;gap:10px;align-items:flex-start;margin:14px 0;cursor:pointer">
+      <input type="checkbox" id="consent-check" style="margin-top:4px;flex:none">
+      <span>Я прочитав(ла) і приймаю Політику приватності та Умови.</span>
+    </label>
+    <button class="btn btn-primary" id="consent-accept" style="width:100%" disabled>Погоджуюсь і продовжити</button>
   </div>
 </div>
 
@@ -701,6 +739,7 @@ onAuthStateChanged(auth, async (u)=>{
     document.getElementById('u-name').textContent=u.displayName||u.email||'';
     if(u.photoURL) document.getElementById('u-avatar').src=u.photoURL;
     await ensureProfile();
+    maybeShowConsent();
     startSync();
     touchStreak();
   } else {
@@ -996,6 +1035,29 @@ function openJoinModal(){
   setTimeout(()=>inp.focus(),50);
 }
 function closeJoinModal(){ document.getElementById('join-modal').classList.remove('show'); }
+
+/* ── About + consent ── */
+const CONSENT_VERSION=1;
+function openAbout(){ document.getElementById('about-modal').classList.add('show'); }
+function closeAbout(){ document.getElementById('about-modal').classList.remove('show'); }
+
+function maybeShowConsent(){
+  if(profile && Number(profile.consentVersion||0) >= CONSENT_VERSION) return;
+  const m=document.getElementById('consent-modal');
+  const chk=document.getElementById('consent-check');
+  const btn=document.getElementById('consent-accept');
+  chk.checked=false; btn.disabled=true;
+  chk.onchange=()=>{ btn.disabled=!chk.checked; };
+  btn.onclick=async()=>{
+    btn.disabled=true;
+    try{
+      await updateDoc(doc(db,'users',user.uid),{ consentAt:Date.now(), consentVersion:CONSENT_VERSION });
+      if(profile) profile.consentVersion=CONSENT_VERSION;
+    }catch(e){ console.error('consent write',e); }
+    m.classList.remove('show');
+  };
+  m.classList.add('show');
+}
 
 async function joinByCode(rawCode){
   const code=(rawCode||'').trim().toUpperCase();
@@ -1462,6 +1524,9 @@ document.getElementById('share-copy').onclick=async()=>{
 };
 document.getElementById('join-cancel').onclick=closeJoinModal;
 document.getElementById('join-modal').addEventListener('click',e=>{ if(e.target.id==='join-modal') closeJoinModal(); });
+document.getElementById('about-link').onclick=e=>{ e.preventDefault(); openAbout(); };
+document.getElementById('about-close').onclick=closeAbout;
+document.getElementById('about-modal').addEventListener('click',e=>{ if(e.target.id==='about-modal') closeAbout(); });
 document.getElementById('join-go').onclick=()=>joinByCode(document.getElementById('join-code').value);
 document.getElementById('join-code').addEventListener('keydown',e=>{ if(e.key==='Enter') joinByCode(e.target.value); });
 </script>
