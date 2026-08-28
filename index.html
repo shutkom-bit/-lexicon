@@ -1253,8 +1253,10 @@ function renderStudy(){
   document.getElementById('flash').onclick=()=>{ if(!flipped){ flipped=true; renderStudy(); } };
   const fspk=document.querySelector('#flash .spk'); if(fspk) fspk.onclick=(e)=>{ e.stopPropagation(); speak(w.word); };
   document.querySelectorAll('#grade [data-grade]').forEach(b=>b.onclick=async()=>{
-    const w=queue[qi], f=schedFields(w,b.dataset.grade==='1'); Object.assign(w,f);
+    const ok=b.dataset.grade==='1';
+    const w=queue[qi], f=schedFields(w,ok); Object.assign(w,f);
     try{ await updateDoc(doc(db,'decks',activeDeckId,'words',w.id), f); }catch(e){ console.error(e); }
+    if(!ok) queue.push(w);   // «Ще не знаю» → показати це слово ще раз у цій самій сесії
     qi++; flipped=false; renderStudy(); refreshStats();
   });
 }
