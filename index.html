@@ -1233,10 +1233,10 @@ function renderDict(){
 
 /* ── STUDY ── */
 let queue=[], qi=0, flipped=false;
-function startStudy(){ queue=words.filter(isDue).sort((a,b)=>(a.due||0)-(b.due||0)); qi=0; flipped=false; renderStudy(); }
+function startStudy(all){ queue=(all?words.slice():words.filter(isDue)).sort((a,b)=>(a.due||0)-(b.due||0)); qi=0; flipped=false; renderStudy(); }
 function renderStudy(){
   const body=document.getElementById('study-body');
-  if(!queue.length){ body.innerHTML=`<div class="empty"><div class="big">Немає карток на повтор 🎉</div>${words.length?'Усе повторено на сьогодні.':'Спершу додай слова.'}</div>`; return; }
+  if(!queue.length){ body.innerHTML=`<div class="empty"><div class="big">Немає карток на повтор 🎉</div>${words.length?'Усе повторено на сьогодні.':'Спершу додай слова.'}</div>${words.length?`<div class="center" style="margin-top:16px"><button class="btn btn-primary" onclick="startStudy(true)">Повторити всі слова (${words.length})</button></div>`:''}`; return; }
   if(qi>=queue.length){ body.innerHTML=`<div class="empty"><div class="big">Сесію завершено</div>Пройдено: ${queue.length}.</div><div class="center"><button class="btn btn-ghost" onclick="startStudy()">Ще раз</button></div>`; refreshStats(); return; }
   const w=queue[qi], nat=deckNatives();
   const front=`<div class="fw">${esc(w.word)}</div>${w.ipa?`<div class="fipa">${esc(w.ipa)}</div>`:''}<div style="margin-top:12px">${speakBtn(w.word)}</div><div class="flip-hint">натисни, щоб побачити переклад</div>`;
