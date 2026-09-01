@@ -87,6 +87,18 @@ module.exports = async function handler(req, res) {
     if (hash) { topic = hash[1]; word = text.replace(/#\S+/, '').trim(); }
     if (!word) { res.status(200).send('ok'); return; }
 
+    // Дедуплікація (як на сайті): один легкий запит по полю word.
+    // Перевіряємо ДО AI — дубль не витрачає ні запит, ні ліміт.
+    let existing = new Set();
+    try {
+      const wsnap = await db.collection('decks').doc(uid).collection('words').select('word').get();
+      existing = new Set(wsnap.docs.map(s => String((s.data().word) || '').trim().toLowerCase()).filter(Boolean));
+    } catch (e) { console.error('dedupe fetch failed', e); }
+    if (existing.has(word.trim().toLowerCase())) {
+      await tg('sendMessage', { chat_id: chatId, text: `📚 «${word}» вже є у твоєму словнику — не додаю повторно.` });
+      res.status(200).send('ok'); return;
+    }
+
     const usnap = await db.collection('users').doc(uid).get();
     const u = usnap.exists ? usnap.data() : {};
     if (u.plan !== 'pro' && (u.wordCount || 0) >= FREE_LIMIT) {
@@ -97,6 +109,13 @@ module.exports = async function handler(req, res) {
     let d;
     try { d = await enrichWord(word, topic); }
     catch (e) { d = { word, ipa: '', pos: '', pos_group: 'other', translation_uk: '', translation_hu: '', definition: '', example: '' }; }
+
+    // Дубль після лематизації AI (напр. надіслали «running», а в деку вже «run»).
+    // Ловимо ДО списання ліміту.
+    if (existing.has(String(d.word || word).trim().toLowerCase())) {
+      await tg('sendMessage', { chat_id: chatId, text: `📚 «${d.word || word}» вже є у твоєму словнику — не додаю повторно.` });
+      res.status(200).send('ok'); return;
+    }
 
     const entry = {
       word: d.word || word, topic, ipa: d.ipa || '', pos: d.pos || '',
