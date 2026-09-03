@@ -324,9 +324,10 @@
 
   /* i18n language switch */
   .land-top{display:flex;justify-content:flex-end;padding:14px 0 0}
-  .lang-switch{display:inline-flex;gap:2px;background:var(--line-2);border:1px solid var(--line);border-radius:9px;padding:2px}
-  .lang-switch button{border:none;background:none;font-family:inherit;font-size:12px;font-weight:600;color:var(--faint);padding:4px 9px;border-radius:7px;cursor:pointer;line-height:1.4}
+  .lang-switch{display:inline-flex;gap:2px;flex-shrink:0;background:var(--line-2);border:1px solid var(--line);border-radius:9px;padding:2px}
+  .lang-switch button{border:none;background:none;font-family:inherit;font-size:12px;font-weight:600;color:var(--faint);padding:5px 10px;border-radius:7px;cursor:pointer;line-height:1.4}
   .lang-switch button.on{background:var(--panel);color:var(--accent);box-shadow:0 1px 2px rgba(22,27,51,.06)}
+  @media (max-width:640px){ .land-top{padding:10px 0 0} .lang-switch button{padding:7px 12px;font-size:13px} }
 </style>
 </head>
 <body>
@@ -723,9 +724,11 @@ function applyI18n(root){
   document.title=t('doc.title');
 }
 function initUiLang(){
+  // Дефолт — українська (основна аудиторія). НЕ вгадуємо мову з браузера/ОС:
+  // україномовний користувач з англійським телефоном має бачити UA за замовчуванням.
+  // Мова змінюється лише за явним вибором (localStorage) або збереженим профілем.
   let saved=null; try{ saved=localStorage.getItem(UILANG_KEY); }catch(e){}
   if(saved&&I18N[saved]){ uiLang=saved; uiLangExplicit=true; }
-  else { const n=(navigator.language||'').slice(0,2); if(I18N[n]) uiLang=n; }
 }
 /* Re-render whatever is on screen so dynamic (JS) strings pick up the new language.
    Safe to call before later steps migrate those strings. */
