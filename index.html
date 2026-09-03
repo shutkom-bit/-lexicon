@@ -282,6 +282,7 @@
   @media (max-width:640px){
     .wrap{padding:20px 16px 80px}
     header{gap:10px}
+    .usermenu{flex-wrap:wrap;justify-content:flex-end;gap:8px 10px}
     .brand h1{font-size:26px}
     /* stats spread evenly across full width, each centered */
     .statbar{justify-content:space-between;gap:8px}
@@ -404,19 +405,19 @@
 <!-- APP -->
 <div id="app"><div class="wrap">
   <header>
-    <div class="brand"><span class="dot"></span><h1>Lexicon</h1><small>тренажер словника</small></div>
+    <div class="brand"><span class="dot"></span><h1>Lexicon</h1><small data-i18n="app.tagline">тренажер словника</small></div>
     <div class="usermenu">
       <div class="lang-switch" id="lang-switch-app"></div>
       <span class="plan-chip" id="plan-chip">Free</span>
       <div class="uchip"><img id="u-avatar" alt=""><span class="uname" id="u-name"></span></div>
-      <button class="signout" id="signout-btn">вийти</button>
+      <button class="signout" id="signout-btn" data-i18n="app.signout">вийти</button>
     </div>
   </header>
 
   <div class="deckbar">
     <button class="deck-switch" id="deck-switch" aria-haspopup="true" aria-expanded="false">
       <svg class="deck-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-      <span class="deck-name" id="deck-name">Мій словник</span>
+      <span class="deck-name" id="deck-name" data-i18n="deck.default_name">Мій словник</span>
       <span class="deck-pair" id="deck-pair"></span>
       <svg class="deck-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
     </button>
@@ -424,32 +425,32 @@
   </div>
 
   <div class="statbar">
-    <div class="stat"><b id="s-total">·</b><span>слів</span></div>
-    <div class="stat due"><b id="s-due">·</b><span>на повтор</span></div>
-    <div class="stat learned"><b id="s-mastered">·</b><span>засвоєно</span></div>
+    <div class="stat"><b id="s-total">·</b><span data-i18n="stats.words">слів</span></div>
+    <div class="stat due"><b id="s-due">·</b><span data-i18n="stats.due">на повтор</span></div>
+    <div class="stat learned"><b id="s-mastered">·</b><span data-i18n="stats.mastered">засвоєно</span></div>
   </div>
 
   <nav>
-    <button data-tab="add" class="on"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span><span class="tl">Додати</span></button>
-    <button data-tab="dict"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span><span class="tl">Словник</span> <span class="badge" id="b-dict">0</span></button>
-    <button data-tab="study" class="due-hl"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span><span class="tl">Тренування</span> <span class="badge" id="b-study">0</span></button>
-    <button data-tab="quiz"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span><span class="tl">Тест</span></button>
-    <button data-tab="game"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span><span class="tl">Гра</span></button>
-    <button data-tab="progress"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span><span class="tl">Прогрес</span></button>
+    <button data-tab="add" class="on"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span><span class="tl" data-i18n="nav.add">Додати</span></button>
+    <button data-tab="dict"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span><span class="tl" data-i18n="nav.dict">Словник</span> <span class="badge" id="b-dict">0</span></button>
+    <button data-tab="study" class="due-hl"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span><span class="tl" data-i18n="nav.study">Тренування</span> <span class="badge" id="b-study">0</span></button>
+    <button data-tab="quiz"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span><span class="tl" data-i18n="nav.quiz">Тест</span></button>
+    <button data-tab="game"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span><span class="tl" data-i18n="nav.game">Гра</span></button>
+    <button data-tab="progress"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span><span class="tl" data-i18n="nav.progress">Прогрес</span></button>
   </nav>
 
   <section class="panel on" id="p-add">
     <div class="card addbox">
       <div class="row">
-        <input type="text" id="w-word" placeholder="Англійське слово або фраза…" autocomplete="off">
-        <input type="text" id="w-topic" placeholder="Тема (необовʼязково)" autocomplete="off">
-        <button class="btn btn-primary" id="add-btn">Додати</button>
+        <input type="text" id="w-word" placeholder="Англійське слово або фраза…" data-i18n-ph="add.word_ph" autocomplete="off">
+        <input type="text" id="w-topic" placeholder="Тема (необовʼязково)" data-i18n-ph="add.topic_ph" autocomplete="off">
+        <button class="btn btn-primary" id="add-btn" data-i18n="add.btn">Додати</button>
       </div>
-      <div class="hint">AI визначить частину мови, <b>тему</b> й допише переклад українською та угорською, транскрипцію, значення й приклад. Тему можна лишити порожньою.</div>
+      <div class="hint" data-i18n-html="add.hint">AI визначить частину мови, <b>тему</b> й допише переклад українською та угорською, транскрипцію, значення й приклад. Тему можна лишити порожньою.</div>
       <div class="limit-meter" id="limit-meter"></div>
       <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--line-2)">
-        <button class="btn btn-ghost" id="tg-btn" style="font-size:13px;padding:9px 14px">🔗 Підключити Telegram</button>
-        <span class="hint" style="margin-top:0;margin-left:10px">Додавай слова прямо з месенджера.</span>
+        <button class="btn btn-ghost" id="tg-btn" style="font-size:13px;padding:9px 14px" data-i18n="add.connect_tg">🔗 Підключити Telegram</button>
+        <span class="hint" style="margin-top:0;margin-left:10px" data-i18n="add.connect_tg_hint">Додавай слова прямо з месенджера.</span>
       </div>
       <div class="preview" id="preview"></div>
     </div>
@@ -457,13 +458,13 @@
     <div class="card tg-card">
       <div class="tg-head">
         <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8l-1.57 7.4c-.12.53-.43.66-.87.41l-2.4-1.77-1.16 1.11c-.13.13-.24.24-.48.24l.17-2.43 4.42-3.99c.19-.17-.04-.27-.3-.1L8.4 13.06l-2.36-.74c-.51-.16-.52-.51.11-.76l9.22-3.56c.43-.16.8.1.66.8z"/></svg>
-        Підключити Telegram-бота
+        <span data-i18n="tg.head">Підключити Telegram-бота</span>
       </div>
-      <p>Додавай слова прямо з месенджера — бот запише їх у твій основний набір («Мій словник»).</p>
-      <div id="tg-body"><div class="center" style="margin-top:12px"><button class="btn btn-ghost" id="tg-gen">Отримати код підключення</button></div></div>
+      <p data-i18n="tg.desc">Додавай слова прямо з месенджера — бот запише їх у твій основний набір («Мій словник»).</p>
+      <div id="tg-body"><div class="center" style="margin-top:12px"><button class="btn btn-ghost" id="tg-gen" data-i18n="tg.get_code">Отримати код підключення</button></div></div>
     </div>
 
-    <div class="conn" id="conn"><span class="d"></span><span id="conn-t">Підключення…</span></div>
+    <div class="conn" id="conn"><span class="d"></span><span id="conn-t" data-i18n="sync.connecting">Підключення…</span></div>
   </section>
 
   <section class="panel" id="p-dict">
@@ -668,7 +669,55 @@ const I18N={
   "land.cta_free": "Почати безкоштовно з Google",
   "land.cta_login": "Увійти через Google",
   "land.foot_bot": "Telegram-бот",
-  "doc.title": "Lexicon — тренажер словника"
+  "doc.title": "Lexicon — тренажер словника",
+  "app.tagline": "тренажер словника",
+  "app.signout": "вийти",
+  "deck.default_name": "Мій словник",
+  "stats.words": "слів",
+  "stats.due": "на повтор",
+  "stats.mastered": "засвоєно",
+  "nav.add": "Додати",
+  "nav.dict": "Словник",
+  "nav.study": "Тренування",
+  "nav.quiz": "Тест",
+  "nav.game": "Гра",
+  "nav.progress": "Прогрес",
+  "add.btn": "Додати",
+  "add.hint": "AI визначить частину мови, <b>тему</b> й допише переклад українською та угорською, транскрипцію, значення й приклад. Тему можна лишити порожньою.",
+  "add.connect_tg": "🔗 Підключити Telegram",
+  "add.connect_tg_hint": "Додавай слова прямо з месенджера.",
+  "tg.desc": "Додавай слова прямо з месенджера — бот запише їх у твій основний набір («Мій словник»).",
+  "tg.get_code": "Отримати код підключення",
+  "sync.connecting": "Підключення…",
+  "add.word_ph": "Англійське слово або фраза…",
+  "add.topic_ph": "Тема (необовʼязково)",
+  "tg.head": "Підключити Telegram-бота",
+  "add.limit_pro": "План Pro — без обмежень.",
+  "add.limit_free": "Free · додано {c} / {limit} слів (назавжди)",
+  "add.processing": "Обробляю…",
+  "add.ai_unavailable": "AI недоступний — додано без деталей",
+  "add.dup_toast": "Слово вже є в наборі",
+  "add.dup_here": "Це слово вже є в цьому наборі.",
+  "add.dup_as": "Це слово вже є в наборі (як «{w}»).",
+  "add.save_failed": "Не вдалось записати",
+  "add.added_next": "Додано. Введи наступне слово.",
+  "deck.new": "Новий набір",
+  "deck.catalog": "Готові набори",
+  "deck.share": "Поділитися набором",
+  "deck.join": "Приєднатися за кодом",
+  "deck.untitled": "Без назви",
+  "deck.created": "Набір «{name}» створено",
+  "deck.create_failed": "Не вдалось створити набір",
+  "deck.cant_delete_default": "Основний набір видалити не можна",
+  "deck.delete_confirm": "Видалити набір «{name}» разом з усіма його словами? Дію не можна скасувати.",
+  "deck.deleted": "Набір видалено",
+  "deck.delete_failed": "Не вдалось видалити набір",
+  "sync.ok": "Синхронізовано · слів: {n}",
+  "sync.err_decks": "Немає доступу до наборів — перевір правила Firestore",
+  "sync.err_db": "Немає доступу до бази — перевір правила Firestore",
+  "tg.steps": "Натисни кнопку — відкриється бот, тисни <b>Start</b>, і підключення завершиться саме.<br>Якщо бот не відкрився, надішли йому вручну: <code>/link {code}</code>",
+  "tg.open_bot": "Відкрити бота та підключити",
+  "tg.code_failed": "Не вдалось створити код підключення"
  },
  "en": {
   "doc.title": "Lexicon — vocabulary trainer",
@@ -699,7 +748,55 @@ const I18N={
   "land.foot_how": "How it works",
   "nav.privacy": "Privacy",
   "nav.terms": "Terms",
-  "land.foot_bot": "Telegram bot"
+  "land.foot_bot": "Telegram bot",
+  "app.tagline": "vocabulary trainer",
+  "app.signout": "sign out",
+  "deck.default_name": "My dictionary",
+  "stats.words": "words",
+  "stats.due": "to review",
+  "stats.mastered": "mastered",
+  "nav.add": "Add",
+  "nav.dict": "Dictionary",
+  "nav.study": "Study",
+  "nav.quiz": "Quiz",
+  "nav.game": "Game",
+  "nav.progress": "Progress",
+  "add.btn": "Add",
+  "add.hint": "AI will detect the part of speech, the <b>topic</b> and add the translation into Ukrainian and Hungarian, the transcription, meaning and an example. You can leave the topic empty.",
+  "add.connect_tg": "🔗 Connect Telegram",
+  "add.connect_tg_hint": "Add words straight from the messenger.",
+  "tg.desc": "Add words straight from the messenger — the bot saves them to your main set (“My dictionary”).",
+  "tg.get_code": "Get a connection code",
+  "sync.connecting": "Connecting…",
+  "add.word_ph": "English word or phrase…",
+  "add.topic_ph": "Topic (optional)",
+  "tg.head": "Connect the Telegram bot",
+  "add.limit_pro": "Pro plan — no limits.",
+  "add.limit_free": "Free · added {c} / {limit} words (forever)",
+  "add.processing": "Processing…",
+  "add.ai_unavailable": "AI unavailable — added without details",
+  "add.dup_toast": "Word already in the set",
+  "add.dup_here": "This word is already in this set.",
+  "add.dup_as": "This word is already in the set (as “{w}”).",
+  "add.save_failed": "Couldn’t save",
+  "add.added_next": "Added. Type the next word.",
+  "deck.new": "New set",
+  "deck.catalog": "Ready-made sets",
+  "deck.share": "Share a set",
+  "deck.join": "Join by code",
+  "deck.untitled": "Untitled",
+  "deck.created": "Set “{name}” created",
+  "deck.create_failed": "Couldn’t create the set",
+  "deck.cant_delete_default": "The main set can’t be deleted",
+  "deck.delete_confirm": "Delete the set “{name}” with all its words? This can’t be undone.",
+  "deck.deleted": "Set deleted",
+  "deck.delete_failed": "Couldn’t delete the set",
+  "sync.ok": "Synced · words: {n}",
+  "sync.err_decks": "No access to sets — check Firestore rules",
+  "sync.err_db": "No access to the database — check Firestore rules",
+  "tg.steps": "Tap the button — the bot opens, press <b>Start</b>, and the connection completes itself.<br>If the bot didn’t open, send it manually: <code>/link {code}</code>",
+  "tg.open_bot": "Open the bot and connect",
+  "tg.code_failed": "Couldn’t create a connection code"
  }
 };
 
@@ -931,7 +1028,7 @@ function startSync(){
       if(target!==activeDeckId){ activeDeckId=target; subscribeWords(); }
       else if(!unsubWords){ subscribeWords(); }
     },
-    err=>{ console.error(err); setConn('err','Немає доступу до наборів — перевір правила Firestore'); }
+    err=>{ console.error(err); setConn('err',t('sync.err_decks')); }
   );
 }
 
@@ -951,10 +1048,10 @@ function subscribeWords(){
     snap=>{
       words=snap.docs.map(d=>({id:d.id,...d.data()}));
       words.sort((a,b)=>(b.created||0)-(a.created||0)); // uniform newest-first (no composite index needed)
-      setConn('ok','Синхронізовано · слів: '+words.length);
+      setConn('ok',t('sync.ok',{n:words.length}));
       refreshStats(); if(activeTab==='dict') renderDict(); if(activeTab==='progress') renderProgress();
     },
-    err=>{ console.error(err); setConn('err','Немає доступу до бази — перевір правила Firestore'); }
+    err=>{ console.error(err); setConn('err',t('sync.err_db')); }
   );
 }
 
@@ -969,10 +1066,11 @@ function setActiveDeck(id){
 }
 
 /* ── DECK SWITCHER ── */
+function deckDisplayName(d){ if(!d) return t('deck.default_name'); if(d.isDefault||d.id===(user&&user.uid)) return t('deck.default_name'); return d.name||t('deck.untitled'); }
 function renderDeckSwitcher(){
   const active=decks.find(d=>d.id===activeDeckId);
   const nameEl=document.getElementById('deck-name');
-  if(nameEl) nameEl.textContent=(active&&active.name)||'Мій словник';
+  if(nameEl) nameEl.textContent=active?deckDisplayName(active):t('deck.default_name');
   const pairEl=document.getElementById('deck-pair');
   if(pairEl) pairEl.textContent=active?deckPairLabel(active):'';
   const menu=document.getElementById('deck-menu');
@@ -983,7 +1081,7 @@ function renderDeckSwitcher(){
     return `<div class="deck-row">
       <button class="deck-item ${d.id===activeDeckId?'active':''}" data-deck="${esc(d.id)}">
         <svg class="di-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-        <span class="di-name">${esc(d.name||'Без назви')}</span>
+        <span class="di-name">${esc(deckDisplayName(d))}</span>
         <span class="di-pair">${deckPairLabel(d)}</span>
       </button>${del}
     </div>`;
@@ -991,19 +1089,19 @@ function renderDeckSwitcher(){
   menu.innerHTML=rows+`<div class="deck-sep"></div>
     <button class="deck-item new" data-deck-new="1">
       <svg class="di-check" style="opacity:1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      <span class="di-name">Новий набір</span>
+      <span class="di-name">${t('deck.new')}</span>
     </button>
     <button class="deck-item cat" data-catalog="1">
       <span class="di-cat-emoji">📚</span>
-      <span class="di-name">Готові набори</span>
+      <span class="di-name">${t('deck.catalog')}</span>
     </button>
     <button class="deck-item cat" data-deck-share="1">
       <span class="di-cat-emoji">🔗</span>
-      <span class="di-name">Поділитися набором</span>
+      <span class="di-name">${t('deck.share')}</span>
     </button>
     <button class="deck-item cat" data-deck-join="1">
       <span class="di-cat-emoji">🔑</span>
-      <span class="di-name">Приєднатися за кодом</span>
+      <span class="di-name">${t('deck.join')}</span>
     </button>`;
 }
 
@@ -1028,16 +1126,16 @@ async function createDeck(name,langs){
     });
     // onSnapshot(decks) will pick it up; switch to it right away
     activeDeckId=ref.id; subscribeWords(); renderDeckSwitcher();
-    toast('Набір «'+clean+'» створено');
+    toast(t('deck.created',{name:clean}));
     tab('add');
-  }catch(e){ console.error(e); toast('Не вдалось створити набір'); }
+  }catch(e){ console.error(e); toast(t('deck.create_failed')); }
 }
 
 async function deleteDeck(id){
   const d=decks.find(x=>x.id===id);
   if(!d) return;
-  if(d.isDefault || id===user.uid){ toast('Основний набір видалити не можна'); return; }
-  if(!confirm(`Видалити набір «${d.name||'Без назви'}» разом з усіма його словами? Дію не можна скасувати.`)) return;
+  if(d.isDefault || id===user.uid){ toast(t('deck.cant_delete_default')); return; }
+  if(!confirm(t('deck.delete_confirm',{name:d.name||t('deck.untitled')}))) return;
   toggleDeckMenu(false);
   try{
     // if we're viewing the deck being deleted, switch to the default first
@@ -1054,8 +1152,8 @@ async function deleteDeck(id){
     snap.forEach(s=>batch.delete(s.ref));
     batch.delete(doc(db,'decks',id));
     await batch.commit();
-    toast('Набір видалено');
-  }catch(e){ console.error(e); toast('Не вдалось видалити набір'); }
+    toast(t('deck.deleted'));
+  }catch(e){ console.error(e); toast(t('deck.delete_failed')); }
 }
 
 /* ── Ready-made catalog packs ── */
@@ -1094,7 +1192,7 @@ async function addPack(packId){
   if(btn){ btn.disabled=true; btn.textContent='Додаю…'; }
   try{
     const snap=await getDoc(doc(db,'catalog',packId));
-    if(!snap.exists()){ toast('Набір не знайдено'); if(btn){btn.disabled=false;btn.textContent='Додати';} return; }
+    if(!snap.exists()){ toast('Набір не знайдено'); if(btn){btn.disabled=false;btn.textContent=t('add.btn');} return; }
     const p=snap.data();
     const words=Array.isArray(p.words)?p.words:[];
     const deckRef=await addDoc(collection(db,'decks'),{
@@ -1119,7 +1217,7 @@ async function addPack(packId){
     activeDeckId=deckRef.id; subscribeWords(); renderDeckSwitcher();
     toast('Набір «'+(p.name||'набір')+'» додано');
     tab('dict');
-  }catch(e){ console.error(e); toast('Не вдалось додати набір'); if(btn){ btn.disabled=false; btn.textContent='Додати'; } }
+  }catch(e){ console.error(e); toast('Не вдалось додати набір'); if(btn){ btn.disabled=false; btn.textContent=t('add.btn'); } }
 }
 
 /* ── Share a deck (teacher → student, clone-on-join) ── */
@@ -1245,9 +1343,9 @@ function refreshPlanUI(){
   const pro=profile&&profile.plan==='pro';
   chip.textContent=pro?'Pro':'Free'; chip.classList.toggle('pro',pro);
   const m=document.getElementById('limit-meter');
-  if(pro){ m.innerHTML='<span>План Pro — без обмежень.</span>'; return; }
+  if(pro){ m.innerHTML='<span>'+t('add.limit_pro')+'</span>'; return; }
   const c=(profile&&profile.wordCount)||0, pct=Math.min(100,c/FREE_LIMIT*100);
-  m.innerHTML=`<span>Free · додано ${c} / ${FREE_LIMIT} слів (назавжди)</span><div class="bar"><i class="${pct>=80?'warn':''}" style="width:${pct}%"></i></div>`;
+  m.innerHTML=`<span>${t('add.limit_free',{c:c,limit:FREE_LIMIT})}</span><div class="bar"><i class="${pct>=80?'warn':''}" style="width:${pct}%"></i></div>`;
 }
 
 function refreshStats(){
@@ -1294,24 +1392,24 @@ async function doAdd(){
   const dupPre=findDuplicate(word);
   if(dupPre){
     const p=document.getElementById('preview'); p.className='preview show';
-    p.innerHTML=renderEntryInner({...dupPre,id:'preview'})+'<div class="hint" style="margin-top:12px">Це слово вже є в цьому наборі.</div>';
-    toast('Слово вже є в наборі'); wi.value=''; wi.focus(); return;
+    p.innerHTML=renderEntryInner({...dupPre,id:'preview'})+'<div class="hint" style="margin-top:12px">'+t('add.dup_here')+'</div>';
+    toast(t('add.dup_toast')); wi.value=''; wi.focus(); return;
   }
   const btn=document.getElementById('add-btn');
-  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Обробляю…';
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>'+t('add.processing');
   let d;
   try{ d=await enrich(word,topic); }
   catch(e){
-    if(e.limit){ btn.disabled=false; btn.textContent='Додати'; showPaywall(); return; }
-    d={word,ipa:'',pos:'',pos_group:'other',tr:{},definition:'',example:'',topic:topic||'General'}; toast('AI недоступний — додано без деталей');
+    if(e.limit){ btn.disabled=false; btn.textContent=t('add.btn'); showPaywall(); return; }
+    d={word,ipa:'',pos:'',pos_group:'other',tr:{},definition:'',example:'',topic:topic||'General'}; toast(t('add.ai_unavailable'));
   }
   // Дубль після лематизації AI (напр. ввели «running», а в наборі вже є «run»).
   // Важливо: тут ловимо ДО списання ліміту, щоб дубль не з'їдав слот із 50.
   const dupPost=findDuplicate(d.word||word);
   if(dupPost){
     const p=document.getElementById('preview'); p.className='preview show';
-    p.innerHTML=renderEntryInner({...dupPost,id:'preview'})+'<div class="hint" style="margin-top:12px">Це слово вже є в наборі (як «'+esc(dupPost.word||'')+'»).</div>';
-    toast('Слово вже є в наборі'); btn.disabled=false; btn.textContent='Додати'; wi.value=''; wi.focus(); return;
+    p.innerHTML=renderEntryInner({...dupPost,id:'preview'})+'<div class="hint" style="margin-top:12px">'+t('add.dup_as',{w:esc(dupPost.word||'')})+'</div>';
+    toast(t('add.dup_toast')); btn.disabled=false; btn.textContent=t('add.btn'); wi.value=''; wi.focus(); return;
   }
   const finalTopic=(d.topic&&d.topic.trim())||topic||'General';
   const entry={
@@ -1322,10 +1420,10 @@ async function doAdd(){
   try{
     await addDoc(collection(db,'decks',activeDeckId,'words'), entry);
     await updateDoc(doc(db,'users',user.uid), { wordCount: increment(1) });
-  }catch(e){ console.error(e); toast('Не вдалось записати'); btn.disabled=false; btn.textContent='Додати'; return; }
+  }catch(e){ console.error(e); toast(t('add.save_failed')); btn.disabled=false; btn.textContent=t('add.btn'); return; }
   const p=document.getElementById('preview'); p.className='preview show';
-  p.innerHTML=renderEntryInner({...entry,id:'preview'})+'<div class="hint" style="margin-top:12px">Додано. Введи наступне слово.</div>';
-  btn.disabled=false; btn.textContent='Додати';
+  p.innerHTML=renderEntryInner({...entry,id:'preview'})+'<div class="hint" style="margin-top:12px">'+t('add.added_next')+'</div>';
+  btn.disabled=false; btn.textContent=t('add.btn');
   wi.value=''; ti.value=topic; wi.focus();
 }
 
@@ -1597,9 +1695,9 @@ document.getElementById('tg-gen').onclick=async()=>{
     await setDoc(doc(db,'linkCodes',code),{uid:user.uid,createdAt:Date.now()});
     document.getElementById('tg-body').innerHTML=
       `<div class="tg-code">${code}</div>
-       <div class="tg-steps">Натисни кнопку — відкриється бот, тисни <b>Start</b>, і підключення завершиться саме.<br>Якщо бот не відкрився, надішли йому вручну: <code>/link ${code}</code></div>
-       <div class="center" style="margin-top:12px"><a class="btn btn-primary" href="https://t.me/${BOT_USERNAME}?start=${code}" target="_blank" rel="noopener">Відкрити бота та підключити</a></div>`;
-  }catch(e){ console.error(e); toast('Не вдалось створити код підключення'); }
+       <div class="tg-steps">${t('tg.steps',{code:code})}</div>
+       <div class="center" style="margin-top:12px"><a class="btn btn-primary" href="https://t.me/${BOT_USERNAME}?start=${code}" target="_blank" rel="noopener">${t('tg.open_bot')}</a></div>`;
+  }catch(e){ console.error(e); toast(t('tg.code_failed')); }
 };
 
 /* ── Deck switcher wiring ── */
