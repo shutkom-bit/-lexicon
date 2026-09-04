@@ -497,19 +497,19 @@
 <!-- NEW DECK -->
 <div class="modal-bg" id="deck-modal">
   <div class="modal" style="max-width:400px">
-    <h2>Новий набір</h2>
-    <p>Окремий словник зі своєю мовною парою.</p>
-    <input type="text" id="deck-name-input" placeholder="Назва (напр. «Робота»)" autocomplete="off" maxlength="40" style="width:100%;margin-top:14px">
+    <h2 data-i18n="deck.new">Новий набір</h2>
+    <p data-i18n="deckm.sub">Окремий словник зі своєю мовною парою.</p>
+    <input type="text" id="deck-name-input" placeholder="Назва (напр. «Робота»)" data-i18n-ph="deckm.name_ph" autocomplete="off" maxlength="40" style="width:100%;margin-top:14px">
     <div class="deck-lang-row">
-      <div class="dl-field"><div class="dl-lbl">Вивчаю</div><select id="deck-target"></select></div>
+      <div class="dl-field"><div class="dl-lbl" data-i18n="deckm.learn">Вивчаю</div><select id="deck-target"></select></div>
       <span class="dl-arrow">→</span>
-      <div class="dl-field"><div class="dl-lbl">Переклад</div><select id="deck-native"></select></div>
+      <div class="dl-field"><div class="dl-lbl" data-i18n="deckm.translation">Переклад</div><select id="deck-native"></select></div>
     </div>
-    <label class="deck-n2-toggle"><input type="checkbox" id="deck-native2-on"> Додати другу мову перекладу</label>
-    <div class="dl-field" id="deck-native2-wrap" style="display:none;margin-top:10px"><div class="dl-lbl">Друга мова перекладу</div><select id="deck-native2"></select></div>
+    <label class="deck-n2-toggle"><input type="checkbox" id="deck-native2-on"> <span data-i18n="deckm.add_second">Додати другу мову перекладу</span></label>
+    <div class="dl-field" id="deck-native2-wrap" style="display:none;margin-top:10px"><div class="dl-lbl" data-i18n="deckm.second_lang">Друга мова перекладу</div><select id="deck-native2"></select></div>
     <div style="display:flex;gap:10px;margin-top:22px">
-      <button class="btn btn-ghost" id="deck-cancel" style="flex:1">Скасувати</button>
-      <button class="btn btn-primary" id="deck-create" style="flex:1">Створити</button>
+      <button class="btn btn-ghost" id="deck-cancel" style="flex:1" data-i18n="common.cancel">Скасувати</button>
+      <button class="btn btn-primary" id="deck-create" style="flex:1" data-i18n="deckm.create">Створити</button>
     </div>
   </div>
 </div>
@@ -517,11 +517,11 @@
 <!-- CATALOG (ready-made packs) -->
 <div class="modal-bg" id="catalog-modal">
   <div class="modal" style="max-width:440px">
-    <h2>📚 Готові набори</h2>
-    <p>Готові словнички — додай одним тапом. Слова з них не рахуються в ліміт.</p>
-    <div id="catalog-list" class="cat-list"><div class="cat-loading">Завантаження…</div></div>
+    <h2 data-i18n="catalog.title">📚 Готові набори</h2>
+    <p data-i18n="catalog.sub">Готові словнички — додай одним тапом. Слова з них не рахуються в ліміт.</p>
+    <div id="catalog-list" class="cat-list"><div class="cat-loading" data-i18n="catalog.loading">Завантаження…</div></div>
     <div style="display:flex;margin-top:18px">
-      <button class="btn btn-ghost" id="catalog-close" style="flex:1">Закрити</button>
+      <button class="btn btn-ghost" id="catalog-close" style="flex:1" data-i18n="common.close">Закрити</button>
     </div>
   </div>
 </div>
@@ -529,12 +529,12 @@
 <!-- SHARE DECK (teacher → student) -->
 <div class="modal-bg" id="share-modal">
   <div class="modal" style="max-width:440px">
-    <h2>🔗 Поділитися набором</h2>
-    <p id="share-sub">Дай цей код учням — вони введуть його й отримають копію набору собі.</p>
+    <h2 data-i18n="share.title">🔗 Поділитися набором</h2>
+    <p id="share-sub" data-i18n="share.sub">Дай цей код учням — вони введуть його й отримають копію набору собі.</p>
     <div class="tg-code" id="share-code">——————</div>
     <div style="display:flex;gap:8px;margin-top:16px">
-      <button class="btn btn-primary" id="share-copy" style="flex:1">Скопіювати код</button>
-      <button class="btn btn-ghost" id="share-close" style="flex:1">Закрити</button>
+      <button class="btn btn-primary" id="share-copy" style="flex:1" data-i18n="share.copy">Скопіювати код</button>
+      <button class="btn btn-ghost" id="share-close" style="flex:1" data-i18n="common.close">Закрити</button>
     </div>
   </div>
 </div>
@@ -542,12 +542,12 @@
 <!-- JOIN BY CODE (student) -->
 <div class="modal-bg" id="join-modal">
   <div class="modal" style="max-width:440px">
-    <h2>🔑 Приєднатися за кодом</h2>
-    <p>Введи код набору, який дав тобі вчитель. Набір скопіюється до твоїх — безкоштовно, не рахується в ліміт.</p>
-    <input type="text" id="join-code" placeholder="Напр. A3F9K2" autocomplete="off" maxlength="8" style="width:100%;margin-top:14px;text-transform:uppercase;letter-spacing:3px;font-weight:700;text-align:center">
+    <h2 data-i18n="join.title">🔑 Приєднатися за кодом</h2>
+    <p data-i18n="join.sub">Введи код набору, який дав тобі вчитель. Набір скопіюється до твоїх — безкоштовно, не рахується в ліміт.</p>
+    <input type="text" id="join-code" placeholder="Напр. A3F9K2" data-i18n-ph="join.code_ph" autocomplete="off" maxlength="8" style="width:100%;margin-top:14px;text-transform:uppercase;letter-spacing:3px;font-weight:700;text-align:center">
     <div style="display:flex;gap:8px;margin-top:16px">
-      <button class="btn btn-primary" id="join-go" style="flex:1">Приєднатися</button>
-      <button class="btn btn-ghost" id="join-cancel" style="flex:1">Скасувати</button>
+      <button class="btn btn-primary" id="join-go" style="flex:1" data-i18n="join.go">Приєднатися</button>
+      <button class="btn btn-ghost" id="join-cancel" style="flex:1" data-i18n="common.cancel">Скасувати</button>
     </div>
   </div>
 </div>
@@ -555,45 +555,46 @@
 <!-- ABOUT -->
 <div class="modal-bg" id="about-modal">
   <div class="modal" style="max-width:460px">
-    <h2>Про Lexicon</h2>
-    <p><b>Lexicon</b> — застосунок для вивчення слів. Додаєш слово → ШІ дає переклад, транскрипцію й приклад; тренуєш інтервальними повтореннями, тестом і грою на швидкість.</p>
-    <p>Слова групуються в набори під різні мовні пари. Є готові стартові набори, спільні набори за кодом (для вчителів та учнів), Telegram-бот і озвучка.</p>
+    <h2 data-i18n="about.title">Про Lexicon</h2>
+    <p data-i18n-html="about.p1"><b>Lexicon</b> — застосунок для вивчення слів. Додаєш слово → ШІ дає переклад, транскрипцію й приклад; тренуєш інтервальними повтореннями, тестом і грою на швидкість.</p>
+    <p data-i18n="about.p2">Слова групуються в набори під різні мовні пари. Є готові стартові набори, спільні набори за кодом (для вчителів та учнів), Telegram-бот і озвучка.</p>
     <div style="display:flex;gap:16px;margin-top:14px">
-      <a href="/privacy.html" target="_blank" rel="noopener">Приватність</a>
-      <a href="/terms.html" target="_blank" rel="noopener">Умови</a>
+      <a href="/privacy.html" target="_blank" rel="noopener" data-i18n="nav.privacy">Приватність</a>
+      <a href="/terms.html" target="_blank" rel="noopener" data-i18n="nav.terms">Умови</a>
     </div>
-    <button class="btn btn-ghost" id="about-close" style="width:100%;margin-top:18px">Закрити</button>
+    <p style="margin-top:14px;font-size:14px"><span data-i18n="about.social_lead">Ми в соцмережах:</span> <a href="https://instagram.com/lexiconstudy" target="_blank" rel="noopener">Instagram</a> · <a href="https://www.threads.net/@lexiconstudy" target="_blank" rel="noopener">Threads</a></p>
+    <button class="btn btn-ghost" id="about-close" style="width:100%;margin-top:18px" data-i18n="common.close">Закрити</button>
   </div>
 </div>
 
 <!-- CONSENT (first login) -->
 <div class="modal-bg" id="consent-modal">
   <div class="modal" style="max-width:440px">
-    <h2>Ласкаво просимо 👋</h2>
-    <p>Перш ніж почати: користуючись Lexicon, ти погоджуєшся з <a href="/privacy.html" target="_blank" rel="noopener">Політикою приватності</a> та <a href="/terms.html" target="_blank" rel="noopener">Умовами користування</a>.</p>
-    <p style="color:var(--ink-soft);font-size:14px">Коротко: слова, які ти додаєш, надсилаються ШІ-сервісу (DeepSeek) для перекладу. Не вводь чутливих особистих даних.</p>
+    <h2 data-i18n="consent.title">Ласкаво просимо 👋</h2>
+    <p data-i18n-html="consent.p1">Перш ніж почати: користуючись Lexicon, ти погоджуєшся з <a href="/privacy.html" target="_blank" rel="noopener">Політикою приватності</a> та <a href="/terms.html" target="_blank" rel="noopener">Умовами користування</a>.</p>
+    <p style="color:var(--ink-soft);font-size:14px" data-i18n="consent.p2">Коротко: слова, які ти додаєш, надсилаються ШІ-сервісу (DeepSeek) для перекладу. Не вводь чутливих особистих даних.</p>
     <label style="display:flex;gap:10px;align-items:flex-start;margin:14px 0;cursor:pointer">
       <input type="checkbox" id="consent-check" style="margin-top:4px;flex:none">
-      <span>Я прочитав(ла) і приймаю Політику приватності та Умови.</span>
+      <span data-i18n="consent.check_label">Я прочитав(ла) і приймаю Політику приватності та Умови.</span>
     </label>
-    <button class="btn btn-primary" id="consent-accept" style="width:100%" disabled>Погоджуюсь і продовжити</button>
+    <button class="btn btn-primary" id="consent-accept" style="width:100%" disabled data-i18n="consent.accept">Погоджуюсь і продовжити</button>
   </div>
 </div>
 
 <!-- PAYWALL -->
 <div class="modal-bg" id="paywall">
   <div class="modal">
-    <h2>Ліміт вичерпано</h2>
-    <p>Безкоштовно можна додати <b id="pw-limit">50</b> слів — назавжди. Ти вже їх додав.<br><span style="font-size:13px;color:var(--faint)">Видаляти слова можна скільки завгодно, але ліміт рахує всі колись додані слова.</span></p>
-    <div class="price">€12.99 <small>разово, назавжди</small></div>
+    <h2 data-i18n="pw.title">Ліміт вичерпано</h2>
+    <p data-i18n-html="pw.body">Безкоштовно можна додати <b id="pw-limit">50</b> слів — назавжди. Ти вже їх додав.<br><span style="font-size:13px;color:var(--faint)">Видаляти слова можна скільки завгодно, але ліміт рахує всі колись додані слова.</span></p>
+    <div class="price">€12.99 <small data-i18n="pw.once">разово, назавжди</small></div>
     <ul>
-      <li>Безлімітна кількість слів</li>
-      <li>Усі мови перекладу</li>
-      <li>Додавання через Telegram-бота</li>
-      <li>Повна аналітика прогресу</li>
+      <li data-i18n="pw.feat1">Безлімітна кількість слів</li>
+      <li data-i18n="pw.feat2">Усі мови перекладу</li>
+      <li data-i18n="pw.feat3">Додавання через Telegram-бота</li>
+      <li data-i18n="pw.feat4">Повна аналітика прогресу</li>
     </ul>
-    <button class="btn btn-primary" id="pw-buy" style="width:100%" disabled>Оформити Pro — скоро</button>
-    <button class="close" id="pw-close">Поки продовжу безкоштовно</button>
+    <button class="btn btn-primary" id="pw-buy" style="width:100%" disabled data-i18n="pw.buy">Оформити Pro — скоро</button>
+    <button class="close" id="pw-close" data-i18n="pw.dismiss">Поки продовжу безкоштовно</button>
   </div>
 </div>
 
@@ -769,7 +770,72 @@ const I18N={
   "progress.game_record": "рекорд гри",
   "progress.days.one": "день",
   "progress.days.few": "дні",
-  "progress.days.many": "днів"
+  "progress.days.many": "днів",
+  "deckm.sub": "Окремий словник зі своєю мовною парою.",
+  "deckm.name_ph": "Назва (напр. «Робота»)",
+  "deckm.learn": "Вивчаю",
+  "deckm.translation": "Переклад",
+  "deckm.second_lang": "Друга мова перекладу",
+  "common.cancel": "Скасувати",
+  "deckm.create": "Створити",
+  "catalog.title": "📚 Готові набори",
+  "catalog.sub": "Готові словнички — додай одним тапом. Слова з них не рахуються в ліміт.",
+  "catalog.loading": "Завантаження…",
+  "common.close": "Закрити",
+  "share.title": "🔗 Поділитися набором",
+  "share.sub": "Дай цей код учням — вони введуть його й отримають копію набору собі.",
+  "share.copy": "Скопіювати код",
+  "join.title": "🔑 Приєднатися за кодом",
+  "join.sub": "Введи код набору, який дав тобі вчитель. Набір скопіюється до твоїх — безкоштовно, не рахується в ліміт.",
+  "join.code_ph": "Напр. A3F9K2",
+  "join.go": "Приєднатися",
+  "about.title": "Про Lexicon",
+  "about.p1": "<b>Lexicon</b> — застосунок для вивчення слів. Додаєш слово → ШІ дає переклад, транскрипцію й приклад; тренуєш інтервальними повтореннями, тестом і грою на швидкість.",
+  "about.p2": "Слова групуються в набори під різні мовні пари. Є готові стартові набори, спільні набори за кодом (для вчителів та учнів), Telegram-бот і озвучка.",
+  "consent.title": "Ласкаво просимо 👋",
+  "consent.p1": "Перш ніж почати: користуючись Lexicon, ти погоджуєшся з <a href=\"/privacy.html\" target=\"_blank\" rel=\"noopener\">Політикою приватності</a> та <a href=\"/terms.html\" target=\"_blank\" rel=\"noopener\">Умовами користування</a>.",
+  "consent.p2": "Коротко: слова, які ти додаєш, надсилаються ШІ-сервісу (DeepSeek) для перекладу. Не вводь чутливих особистих даних.",
+  "consent.check_label": "Я прочитав(ла) і приймаю Політику приватності та Умови.",
+  "consent.accept": "Погоджуюсь і продовжити",
+  "pw.title": "Ліміт вичерпано",
+  "pw.body": "Безкоштовно можна додати <b id=\"pw-limit\">50</b> слів — назавжди. Ти вже їх додав.<br><span style=\"font-size:13px;color:var(--faint)\">Видаляти слова можна скільки завгодно, але ліміт рахує всі колись додані слова.</span>",
+  "pw.once": "разово, назавжди",
+  "pw.feat1": "Безлімітна кількість слів",
+  "pw.feat2": "Усі мови перекладу",
+  "pw.feat3": "Додавання через Telegram-бота",
+  "pw.feat4": "Повна аналітика прогресу",
+  "pw.buy": "Оформити Pro — скоро",
+  "pw.dismiss": "Поки продовжу безкоштовно",
+  "deckm.add_second": "Додати другу мову перекладу",
+  "about.social_lead": "Ми в соцмережах:",
+  "catalog.load_failed": "Не вдалось завантажити набори.",
+  "catalog.empty": "Поки що порожньо.",
+  "catalog.pack_words": "{cnt} слів",
+  "catalog.already_added": "вже додано",
+  "catalog.add_more": "Додати ще",
+  "catalog.adding": "Додаю…",
+  "catalog.not_found": "Набір не знайдено",
+  "catalog.added": "Набір «{name}» додано",
+  "catalog.add_failed": "Не вдалось додати набір",
+  "share.open_first": "Спершу відкрий набір",
+  "share.empty": "Набір порожній — нема чим ділитися",
+  "share.failed": "Не вдалось поділитися набором",
+  "share.published": "Набір «<b>{name}</b>» ({count} слів) {status}. Дай цей код учням — вони введуть його в «Приєднатися за кодом» і отримають копію собі.",
+  "share.status_new": "опубліковано",
+  "share.status_upd": "оновлено",
+  "share.copied": "Код скопійовано",
+  "share.copy_manual": "Скопіюй код вручну: {code}",
+  "join.enter_code": "Введи код",
+  "join.not_found": "Набір за цим кодом не знайдено",
+  "join.read_failed": "Читання коду не вдалось: {e}",
+  "join.own": "Це твій власний набір",
+  "join.empty_set": "У наборі немає слів",
+  "join.write_failed": "Запис набору не вдався: {e}",
+  "a11y.listen": "Прослухати",
+  "a11y.delete_set": "Видалити набір",
+  "speak.unsupported": "Озвучка не підтримується у цьому браузері",
+  "auth.signin_failed": "Не вдалось увійти: {e}",
+  "entry.delete_failed": "Не вдалось видалити"
  },
  "en": {
   "doc.title": "Lexicon — vocabulary trainer",
@@ -899,7 +965,72 @@ const I18N={
   "progress.total_words": "total words",
   "progress.game_record": "game record",
   "progress.days.one": "day",
-  "progress.days.other": "days"
+  "progress.days.other": "days",
+  "deckm.sub": "A separate dictionary with its own language pair.",
+  "deckm.name_ph": "Name (e.g. “Work”)",
+  "deckm.learn": "Learning",
+  "deckm.translation": "Translation",
+  "deckm.second_lang": "Second translation language",
+  "common.cancel": "Cancel",
+  "deckm.create": "Create",
+  "catalog.title": "📚 Ready-made sets",
+  "catalog.sub": "Ready-made dictionaries — add with one tap. Their words don’t count toward the limit.",
+  "catalog.loading": "Loading…",
+  "common.close": "Close",
+  "share.title": "🔗 Share a set",
+  "share.sub": "Give this code to your students — they enter it and get their own copy of the set.",
+  "share.copy": "Copy code",
+  "join.title": "🔑 Join by code",
+  "join.sub": "Enter the set code your teacher gave you. The set is copied to yours — free, doesn’t count toward the limit.",
+  "join.code_ph": "e.g. A3F9K2",
+  "join.go": "Join",
+  "about.title": "About Lexicon",
+  "about.p1": "<b>Lexicon</b> is a vocabulary-learning app. Add a word → AI gives the translation, transcription and an example; you train with spaced repetition, a quiz and a speed game.",
+  "about.p2": "Words are grouped into sets for different language pairs. There are ready-made starter sets, shared sets by code (for teachers and students), a Telegram bot and audio.",
+  "consent.title": "Welcome 👋",
+  "consent.p1": "Before you start: by using Lexicon you agree to the <a href=\"/privacy.html\" target=\"_blank\" rel=\"noopener\">Privacy Policy</a> and <a href=\"/terms.html\" target=\"_blank\" rel=\"noopener\">Terms of Use</a>.",
+  "consent.p2": "In short: the words you add are sent to an AI service (DeepSeek) for translation. Don’t enter sensitive personal data.",
+  "consent.check_label": "I have read and accept the Privacy Policy and Terms.",
+  "consent.accept": "Agree and continue",
+  "pw.title": "Limit reached",
+  "pw.body": "You can add <b id=\"pw-limit\">50</b> words for free — forever. You’ve already added them.<br><span style=\"font-size:13px;color:var(--faint)\">You can delete words freely, but the limit counts every word ever added.</span>",
+  "pw.once": "one-time, forever",
+  "pw.feat1": "Unlimited words",
+  "pw.feat2": "All translation languages",
+  "pw.feat3": "Adding via the Telegram bot",
+  "pw.feat4": "Full progress analytics",
+  "pw.buy": "Get Pro — soon",
+  "pw.dismiss": "Keep using the free plan for now",
+  "deckm.add_second": "Add a second translation language",
+  "about.social_lead": "Find us on:",
+  "catalog.load_failed": "Couldn’t load the sets.",
+  "catalog.empty": "Nothing here yet.",
+  "catalog.pack_words": "{cnt} words",
+  "catalog.already_added": "already added",
+  "catalog.add_more": "Add more",
+  "catalog.adding": "Adding…",
+  "catalog.not_found": "Set not found",
+  "catalog.added": "Set “{name}” added",
+  "catalog.add_failed": "Couldn’t add the set",
+  "share.open_first": "Open a set first",
+  "share.empty": "The set is empty — nothing to share",
+  "share.failed": "Couldn’t share the set",
+  "share.published": "Set “<b>{name}</b>” ({count} words) {status}. Give this code to your students — they enter it in “Join by code” and get their own copy.",
+  "share.status_new": "published",
+  "share.status_upd": "updated",
+  "share.copied": "Code copied",
+  "share.copy_manual": "Copy the code manually: {code}",
+  "join.enter_code": "Enter a code",
+  "join.not_found": "No set found for this code",
+  "join.read_failed": "Reading the code failed: {e}",
+  "join.own": "This is your own set",
+  "join.empty_set": "The set has no words",
+  "join.write_failed": "Saving the set failed: {e}",
+  "a11y.listen": "Listen",
+  "a11y.delete_set": "Delete set",
+  "speak.unsupported": "Audio isn’t supported in this browser",
+  "auth.signin_failed": "Sign-in failed: {e}",
+  "entry.delete_failed": "Couldn’t delete"
  }
 };
 
@@ -997,7 +1128,7 @@ function langSeg(id,current,natives){
     `</div></div>`;
 }
 const SPK_SVG='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 10v4h4l5 5V5L7 10H3zm13.5 2a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12zM14 3.23v2.06a7 7 0 0 1 0 13.42v2.06a9 9 0 0 0 0-17.54z"/></svg>';
-const speakBtn=word=>`<button class="spk" data-speak="${esc(word)}" title="Прослухати" aria-label="Прослухати">${SPK_SVG}</button>`;
+const speakBtn=word=>`<button class="spk" data-speak="${esc(word)}" title="${t('a11y.listen')}" aria-label="${t('a11y.listen')}">${SPK_SVG}</button>`;
 let _voices=[];
 function loadVoices(){ try{ _voices=window.speechSynthesis.getVoices()||[]; }catch(e){ _voices=[]; } }
 if('speechSynthesis' in window){ loadVoices(); window.speechSynthesis.onvoiceschanged=loadVoices; }
@@ -1020,7 +1151,7 @@ function pickEnVoice(){
 }
 function speak(text){
   try{
-    if(!('speechSynthesis' in window)){ toast('Озвучка не підтримується у цьому браузері'); return; }
+    if(!('speechSynthesis' in window)){ toast(t('speak.unsupported')); return; }
     window.speechSynthesis.cancel();
     const u=new SpeechSynthesisUtterance(text);
     const v=pickEnVoice();
@@ -1035,7 +1166,7 @@ function schedFields(w,ok){const box=ok?Math.min(5,(w.box||0)+1):1;return {box, 
 /* ── AUTH ── */
 async function signInGoogle(){
   try{ await signInWithPopup(auth, provider); }
-  catch(e){ console.error(e); toast('Не вдалось увійти: '+(e.code||e.message)); }
+  catch(e){ console.error(e); toast(t('auth.signin_failed',{e:(e.code||e.message)})); }
 }
 ['google-btn','google-btn-2'].forEach(id=>{ const b=document.getElementById(id); if(b) b.onclick=signInGoogle; });
 document.getElementById('signout-btn').onclick=()=>signOut(auth);
@@ -1187,7 +1318,7 @@ function renderDeckSwitcher(){
   if(!menu) return;
   const rows=decks.map(d=>{
     const del=(d.isDefault||d.id===user.uid)?'':
-      `<button class="deck-del" data-deck-del="${esc(d.id)}" title="Видалити набір" aria-label="Видалити набір"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>`;
+      `<button class="deck-del" data-deck-del="${esc(d.id)}" title="${t('a11y.delete_set')}" aria-label="${t('a11y.delete_set')}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>`;
     return `<div class="deck-row">
       <button class="deck-item ${d.id===activeDeckId?'active':''}" data-deck="${esc(d.id)}">
         <svg class="di-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
@@ -1273,16 +1404,16 @@ async function openCatalogModal(){
   const list=document.getElementById('catalog-list');
   document.getElementById('catalog-modal').classList.add('show');
   if(catalogPacks.length){ renderCatalogList(); return; }
-  list.innerHTML='<div class="cat-loading">Завантаження…</div>';
+  list.innerHTML='<div class="cat-loading">'+t('catalog.loading')+'</div>';
   try{
     const snap=await getDocs(query(collection(db,'catalog'), orderBy('order')));
     catalogPacks=snap.docs.map(d=>({id:d.id,...d.data()}));
     renderCatalogList();
-  }catch(e){ console.error(e); list.innerHTML='<div class="cat-loading">Не вдалось завантажити набори.</div>'; }
+  }catch(e){ console.error(e); list.innerHTML='<div class="cat-loading">'+t('catalog.load_failed')+'</div>'; }
 }
 function renderCatalogList(){
   const list=document.getElementById('catalog-list');
-  if(!catalogPacks.length){ list.innerHTML='<div class="cat-loading">Поки що порожньо.</div>'; return; }
+  if(!catalogPacks.length){ list.innerHTML='<div class="cat-loading">'+t('catalog.empty')+'</div>'; return; }
   list.innerHTML=catalogPacks.map(p=>{
     const have=decks.some(d=>d.fromCatalog===p.id);
     const cnt=p.count||(p.words?p.words.length:0);
@@ -1291,18 +1422,18 @@ function renderCatalogList(){
       <span class="cat-emoji">${esc(p.emoji||'📘')}</span>
       <div class="cat-meta">
         <div class="cat-name">${esc(p.name||p.id)}</div>
-        <div class="cat-sub">${cnt} слів · ${pair}${have?' · вже додано':''}</div>
+        <div class="cat-sub">${t('catalog.pack_words',{cnt:cnt})} · ${pair}${have?' · '+t('catalog.already_added'):''}</div>
       </div>
-      <button class="cat-add${have?' have':''}" data-pack="${esc(p.id)}">${have?'Додати ще':'Додати'}</button>
+      <button class="cat-add${have?' have':''}" data-pack="${esc(p.id)}">${have?t('catalog.add_more'):t('add.btn')}</button>
     </div>`;
   }).join('');
 }
 async function addPack(packId){
   const btn=document.querySelector('#catalog-list [data-pack="'+packId+'"]');
-  if(btn){ btn.disabled=true; btn.textContent='Додаю…'; }
+  if(btn){ btn.disabled=true; btn.textContent=t('catalog.adding'); }
   try{
     const snap=await getDoc(doc(db,'catalog',packId));
-    if(!snap.exists()){ toast('Набір не знайдено'); if(btn){btn.disabled=false;btn.textContent=t('add.btn');} return; }
+    if(!snap.exists()){ toast(t('catalog.not_found')); if(btn){btn.disabled=false;btn.textContent=t('add.btn');} return; }
     const p=snap.data();
     const words=Array.isArray(p.words)?p.words:[];
     const deckRef=await addDoc(collection(db,'decks'),{
@@ -1325,9 +1456,9 @@ async function addPack(packId){
     // NOTE: wordCount is intentionally NOT incremented — catalog words are free (loss-leader).
     closeCatalogModal();
     activeDeckId=deckRef.id; subscribeWords(); renderDeckSwitcher();
-    toast('Набір «'+(p.name||'набір')+'» додано');
+    toast(t('catalog.added',{name:(p.name||t('deck.untitled'))}));
     tab('dict');
-  }catch(e){ console.error(e); toast('Не вдалось додати набір'); if(btn){ btn.disabled=false; btn.textContent=t('add.btn'); } }
+  }catch(e){ console.error(e); toast(t('catalog.add_failed')); if(btn){ btn.disabled=false; btn.textContent=t('add.btn'); } }
 }
 
 /* ── Share a deck (teacher → student, clone-on-join) ── */
@@ -1336,8 +1467,8 @@ function genShareCode(){ return Math.random().toString(36).slice(2,8).toUpperCas
 async function shareActiveDeck(){
   if(!user) return;
   const d=activeDeck();
-  if(!d || !d.id){ toast('Спершу відкрий набір'); return; }
-  if(!words.length){ toast('Набір порожній — нема чим ділитися'); return; }
+  if(!d || !d.id){ toast(t('share.open_first')); return; }
+  if(!words.length){ toast(t('share.empty')); return; }
   // Знімок слів у формі каталогу (без SRS-полів).
   const snapshot=words.map(w=>({
     word:w.word||'', ipa:w.ipa||'', pos:w.pos||'',
@@ -1357,12 +1488,12 @@ async function shareActiveDeck(){
     await setDoc(doc(db,'sharedPacks',code), payload, { merge:true });
     if(!wasShared){ await updateDoc(doc(db,'decks',d.id), { shareCode:code }); }
     openShareModal(d.name||'Набір', code, snapshot.length, wasShared);
-  }catch(e){ console.error(e); toast('Не вдалось поділитися набором'); }
+  }catch(e){ console.error(e); toast(t('share.failed')); }
 }
 function openShareModal(name, code, count, wasShared){
   document.getElementById('share-code').textContent=code;
   document.getElementById('share-sub').innerHTML=
-    `Набір «<b>${esc(name)}</b>» (${count} слів) ${wasShared?'оновлено':'опубліковано'}. Дай цей код учням — вони введуть його в «Приєднатися за кодом» і отримають копію собі.`;
+    t('share.published',{name:esc(name),count:count,status:wasShared?t('share.status_upd'):t('share.status_new')});
   document.getElementById('share-modal').classList.add('show');
 }
 function closeShareModal(){ document.getElementById('share-modal').classList.remove('show'); }
@@ -1400,20 +1531,20 @@ function maybeShowConsent(){
 
 async function joinByCode(rawCode){
   const code=(rawCode||'').trim().toUpperCase();
-  if(!code){ toast('Введи код'); return; }
+  if(!code){ toast(t('join.enter_code')); return; }
   const btn=document.getElementById('join-go');
-  if(btn){ btn.disabled=true; btn.textContent='Додаю…'; }
-  const reset=()=>{ if(btn){ btn.disabled=false; btn.textContent='Приєднатися'; } };
+  if(btn){ btn.disabled=true; btn.textContent=t('catalog.adding'); }
+  const reset=()=>{ if(btn){ btn.disabled=false; btn.textContent=t('join.go'); } };
   let p;
   // Фаза 1 — читання коду
   try{
     const snap=await getDoc(doc(db,'sharedPacks',code));
-    if(!snap.exists()){ toast('Набір за цим кодом не знайдено'); reset(); return; }
+    if(!snap.exists()){ toast(t('join.not_found')); reset(); return; }
     p=snap.data();
-  }catch(e){ console.error('join read',e); toast('Читання коду не вдалось: '+(e.code||e.message||e)); reset(); return; }
-  if(p.ownerUid===user.uid){ toast('Це твій власний набір'); reset(); return; }
+  }catch(e){ console.error('join read',e); toast(t('join.read_failed',{e:(e.code||e.message||e)})); reset(); return; }
+  if(p.ownerUid===user.uid){ toast(t('join.own')); reset(); return; }
   const src=Array.isArray(p.words)?p.words:[];
-  if(!src.length){ toast('У наборі немає слів'); reset(); return; }
+  if(!src.length){ toast(t('join.empty_set')); reset(); return; }
   // Фаза 2 — запис копії собі
   let newDeckId;
   try{
@@ -1436,7 +1567,7 @@ async function joinByCode(rawCode){
     });
     await batch.commit();
     // wordCount НЕ інкрементуємо — як каталог: клон уже збагачених слів не витрачає AI.
-  }catch(e){ console.error('join write',e); toast('Запис набору не вдався: '+(e.code||e.message||e)); reset(); return; }
+  }catch(e){ console.error('join write',e); toast(t('join.write_failed',{e:(e.code||e.message||e)})); reset(); return; }
 
   // Успіх: дані вже в базі. Оновлення екрана НЕ може позначати операцію як провал —
   // якщо тут щось спіткнеться, застосунок сам підхопить новий набір через onSnapshot деків.
@@ -1445,7 +1576,7 @@ async function joinByCode(rawCode){
     activeDeckId=newDeckId; subscribeWords(); renderDeckSwitcher();
     tab('dict');
   }catch(e){ console.error('join ui refresh (не критично)',e); }
-  toast('Набір «'+(p.name||'набір')+'» додано');
+  toast(t('catalog.added',{name:(p.name||t('deck.untitled'))}));
 }
 
 function refreshPlanUI(){
@@ -1788,7 +1919,7 @@ document.getElementById('dict-list').addEventListener('click',async e=>{
   // Deletions are unlimited and do NOT decrement wordCount: the free limit counts
   // total enrichments ever created (lifetime), not the current dictionary size.
   try{ await deleteDoc(doc(db,'decks',activeDeckId,'words',id)); }
-  catch(err){ console.error(err); toast('Не вдалось видалити'); }
+  catch(err){ console.error(err); toast(t('entry.delete_failed')); }
 });
 // Speaker buttons anywhere except the flashcard (which has its own handler)
 document.addEventListener('click',e=>{
@@ -1860,8 +1991,8 @@ document.getElementById('share-close').onclick=closeShareModal;
 document.getElementById('share-modal').addEventListener('click',e=>{ if(e.target.id==='share-modal') closeShareModal(); });
 document.getElementById('share-copy').onclick=async()=>{
   const code=document.getElementById('share-code').textContent;
-  try{ await navigator.clipboard.writeText(code); toast('Код скопійовано'); }
-  catch(e){ toast('Скопіюй код вручну: '+code); }
+  try{ await navigator.clipboard.writeText(code); toast(t('share.copied')); }
+  catch(e){ toast(t('share.copy_manual',{code:code})); }
 };
 document.getElementById('join-cancel').onclick=closeJoinModal;
 document.getElementById('join-modal').addEventListener('click',e=>{ if(e.target.id==='join-modal') closeJoinModal(); });
