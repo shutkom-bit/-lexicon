@@ -1100,6 +1100,13 @@ function renderLangSwitchers(){
   });
 }
 initUiLang(); applyI18n(); renderLangSwitchers();
+document.addEventListener('click', function(e){
+  const a=e.target.closest && e.target.closest('a[href="#how"]');
+  if(!a) return;
+  e.preventDefault();
+  const el=document.getElementById('how');
+  if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+});
 
 
 let user=null, profile=null;
@@ -2001,8 +2008,6 @@ document.getElementById('share-copy').onclick=async()=>{
 document.getElementById('join-cancel').onclick=closeJoinModal;
 document.getElementById('join-modal').addEventListener('click',e=>{ if(e.target.id==='join-modal') closeJoinModal(); });
 document.getElementById('about-link').onclick=e=>{ e.preventDefault(); openAbout(); };
-const howLink=document.querySelector('.land-foot a[href="#how"]');
-if(howLink) howLink.onclick=e=>{ e.preventDefault(); const el=document.getElementById('how'); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); };
 document.getElementById('about-close').onclick=closeAbout;
 document.getElementById('about-modal').addEventListener('click',e=>{ if(e.target.id==='about-modal') closeAbout(); });
 document.getElementById('join-go').onclick=()=>joinByCode(document.getElementById('join-code').value);
