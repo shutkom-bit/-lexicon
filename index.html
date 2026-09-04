@@ -625,18 +625,18 @@ function posLabel(k){ return t('pos.'+k); }
 
 /* Supported languages. code=Firestore key, label=nominative (selects), inst=instrumental ("переклад <inst>"). */
 const LANGS=[
-  {code:'en',label:'Англійська',inst:'англійською'},
-  {code:'uk',label:'Українська',inst:'українською'},
-  {code:'hu',label:'Угорська',inst:'угорською'},
-  {code:'fr',label:'Французька',inst:'французькою'},
-  {code:'es',label:'Іспанська',inst:'іспанською'},
-  {code:'it',label:'Італійська',inst:'італійською'},
-  {code:'pl',label:'Польська',inst:'польською'},
-  {code:'de',label:'Німецька',inst:'німецькою'}
+  {code:'en',name:{uk:'Англійська',en:'English'},   inst:{uk:'англійською',en:'English'}},
+  {code:'uk',name:{uk:'Українська',en:'Ukrainian'}, inst:{uk:'українською',en:'Ukrainian'}},
+  {code:'hu',name:{uk:'Угорська',en:'Hungarian'},   inst:{uk:'угорською',en:'Hungarian'}},
+  {code:'fr',name:{uk:'Французька',en:'French'},     inst:{uk:'французькою',en:'French'}},
+  {code:'es',name:{uk:'Іспанська',en:'Spanish'},     inst:{uk:'іспанською',en:'Spanish'}},
+  {code:'it',name:{uk:'Італійська',en:'Italian'},    inst:{uk:'італійською',en:'Italian'}},
+  {code:'pl',name:{uk:'Польська',en:'Polish'},       inst:{uk:'польською',en:'Polish'}},
+  {code:'de',name:{uk:'Німецька',en:'German'},       inst:{uk:'німецькою',en:'German'}}
 ];
 const LANG_OK=c=>LANGS.some(l=>l.code===c);
-const langLabel=c=>{const l=LANGS.find(x=>x.code===c);return l?l.label:(c||'').toUpperCase();};
-const langInst=c=>{const l=LANGS.find(x=>x.code===c);return l?l.inst:(c||'');};
+const langLabel=c=>{const l=LANGS.find(x=>x.code===c);return l?(l.name[uiLang]||l.name.uk):(c||'').toUpperCase();};
+const langInst=c=>{const l=LANGS.find(x=>x.code===c);return l?(l.inst[uiLang]||l.inst.uk):(c||'');};
 const langBadge=c=>c==='uk'?'UA':(c||'').toUpperCase();
 
 const I18N={
@@ -742,7 +742,21 @@ const I18N={
   "study.flip_hint": "натисни, щоб побачити переклад",
   "study.card_of": "Картка {i} з {n}",
   "study.dont_know": "Ще не знаю",
-  "study.know": "Знаю"
+  "study.know": "Знаю",
+  "quiz.too_few_title": "Замало слів для тесту",
+  "quiz.need": "Потрібно ≥4 слова з перекладом {lang}.",
+  "quiz.choose_tr": "обери переклад {lang}",
+  "quiz.next": "Наступне →",
+  "game.points_short": "балів",
+  "game.streak": "серія",
+  "game.new_record": "Новий рекорд!",
+  "game.final_sub": "балів за {sec} сек · найкраща серія {streak} · точність {acc}%",
+  "game.your_record": "твій рекорд: {n}",
+  "game.too_few_title": "Замало слів для гри",
+  "game.title": "Гра на швидкість",
+  "game.intro": "За {sec} секунд обери якнайбільше правильних перекладів. Серія (🔥) підвищує азарт, а правильні відповіді зараховуються у твій прогрес.",
+  "game.record_intro": "🏆 Твій рекорд: {n}",
+  "game.start": "Почати ({sec} сек)"
  },
  "en": {
   "doc.title": "Lexicon — vocabulary trainer",
@@ -846,7 +860,21 @@ const I18N={
   "study.flip_hint": "tap to see the translation",
   "study.card_of": "Card {i} of {n}",
   "study.dont_know": "Don’t know yet",
-  "study.know": "I know it"
+  "study.know": "I know it",
+  "quiz.too_few_title": "Not enough words for a quiz",
+  "quiz.need": "You need ≥4 words with a {lang} translation.",
+  "quiz.choose_tr": "choose the {lang} translation",
+  "quiz.next": "Next →",
+  "game.points_short": "pts",
+  "game.streak": "streak",
+  "game.new_record": "New record!",
+  "game.final_sub": "points in {sec} sec · best streak {streak} · accuracy {acc}%",
+  "game.your_record": "your record: {n}",
+  "game.too_few_title": "Not enough words for a game",
+  "game.title": "Speed game",
+  "game.intro": "In {sec} seconds, pick as many correct translations as you can. A streak (🔥) raises the stakes, and correct answers count toward your progress.",
+  "game.record_intro": "🏆 Your record: {n}",
+  "game.start": "Start ({sec} sec)"
  }
 };
 
@@ -1546,15 +1574,15 @@ function startQuiz(){
   ensureQuizLang();
   const seg=langSeg('quiz-seg',quizLang,deckNatives());
   const pool=words.filter(w=>trOf(w,quizLang));
-  if(pool.length<4){ body.innerHTML=seg+`<div class="empty"><div class="big">Замало слів для тесту</div>Потрібно ≥4 слова з перекладом ${langInst(quizLang)}.</div>`; wireQuizSeg(); return; }
+  if(pool.length<4){ body.innerHTML=seg+`<div class="empty"><div class="big">${t('quiz.too_few_title')}</div>${t('quiz.need',{lang:langInst(quizLang)})}</div>`; wireQuizSeg(); return; }
   const w=pool[Math.floor(Math.random()*pool.length)];
   const wrong=pool.filter(x=>x.id!==w.id).sort(()=>Math.random()-.5).slice(0,3);
   const opts=[w,...wrong].sort(()=>Math.random()-.5);
   body.innerHTML=seg+`
     <div class="q-word">${esc(w.word)}</div>
-    <div class="q-sub">${w.ipa?esc(w.ipa)+' · ':''}обери переклад ${langInst(quizLang)}</div>
+    <div class="q-sub">${w.ipa?esc(w.ipa)+' · ':''}${t('quiz.choose_tr',{lang:langInst(quizLang)})}</div>
     <div class="opts" id="opts">${opts.map(o=>`<button class="opt" data-id="${o.id}">${esc(trOf(o,quizLang))}</button>`).join('')}</div>
-    <div class="center" id="q-next" style="visibility:hidden"><button class="btn btn-primary" onclick="startQuiz()">Наступне →</button></div>`;
+    <div class="center" id="q-next" style="visibility:hidden"><button class="btn btn-primary" onclick="startQuiz()">${t('quiz.next')}</button></div>`;
   wireQuizSeg();
   document.querySelectorAll('#opts .opt').forEach(btn=>btn.onclick=async()=>{
     const ok=btn.dataset.id===w.id;
@@ -1602,10 +1630,10 @@ function gameNext(){
   const wrong=pool.filter(x=>x.id!==w.id).sort(()=>Math.random()-.5).slice(0,3);
   const opts=[w,...wrong].sort(()=>Math.random()-.5);
   document.getElementById('game-body').innerHTML=`
-    <div class="game-hud"><div class="g-score">${gScore}<small>балів</small></div><div class="g-streak">${gStreak>1?'🔥 серія '+gStreak:''}</div></div>
+    <div class="game-hud"><div class="g-score">${gScore}<small>${t('game.points_short')}</small></div><div class="g-streak">${gStreak>1?'🔥 '+t('game.streak')+' '+gStreak:''}</div></div>
     <div class="g-timerbar"><i id="g-bar" style="width:100%"></i></div>
     <div class="q-word">${esc(w.word)}</div>
-    <div class="q-sub">обери переклад ${langInst(gameLang)}</div>
+    <div class="q-sub">${t('quiz.choose_tr',{lang:langInst(gameLang)})}</div>
     <div class="opts" id="g-opts">${opts.map(o=>`<button class="opt" data-id="${o.id}">${esc(trOf(o,gameLang))}</button>`).join('')}</div>`;
   gameTick();
   document.querySelectorAll('#g-opts .opt').forEach(btn=>btn.onclick=()=>gameAnswer(btn,w));
@@ -1640,21 +1668,21 @@ function renderGame(){
     const total=gCorrect+gWrong, acc=total?Math.round(gCorrect/total*100):0;
     const best=(profile&&profile.bestScore)||0;
     body.innerHTML=seg+`
-      ${gNewRecord?'<div style="text-align:center;color:var(--learned);font-weight:600;margin-bottom:4px">🏆 Новий рекорд!</div>':''}
+      ${gNewRecord?'<div style="text-align:center;color:var(--learned);font-weight:600;margin-bottom:4px">🏆 '+t('game.new_record')+'</div>':''}
       <div class="g-final">${gScore}</div>
-      <div class="g-final-sub">балів за ${GAME_SECONDS} сек · найкраща серія ${gBest} · точність ${acc}%<br><span style="color:var(--faint)">твій рекорд: ${best}</span></div>
-      <div class="center"><button class="btn btn-primary" id="g-again">Ще раз</button></div>`;
+      <div class="g-final-sub">${t('game.final_sub',{sec:GAME_SECONDS,streak:gBest,acc:acc})}<br><span style="color:var(--faint)">${t('game.your_record',{n:best})}</span></div>
+      <div class="center"><button class="btn btn-primary" id="g-again">${t('study.again')}</button></div>`;
     wireGameSeg(); document.getElementById('g-again').onclick=beginRound; return;
   }
   if(gamePool().length<4){
-    body.innerHTML=seg+`<div class="empty"><div class="big">Замало слів для гри</div>Потрібно ≥4 слова з перекладом ${langInst(gameLang)}.</div>`;
+    body.innerHTML=seg+`<div class="empty"><div class="big">${t('game.too_few_title')}</div>${t('quiz.need',{lang:langInst(gameLang)})}</div>`;
     wireGameSeg(); return;
   }
   body.innerHTML=seg+`<div class="game-intro">
-    <h2>Гра на швидкість</h2>
-    <p>За ${GAME_SECONDS} секунд обери якнайбільше правильних перекладів. Серія (🔥) підвищує азарт, а правильні відповіді зараховуються у твій прогрес.</p>
-    ${(profile&&profile.bestScore)?`<p style="margin-top:-8px;color:var(--accent);font-weight:600">🏆 Твій рекорд: ${profile.bestScore}</p>`:''}
-    <button class="btn btn-primary" id="g-start">Почати (${GAME_SECONDS} сек)</button>
+    <h2>${t('game.title')}</h2>
+    <p>${t('game.intro',{sec:GAME_SECONDS})}</p>
+    ${(profile&&profile.bestScore)?`<p style="margin-top:-8px;color:var(--accent);font-weight:600">${t('game.record_intro',{n:profile.bestScore})}</p>`:''}
+    <button class="btn btn-primary" id="g-start">${t('game.start',{sec:GAME_SECONDS})}</button>
   </div>`;
   wireGameSeg(); document.getElementById('g-start').onclick=beginRound;
 }
