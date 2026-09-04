@@ -469,10 +469,10 @@
 
   <section class="panel" id="p-dict">
     <div class="dict-controls">
-      <div class="searchbar"><input type="text" id="search" placeholder="Пошук за словом, перекладом чи темою…"></div>
+      <div class="searchbar"><input type="text" id="search" placeholder="Пошук за словом, перекладом чи темою…" data-i18n-ph="dict.search_ph"></div>
       <div class="seg" id="view-seg">
-        <button data-view="topic" class="on">За темою</button>
-        <button data-view="pos">За частиною мови</button>
+        <button data-view="topic" class="on" data-i18n="dict.by_topic">За темою</button>
+        <button data-view="pos" data-i18n="dict.by_pos">За частиною мови</button>
       </div>
     </div>
     <div class="card" id="dict-list"></div>
@@ -621,7 +621,7 @@ const provider = new GoogleAuthProvider();
 const FREE_LIMIT = 50;
 const INTERVALS=[0,1,2,4,8,16];
 const POS_ORDER=['verb','noun','adjective','adverb','phrase','other'];
-const POS_LABEL={verb:'Дієслова',noun:'Іменники',adjective:'Прикметники',adverb:'Прислівники',phrase:'Фрази та вирази',other:'Інше'};
+function posLabel(k){ return t('pos.'+k); }
 
 /* Supported languages. code=Firestore key, label=nominative (selects), inst=instrumental ("переклад <inst>"). */
 const LANGS=[
@@ -717,7 +717,32 @@ const I18N={
   "sync.err_db": "Немає доступу до бази — перевір правила Firestore",
   "tg.steps": "Натисни кнопку — відкриється бот, тисни <b>Start</b>, і підключення завершиться саме.<br>Якщо бот не відкрився, надішли йому вручну: <code>/link {code}</code>",
   "tg.open_bot": "Відкрити бота та підключити",
-  "tg.code_failed": "Не вдалось створити код підключення"
+  "tg.code_failed": "Не вдалось створити код підключення",
+  "dict.search_ph": "Пошук за словом, перекладом чи темою…",
+  "dict.by_topic": "За темою",
+  "dict.by_pos": "За частиною мови",
+  "pos.verb": "Дієслова",
+  "pos.noun": "Іменники",
+  "pos.adjective": "Прикметники",
+  "pos.adverb": "Прислівники",
+  "pos.phrase": "Фрази та вирази",
+  "pos.other": "Інше",
+  "entry.in_progress": "у процесі",
+  "entry.delete": "видалити",
+  "dict.not_found": "Нічого не знайдено",
+  "dict.empty": "Словник порожній",
+  "dict.empty_hint": "Додай перше слово на вкладці «Додати».",
+  "study.empty_title": "Немає карток на повтор 🎉",
+  "study.all_done": "Усе повторено на сьогодні.",
+  "study.add_first": "Спершу додай слова.",
+  "study.repeat_all": "Повторити всі слова ({n})",
+  "study.session_done": "Сесію завершено",
+  "study.session_count": "Пройдено: {n}.",
+  "study.again": "Ще раз",
+  "study.flip_hint": "натисни, щоб побачити переклад",
+  "study.card_of": "Картка {i} з {n}",
+  "study.dont_know": "Ще не знаю",
+  "study.know": "Знаю"
  },
  "en": {
   "doc.title": "Lexicon — vocabulary trainer",
@@ -796,7 +821,32 @@ const I18N={
   "sync.err_db": "No access to the database — check Firestore rules",
   "tg.steps": "Tap the button — the bot opens, press <b>Start</b>, and the connection completes itself.<br>If the bot didn’t open, send it manually: <code>/link {code}</code>",
   "tg.open_bot": "Open the bot and connect",
-  "tg.code_failed": "Couldn’t create a connection code"
+  "tg.code_failed": "Couldn’t create a connection code",
+  "dict.search_ph": "Search by word, translation or topic…",
+  "dict.by_topic": "By topic",
+  "dict.by_pos": "By part of speech",
+  "pos.verb": "Verbs",
+  "pos.noun": "Nouns",
+  "pos.adjective": "Adjectives",
+  "pos.adverb": "Adverbs",
+  "pos.phrase": "Phrases & expressions",
+  "pos.other": "Other",
+  "entry.in_progress": "in progress",
+  "entry.delete": "delete",
+  "dict.not_found": "Nothing found",
+  "dict.empty": "Dictionary is empty",
+  "dict.empty_hint": "Add your first word on the “Add” tab.",
+  "study.empty_title": "No cards to review 🎉",
+  "study.all_done": "Everything reviewed for today.",
+  "study.add_first": "Add some words first.",
+  "study.repeat_all": "Review all words ({n})",
+  "study.session_done": "Session complete",
+  "study.session_count": "Reviewed: {n}.",
+  "study.again": "Again",
+  "study.flip_hint": "tap to see the translation",
+  "study.card_of": "Card {i} of {n}",
+  "study.dont_know": "Don’t know yet",
+  "study.know": "I know it"
  }
 };
 
@@ -1431,8 +1481,8 @@ async function doAdd(){
 function pips(box){let h='';for(let i=1;i<=5;i++){const c=box>=5?'m':(i<=box?'f':'');h+=`<span class="pip ${c}"></span>`;}return h;}
 function renderEntryInner(w){
   const mastered=isMastered(w), due=isDue(w);
-  const tag=mastered?'<span class="tag" style="color:var(--learned)">засвоєно</span>':due?'<span class="tag due">на повтор</span>':'<span class="tag">у процесі</span>';
-  const delBtn=w.id==='preview'?'':`<button class="del" data-del="${w.id}">видалити</button>`;
+  const tag=mastered?'<span class="tag" style="color:var(--learned)">'+t('stats.mastered')+'</span>':due?'<span class="tag due">'+t('stats.due')+'</span>':'<span class="tag">'+t('entry.in_progress')+'</span>';
+  const delBtn=w.id==='preview'?'':`<button class="del" data-del="${w.id}">${t('entry.delete')}</button>`;
   const trLines=deckNatives().map(code=>{const v=trOf(w,code);return v?`<div class="tr"><span class="lang ${code}">${langBadge(code)}</span><span>${esc(v)}</span></div>`:'';}).join('');
   return `<div class="entry">
     <div class="head">
@@ -1449,11 +1499,11 @@ function renderDict(){
   const list=document.getElementById('dict-list');
   let items=words;
   if(q){ const nat=deckNatives(); items=words.filter(w=>[w.word,...nat.map(c=>trOf(w,c)),w.topic,w.def].some(f=>(f||'').toLowerCase().includes(q))); }
-  if(!items.length){ list.innerHTML=`<div class="empty"><div class="big">${words.length?'Нічого не знайдено':'Словник порожній'}</div>${words.length?'':'Додай перше слово на вкладці «Додати».'}</div>`; return; }
+  if(!items.length){ list.innerHTML=`<div class="empty"><div class="big">${words.length?t('dict.not_found'):t('dict.empty')}</div>${words.length?'':t('dict.empty_hint')}</div>`; return; }
   const groups={};
   if(dictView==='pos'){
     items.forEach(w=>{const k=POS_ORDER.includes(w.pos_group)?w.pos_group:'other';(groups[k]=groups[k]||[]).push(w);});
-    list.innerHTML=POS_ORDER.filter(k=>groups[k]).map(k=>`<div class="group-h">${POS_LABEL[k]} · ${groups[k].length}</div>`+groups[k].map(renderEntryInner).join('')).join('');
+    list.innerHTML=POS_ORDER.filter(k=>groups[k]).map(k=>`<div class="group-h">${posLabel(k)} · ${groups[k].length}</div>`+groups[k].map(renderEntryInner).join('')).join('');
   } else {
     items.forEach(w=>{(groups[w.topic||'General']=groups[w.topic||'General']||[]).push(w);});
     list.innerHTML=Object.keys(groups).sort().map(t=>`<div class="group-h">${esc(t)} · ${groups[t].length}</div>`+groups[t].map(renderEntryInner).join('')).join('');
@@ -1465,19 +1515,19 @@ let queue=[], qi=0, flipped=false;
 function startStudy(all){ queue=(all?words.slice():words.filter(isDue)).sort((a,b)=>(a.due||0)-(b.due||0)); qi=0; flipped=false; renderStudy(); }
 function renderStudy(){
   const body=document.getElementById('study-body');
-  if(!queue.length){ body.innerHTML=`<div class="empty"><div class="big">Немає карток на повтор 🎉</div>${words.length?'Усе повторено на сьогодні.':'Спершу додай слова.'}</div>${words.length?`<div class="center" style="margin-top:16px"><button class="btn btn-primary" onclick="startStudy(true)">Повторити всі слова (${words.length})</button></div>`:''}`; return; }
-  if(qi>=queue.length){ body.innerHTML=`<div class="empty"><div class="big">Сесію завершено</div>Пройдено: ${queue.length}.</div><div class="center"><button class="btn btn-ghost" onclick="startStudy()">Ще раз</button></div>`; refreshStats(); return; }
+  if(!queue.length){ body.innerHTML=`<div class="empty"><div class="big">${t('study.empty_title')}</div>${words.length?t('study.all_done'):t('study.add_first')}</div>${words.length?`<div class="center" style="margin-top:16px"><button class="btn btn-primary" onclick="startStudy(true)">${t('study.repeat_all',{n:words.length})}</button></div>`:''}`; return; }
+  if(qi>=queue.length){ body.innerHTML=`<div class="empty"><div class="big">${t('study.session_done')}</div>${t('study.session_count',{n:queue.length})}</div><div class="center"><button class="btn btn-ghost" onclick="startStudy()">${t('study.again')}</button></div>`; refreshStats(); return; }
   const w=queue[qi], nat=deckNatives();
-  const front=`<div class="fw">${esc(w.word)}</div>${w.ipa?`<div class="fipa">${esc(w.ipa)}</div>`:''}<div style="margin-top:12px">${speakBtn(w.word)}</div><div class="flip-hint">натисни, щоб побачити переклад</div>`;
+  const front=`<div class="fw">${esc(w.word)}</div>${w.ipa?`<div class="fipa">${esc(w.ipa)}</div>`:''}<div style="margin-top:12px">${speakBtn(w.word)}</div><div class="flip-hint">${t('study.flip_hint')}</div>`;
   const trBack=nat.map((code,i)=>{const v=trOf(w,code); if(i===0) return `<div class="ftr"><span class="lang ${code}">${langBadge(code)}</span>${esc(v||'—')}</div>`; return v?`<div class="ftr" style="font-size:22px;margin-top:8px"><span class="lang ${code}">${langBadge(code)}</span>${esc(v)}</div>`:'';}).join('');
   const back=`${trBack}${w.pos?`<div class="fpos">${esc(w.pos)}</div>`:''}${w.def?`<div class="fdef">${esc(w.def)}</div>`:''}${w.ex?`<div class="fex">${esc(w.ex)}</div>`:''}`;
   body.innerHTML=`<div class="stage">
     <div class="progress"><i style="width:${(qi/queue.length)*100}%"></i></div>
-    <div class="queue-meta">Картка ${qi+1} з ${queue.length}</div>
+    <div class="queue-meta">${t('study.card_of',{i:qi+1,n:queue.length})}</div>
     <div class="flash" id="flash">${flipped?back:front}</div>
     <div class="grade" id="grade" style="visibility:${flipped?'visible':'hidden'}">
-      <button class="btn btn-again" data-grade="0">Ще не знаю</button>
-      <button class="btn btn-good" data-grade="1">Знаю</button>
+      <button class="btn btn-again" data-grade="0">${t('study.dont_know')}</button>
+      <button class="btn btn-good" data-grade="1">${t('study.know')}</button>
     </div></div>`;
   document.getElementById('flash').onclick=()=>{ if(!flipped){ flipped=true; renderStudy(); } };
   const fspk=document.querySelector('#flash .spk'); if(fspk) fspk.onclick=(e)=>{ e.stopPropagation(); speak(w.word); };
