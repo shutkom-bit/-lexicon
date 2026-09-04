@@ -988,7 +988,7 @@ const I18N={
   "about.p1": "<b>Lexicon</b> is a vocabulary-learning app. Add a word → AI gives the translation, transcription and an example; you train with spaced repetition, a quiz and a speed game.",
   "about.p2": "Words are grouped into sets for different language pairs. There are ready-made starter sets, shared sets by code (for teachers and students), a Telegram bot and audio.",
   "consent.title": "Welcome 👋",
-  "consent.p1": "Before you start: by using Lexicon you agree to the <a href=\"/privacy.html\" target=\"_blank\" rel=\"noopener\">Privacy Policy</a> and <a href=\"/terms.html\" target=\"_blank\" rel=\"noopener\">Terms of Use</a>.",
+  "consent.p1": "Before you start: by using Lexicon you agree to the <a href=\"/privacy-en.html\" target=\"_blank\" rel=\"noopener\">Privacy Policy</a> and <a href=\"/terms-en.html\" target=\"_blank\" rel=\"noopener\">Terms of Use</a>.",
   "consent.p2": "In short: the words you add are sent to an AI service (DeepSeek) for translation. Don’t enter sensitive personal data.",
   "consent.check_label": "I have read and accept the Privacy Policy and Terms.",
   "consent.accept": "Agree and continue",
@@ -1051,6 +1051,8 @@ function applyI18n(root){
   root.querySelectorAll('[data-i18n-ph]').forEach(el=>{ el.setAttribute('placeholder', t(el.getAttribute('data-i18n-ph'))); });
   root.querySelectorAll('[data-i18n-title]').forEach(el=>{ el.setAttribute('title', t(el.getAttribute('data-i18n-title'))); });
   root.querySelectorAll('[data-i18n-aria]').forEach(el=>{ el.setAttribute('aria-label', t(el.getAttribute('data-i18n-aria'))); });
+  root.querySelectorAll('[data-i18n="nav.privacy"]').forEach(el=>el.setAttribute('href', uiLang==='en'?'/privacy-en.html':'/privacy.html'));
+  root.querySelectorAll('[data-i18n="nav.terms"]').forEach(el=>el.setAttribute('href', uiLang==='en'?'/terms-en.html':'/terms.html'));
   document.documentElement.lang=uiLang;
   document.title=t('doc.title');
 }
