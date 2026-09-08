@@ -343,6 +343,10 @@
   .daily-name{font-weight:700;font-size:15px;margin-bottom:2px}
   .daily-prompt{font-size:13px;color:var(--ink-soft);margin:2px 0 12px;line-height:1.5}
   .daily-card .btn{width:100%}
+  .fav{background:none;border:none;cursor:pointer;font-size:16px;line-height:1;color:var(--faint);padding:2px 4px}
+  .fav.on{color:#f5b301}
+  .fav-filter{background:var(--panel);border:1px solid var(--line);border-radius:9px;cursor:pointer;font-size:16px;color:var(--faint);padding:6px 10px}
+  .fav-filter.on{color:#f5b301;border-color:#f5b301}
 </style>
 </head>
 <body>
@@ -491,6 +495,7 @@
         <button data-view="topic" class="on" data-i18n="dict.by_topic">За темою</button>
         <button data-view="pos" data-i18n="dict.by_pos">За частиною мови</button>
       </div>
+      <button id="fav-filter" class="fav-filter" data-i18n-title="fav.only" title="Тільки улюблені">☆</button>
     </div>
     <div class="card" id="dict-list"></div>
   </section>
@@ -860,7 +865,9 @@ const I18N={
   "daily.play_again": "Зіграти ще раз",
   "daily.memory_score": "Бал памʼяті",
   "daily.streak_none": "Почни серію сьогодні",
-  "daily.need_words": "Додай кілька слів — і Daily 60 відкриється."
+  "daily.need_words": "Додай кілька слів — і Daily 60 відкриється.",
+  "fav.only": "Тільки улюблені",
+  "fav.add": "До улюблених"
  },
  "en": {
   "doc.title": "Lexicon — vocabulary trainer",
@@ -1063,7 +1070,9 @@ const I18N={
   "daily.play_again": "Play again",
   "daily.memory_score": "Memory score",
   "daily.streak_none": "Start your streak today",
-  "daily.need_words": "Add a few words to unlock Daily 60."
+  "daily.need_words": "Add a few words to unlock Daily 60.",
+  "fav.only": "Favorites only",
+  "fav.add": "Add to favorites"
  }
 };
 
@@ -1142,7 +1151,7 @@ document.addEventListener('click', function(e){
 
 let user=null, profile=null;
 let decks=[], activeDeckId=null;
-let words=[], dictView='topic', quizLang='ua', gameLang='uk', activeTab='add';
+let words=[], dictView='topic', favOnly=false, quizLang='ua', gameLang='uk', activeTab='add';
 let unsubWords=null, unsubProfile=null, unsubDecks=null;
 
 const isDue=w=>(w.due||0)<=Date.now();
@@ -1734,6 +1743,7 @@ function renderEntryInner(w){
   const mastered=isMastered(w), due=isDue(w);
   const tag=mastered?'<span class="tag" style="color:var(--learned)">'+t('stats.mastered')+'</span>':due?'<span class="tag due">'+t('stats.due')+'</span>':'<span class="tag">'+t('entry.in_progress')+'</span>';
   const delBtn=w.id==='preview'?'':`<button class="del" data-del="${w.id}">${t('entry.delete')}</button>`;
+  const favBtn=w.id==='preview'?'':`<button class="fav ${w.fav?'on':''}" data-fav="${w.id}" title="${t('fav.add')}">${w.fav?'\u2605':'\u2606'}</button>`;
   const trLines=deckNatives().map(code=>{const v=trOf(w,code);return v?`<div class="tr"><span class="lang ${code}">${langBadge(code)}</span><span>${esc(v)}</span></div>`:'';}).join('');
   return `<div class="entry">
     <div class="head">
@@ -1742,7 +1752,7 @@ function renderEntryInner(w){
       ${w.def?`<div class="def">${esc(w.def)}</div>`:''}
       ${w.ex?`<div class="ex">${esc(w.ex)}</div>`:''}
     </div>
-    <div class="side"><div class="box-pips">${pips(w.box)}</div>${tag}${delBtn}</div>
+    <div class="side"><div class="box-pips">${pips(w.box)}</div>${favBtn}${tag}${delBtn}</div>
   </div>`;
 }
 function renderDict(){
@@ -1750,6 +1760,7 @@ function renderDict(){
   const list=document.getElementById('dict-list');
   let items=words;
   if(q){ const nat=deckNatives(); items=words.filter(w=>[w.word,...nat.map(c=>trOf(w,c)),w.topic,w.def].some(f=>(f||'').toLowerCase().includes(q))); }
+  if(favOnly){ items=items.filter(w=>w.fav); }
   if(!items.length){ list.innerHTML=`<div class="empty"><div class="big">${words.length?t('dict.not_found'):t('dict.empty')}</div>${words.length?'':t('dict.empty_hint')}</div>`; return; }
   const groups={};
   if(dictView==='pos'){
@@ -1977,7 +1988,10 @@ document.getElementById('w-word').addEventListener('keydown',e=>{if(e.key==='Ent
 document.getElementById('w-topic').addEventListener('keydown',e=>{if(e.key==='Enter')doAdd();});
 document.getElementById('search').addEventListener('input',renderDict);
 document.querySelectorAll('#view-seg button').forEach(b=>b.onclick=()=>{ dictView=b.dataset.view; document.querySelectorAll('#view-seg button').forEach(x=>x.classList.toggle('on',x===b)); renderDict(); });
+{ const ff=document.getElementById('fav-filter'); if(ff) ff.onclick=()=>{ favOnly=!favOnly; ff.classList.toggle('on',favOnly); ff.textContent=favOnly?'\u2605':'\u2606'; renderDict(); }; }
 document.getElementById('dict-list').addEventListener('click',async e=>{
+  const favId=e.target.getAttribute('data-fav');
+  if(favId){ const w=words.find(x=>x.id===favId); if(w){ try{ await updateDoc(doc(db,'decks',activeDeckId,'words',favId),{fav:!w.fav}); }catch(err){ console.error(err); } } return; }
   const id=e.target.getAttribute('data-del'); if(!id)return;
   // Deletions are unlimited and do NOT decrement wordCount: the free limit counts
   // total enrichments ever created (lifetime), not the current dictionary size.
