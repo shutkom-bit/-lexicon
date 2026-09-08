@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<!--
+  redesign.html — ТЕСТОВА сторінка нового UI (Home Dashboard).
+  Гілка ui-redesign. Standalone: НІЧОГО в основному застосунку не чіпає.
+  Тільки ЧИТАЄ дані (users/{uid}, decks, words) — жодних записів.
+  Дизайн: система зі Stitch/DESIGN.md (Tailwind CDN + токени). Mobile-first ~390px.
+  Кнопки ведуть у чинний застосунок: /?go=<tab> (study|add|progress|dict|game).
+  ⚠ Показуємо ЛИШЕ реальні дані. XP/рівні/ліги/CEFR/SM-2/тижневі цілі — прибрано (їх немає в моделі).
+-->
+<html lang="uk">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="robots" content="noindex"/>
+<title>LexiconStudy — новий UI (прев'ю)</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<style>
+  @layer base { html,body{ width:100%; margin:0; padding:0; } body{ overscroll-behavior:none; font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; } }
+  .pb-safe{ padding-bottom:env(safe-area-inset-bottom,0px); } .pt-safe{ padding-top:env(safe-area-inset-top,0px); }
+  ::-webkit-scrollbar{ display:none; }
+  .skel{ background:linear-gradient(90deg,#e6eeff 25%,#dee9fc 37%,#e6eeff 63%); background-size:400% 100%; animation:sk 1.3s ease infinite; border-radius:.75rem; }
+  @keyframes sk{ 0%{background-position:100% 0} 100%{background-position:0 0} }
+</style>
+<script src="https://cdn.tailwindcss.com"></script>
+<script id="tailwind-config">
+tailwind.config = { darkMode:"class", theme:{ extend:{
+  colors:{ "secondary":"#a73a00","on-primary":"#ffffff","on-error-container":"#93000a","surface-container-highest":"#d9e3f6","inverse-primary":"#b7c4ff","on-background":"#121c2a","on-primary-container":"#cad3ff","tertiary":"#623c00","surface-container-low":"#eff4ff","on-tertiary-fixed":"#2a1700","on-primary-fixed-variant":"#0039b5","error":"#ba1a1a","on-primary-fixed":"#001551","tertiary-fixed":"#ffddb8","primary-fixed-dim":"#b7c4ff","secondary-fixed-dim":"#ffb599","inverse-on-surface":"#eaf1ff","on-tertiary":"#ffffff","on-secondary-container":"#571a00","outline":"#747686","surface-container":"#e6eeff","tertiary-fixed-dim":"#ffb95f","surface-dim":"#d0dbed","surface-tint":"#2151da","error-container":"#ffdad6","on-surface-variant":"#434655","surface-container-high":"#dee9fc","surface":"#f8f9ff","primary-container":"#1d4ed8","primary":"#0037b0","secondary-fixed":"#ffdbce","on-error":"#ffffff","on-tertiary-container":"#ffcb8f","secondary-container":"#fd651e","surface-variant":"#d9e3f6","inverse-surface":"#27313f","surface-container-lowest":"#ffffff","on-surface":"#121c2a","primary-fixed":"#dce1ff","outline-variant":"#c4c5d7","on-secondary":"#ffffff","background":"#f8f9ff","on-secondary-fixed-variant":"#7f2b00","on-secondary-fixed":"#370e00","on-tertiary-fixed-variant":"#653e00","tertiary-container":"#825100","surface-bright":"#f8f9ff" },
+  borderRadius:{ "DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px" },
+  spacing:{ "unit-2xl":"2rem","gutter-mobile":"1rem","unit-2xs":"0.25rem","margin-mobile":"1.25rem","unit-xs":"0.5rem","unit-3xl":"3rem","unit-md":"1rem","margin-desktop":"2rem","gutter-desktop":"1.5rem","unit-xl":"1.5rem","unit-lg":"1.25rem","unit-sm":"0.75rem" },
+  fontFamily:{ "headline-md":["Inter"],"body-md":["Inter"],"label-md":["Inter"],"display-lg":["Inter"],"body-sm":["Inter"],"body-lg":["Inter"],"headline-lg":["Inter"],"label-lg":["Inter"],"headline-sm":["Inter"],"title-md":["Inter"],"display-lg-mobile":["Inter"],"label-sm":["Inter"] },
+  fontSize:{ "headline-md":["24px",{lineHeight:"32px",letterSpacing:"-0.01em",fontWeight:"600"}],"body-md":["16px",{lineHeight:"24px",fontWeight:"400"}],"label-md":["12px",{lineHeight:"16px",letterSpacing:"0.02em",fontWeight:"500"}],"display-lg":["40px",{lineHeight:"48px",letterSpacing:"-0.02em",fontWeight:"700"}],"body-sm":["14px",{lineHeight:"20px",fontWeight:"400"}],"body-lg":["18px",{lineHeight:"28px",fontWeight:"400"}],"headline-lg":["28px",{lineHeight:"36px",letterSpacing:"-0.01em",fontWeight:"600"}],"label-lg":["14px",{lineHeight:"20px",letterSpacing:"0.01em",fontWeight:"600"}],"headline-sm":["20px",{lineHeight:"28px",fontWeight:"600"}],"title-md":["18px",{lineHeight:"26px",fontWeight:"600"}],"display-lg-mobile":["32px",{lineHeight:"40px",letterSpacing:"-0.015em",fontWeight:"700"}],"label-sm":["11px",{lineHeight:"14px",letterSpacing:"0.04em",fontWeight:"600"}] }
+}}};
+</script>
+</head>
+<body class="bg-surface text-on-surface flex flex-col min-h-screen">
+
+<!-- ══ HEADER ══ -->
+<header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
+  <div class="h-16 px-margin-mobile flex items-center justify-between max-w-[520px] mx-auto">
+    <div class="flex items-center gap-unit-xs min-w-0">
+      <!-- реальна брендова іконка (inline SVG замість мертвого lh3-лінку зі Stitch) -->
+      <svg class="h-8 w-8 shrink-0" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="120" height="120" rx="28" fill="#2563EB"/>
+        <path d="M38 36H56C62.6 36 68 41.4 68 48V84C68 84 61 82 54 82H38V36Z" fill="white" fill-opacity="0.95"/>
+        <path d="M68 48C68 41.4 73.4 36 80 36H82V82H68V48Z" fill="white" fill-opacity="0.75"/>
+        <circle cx="84" cy="34" r="7" fill="#F97316"/>
+        <path d="M44 48H60M44 58H58M44 68H54" stroke="#2563EB" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+      <span class="font-title-md text-title-md text-on-surface tracking-tight truncate">LexiconStudy</span>
+      <!-- чип мови = TARGET-мова активного деку (реальна) -->
+      <span id="deck-chip" class="ml-unit-2xs hidden items-center gap-unit-2xs bg-surface-container px-unit-xs py-1 rounded-full text-on-surface"></span>
+    </div>
+    <a id="avatar-link" href="/" aria-label="Профіль" class="w-8 h-8 rounded-full bg-primary flex items-center justify-center overflow-hidden shrink-0">
+      <span class="material-symbols-outlined text-on-primary text-[18px]">person</span>
+    </a>
+  </div>
+</header>
+
+<!-- ══ MAIN ══ -->
+<main class="flex flex-col relative w-full pt-16 pb-24 bg-surface min-h-screen">
+  <div class="flex flex-col w-full px-margin-mobile pb-unit-2xl space-y-unit-lg max-w-[520px] mx-auto">
+
+    <!-- greeting -->
+    <div id="greet" class="pt-unit-md">
+      <div class="skel h-8 w-2/3 mb-2"></div><div class="skel h-4 w-1/2"></div>
+    </div>
+
+    <!-- hero: SRS due -->
+    <section id="hero" class="w-full rounded-xl p-unit-lg shadow-sm bg-gradient-to-br from-primary to-primary-container text-on-primary relative overflow-hidden min-h-[168px]">
+      <div class="skel h-full w-full opacity-30"></div>
+    </section>
+
+    <!-- library stats (замість фейкового "Weekly Target") -->
+    <section id="stats" class="w-full bg-surface-container-lowest rounded-xl p-unit-lg shadow-sm"></section>
+
+    <!-- active deck + інші деки -->
+    <section id="decks" class="w-full bg-surface-container-lowest rounded-xl p-unit-lg shadow-sm space-y-unit-md"></section>
+
+    <!-- quick actions (замість "Accelerate Learning" з фейковим соц-рангом) -->
+    <section id="quick" class="w-full"></section>
+
+    <!-- recent words -->
+    <section id="recent" class="w-full"></section>
+
+    <!-- tip -->
+    <section class="w-full bg-gradient-to-br from-surface-container-low to-surface-container-lowest rounded-xl p-unit-lg shadow-sm flex items-start gap-unit-md">
+      <div class="w-10 h-10 rounded-full bg-secondary-container/10 flex items-center justify-center shrink-0 text-secondary-container">
+        <span class="material-symbols-outlined text-[24px]">lightbulb</span>
+      </div>
+      <div class="flex flex-col space-y-1">
+        <h3 id="tip-h" class="font-label-lg text-label-lg text-on-surface font-bold"></h3>
+        <p id="tip-b" class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed"></p>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<!-- ══ BOTTOM NAV ══ -->
+<nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/85 backdrop-blur-xl shadow-[0_-4px_16px_rgba(0,0,0,0.03)]">
+  <div class="flex items-center justify-around h-16 px-unit-xs max-w-[520px] mx-auto">
+    <a class="flex flex-col items-center justify-center min-w-[56px] min-h-[48px] text-primary font-semibold" href="/redesign.html" aria-current="page">
+      <span class="material-symbols-outlined text-[24px]">home</span><span class="font-label-sm text-label-sm mt-0.5">Home</span>
+    </a>
+    <a class="flex flex-col items-center justify-center min-w-[56px] min-h-[48px] text-on-surface-variant" href="/?go=study">
+      <span class="material-symbols-outlined text-[24px]">style</span><span class="font-label-sm text-label-sm mt-0.5" data-t="nav_review"></span>
+    </a>
+    <a class="flex items-center justify-center min-w-[56px] min-h-[48px] active:scale-95 transition-transform" href="/?go=add">
+      <span class="w-11 h-11 rounded-full bg-primary shadow-md flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[24px]">add</span></span>
+    </a>
+    <a class="flex flex-col items-center justify-center min-w-[56px] min-h-[48px] text-on-surface-variant" href="/?go=progress">
+      <span class="material-symbols-outlined text-[24px]">leaderboard</span><span class="font-label-sm text-label-sm mt-0.5" data-t="nav_progress"></span>
+    </a>
+    <a class="flex flex-col items-center justify-center min-w-[56px] min-h-[48px] text-on-surface-variant" href="/">
+      <span class="material-symbols-outlined text-[24px]">tune</span><span class="font-label-sm text-label-sm mt-0.5" data-t="nav_profile"></span>
+    </a>
+  </div>
+</nav>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, collection, getDocs, query, where, getCountFromServer }
+  from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+/* Той самий проєкт, що й основний застосунок (config публічний, клієнтський). */
+const firebaseConfig = {
+  apiKey: "AIzaSyBFP8Bp0qRWTyU3OD7kb4kFH9OK0laJGfQ",
+  authDomain: "lexicon-e6347.firebaseapp.com",
+  projectId: "lexicon-e6347",
+  storageBucket: "lexicon-e6347.firebasestorage.app",
+  messagingSenderId: "621331806360",
+  appId: "1:621331806360:web:5515c2cdcfc62e917eb8ed"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
+
+/* ── ті самі константи/правила, що в основному застосунку ── */
+const FREE_LIMIT = 50;
+const isDue = w => (w.due||0) <= Date.now();
+const isMastered = w => (w.box||0) >= 5;
+const memoryScore = ws => ws.reduce((s,w)=>s+Math.min(5,Math.max(0,w.box||0)),0);
+const esc = s => (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* прапорці/бейджі мов (як у застосунку: uk→UA, решта→код великими) */
+const FLAG = { en:'🇬🇧', uk:'🇺🇦', hu:'🇭🇺', fr:'🇫🇷', es:'🇪🇸', it:'🇮🇹', pl:'🇵🇱', de:'🇩🇪' };
+const badge = c => c==='uk' ? 'UA' : (c||'').toUpperCase();
+
+/* мова UI — читаємо той самий ключ, що застосунок (дефолт uk). Локальний словник лише для статичних рядків прев'ю. */
+let L = 'uk';
+try { const s = localStorage.getItem('lex_uiLang'); if (s==='uk'||s==='en') L = s; } catch(e){}
+const STR = {
+  uk:{ morning:'Доброго ранку', afternoon:'Доброго дня', evening:'Доброго вечора',
+       boost:'Готові до 5-хвилинного розігріву?', due_deck:'НА ПОВТОР СЬОГОДНІ',
+       cards_due:n=>`${n} ${plural(n,['картка','картки','карток'])} на повтор`, min:'хв',
+       start_review:'Почати повтор', caught_up:'Все повторено 🎉', caught_sub:'На сьогодні картки закінчились. Можна пограти або додати нові слова.',
+       practice:'Зіграти Daily 60', empty_hero:'Почни зі свого першого слова', empty_hero_sub:'Додай слово — AI дасть переклад, транскрипцію й приклад.', add_first:'Додати слово',
+       library:'Твоя бібліотека', total:'усього слів', mastered:'засвоєно', mem:'бал памʼяті', streak_d:n=>`${n} ${plural(n,['день','дні','днів'])} поспіль`, streak_none:'Ще без серії — почни сьогодні',
+       free_left:(c,l)=>`${c} / ${l} слів (безкоштовно)`, pro_plan:'Pro — без ліміту',
+       decks_h:'Активний набір', switch:'Змінити набір', words_n:n=>`${n} ${plural(n,['слово','слова','слів'])}`, other_decks:'Інші набори',
+       q_add:'Додати слово', q_add_s:'AI-переклад', q_review:'Повтор', q_review_s:'Інтервали', q_game:'Daily 60', q_game_s:'Гра на час',
+       recent_h:'Нещодавні слова', view_bank:'Весь словник', recent_empty:'Тут зʼявляться слова, які ти додаси.',
+       tip_h:'Порада про інтервальні повтори', tip_b:'Короткі щоденні підходи працюють краще за рідкі довгі. 5 хвилин зранку — і слова осідають самі.',
+       nav_review:'Повтор', nav_progress:'Прогрес', nav_profile:'Профіль',
+       signin_h:'Увійди, щоб побачити свої дані', signin_b:'Це прев\u2019ю нового інтерфейсу. Увійди через Google — і тут зʼявляться твої реальні слова й прогрес.', signin_btn:'Увійти через Google', signin_err:'Вхід тут не спрацював. Ця сторінка бачить твої дані лише коли відкрита на lexiconstudy.com — відкрий її там.', open_app:'Відкрити застосунок' },
+  en:{ morning:'Good morning', afternoon:'Good afternoon', evening:'Good evening',
+       boost:'Ready for your 5-minute boost?', due_deck:'DUE TODAY',
+       cards_due:n=>`${n} ${n===1?'card':'cards'} due`, min:'min',
+       start_review:'Start Review', caught_up:'All caught up 🎉', caught_sub:'No cards due today. Play a round or add new words.',
+       practice:'Play Daily 60', empty_hero:'Start with your first word', empty_hero_sub:'Add a word — AI gives translation, phonetics and an example.', add_first:'Add a word',
+       library:'Your library', total:'total words', mastered:'mastered', mem:'memory score', streak_d:n=>`${n}-day streak`, streak_none:'No streak yet — start today',
+       free_left:(c,l)=>`${c} / ${l} words (free)`, pro_plan:'Pro — unlimited',
+       decks_h:'Active deck', switch:'Switch deck', words_n:n=>`${n} ${n===1?'word':'words'}`, other_decks:'Other decks',
+       q_add:'Add word', q_add_s:'AI translate', q_review:'Review', q_review_s:'Spaced', q_game:'Daily 60', q_game_s:'Timed game',
+       recent_h:'Recent words', view_bank:'View bank', recent_empty:'Words you add will appear here.',
+       tip_h:'Spaced repetition tip', tip_b:'Short daily drills beat rare long ones. Five minutes in the morning and words settle on their own.',
+       nav_review:'Review', nav_progress:'Progress', nav_profile:'Profile',
+       signin_h:'Sign in to see your data', signin_b:'This is a preview of the new UI. Sign in with Google and your real words and progress will appear here.', signin_btn:'Sign in with Google', signin_err:'Sign-in didn\u2019t work here. This page only sees your data when opened on lexiconstudy.com — open it there.', open_app:'Open app' }
+};
+const T = STR[L];
+function plural(n,forms){ const a=n%10,b=n%100; return (a===1&&b!==11)?forms[0]:((a>=2&&a<=4)&&(b<10||b>=20))?forms[1]:forms[2]; }
+document.querySelectorAll('[data-t]').forEach(el=>{ el.textContent = T[el.getAttribute('data-t')]; });
+document.getElementById('tip-h').textContent = T.tip_h;
+document.getElementById('tip-b').textContent = T.tip_b;
+
+/* ── boot ── */
+onAuthStateChanged(auth, async (u)=>{
+  if(!u){ renderSignedOut(); return; }
+  try { await load(u); }
+  catch(e){ console.error(e); renderError(); }
+});
+
+/* Резолв активного деку — та сама логіка, що в застосунку:
+   localStorage['lex_activeDeck_<uid>'] → дефолтний дек (id==uid) → перший. */
+async function load(u){
+  const uref = doc(db,'users',u.uid);
+  const profSnap = await getDoc(uref);
+  const profile = profSnap.exists() ? profSnap.data() : { plan:'free', wordCount:0 };
+
+  const dsnap = await getDocs(query(collection(db,'decks'), where('ownerUid','==',u.uid)));
+  let decks = dsnap.docs.map(d=>({id:d.id, ...d.data()}));
+  decks.sort((a,b)=>((b.isDefault?1:0)-(a.isDefault?1:0)) || ((a.createdAt||0)-(b.createdAt||0)));
+
+  let saved=null; try{ saved=localStorage.getItem('lex_activeDeck_'+u.uid); }catch(e){}
+  const has = id => id && decks.some(d=>d.id===id);
+  const activeId = has(saved) ? saved : ((decks.find(d=>d.isDefault)||decks[0]||{}).id || u.uid);
+  const active = decks.find(d=>d.id===activeId) || { id:u.uid, targetLang:'en', nativeLang:'uk' };
+
+  /* слова активного деку — той самий query-контракт, що в застосунку */
+  const wcol = collection(db,'decks',activeId,'words');
+  const wq = (activeId===u.uid) ? query(wcol) : query(wcol, where('ownerUid','==',u.uid));
+  const wsnap = await getDocs(wq);
+  let words = wsnap.docs.map(d=>({id:d.id, ...d.data()}));
+  words.sort((a,b)=>(b.created||0)-(a.created||0));
+
+  /* лічильники інших деків — через агрегат (дешево, читання дозволене правилами) */
+  const counts = {};
+  await Promise.all(decks.map(async d=>{
+    if(d.id===activeId){ counts[d.id]=words.length; return; }
+    try{
+      const c = collection(db,'decks',d.id,'words');
+      const cq = (d.id===u.uid) ? query(c) : query(c, where('ownerUid','==',u.uid));
+      counts[d.id] = (await getCountFromServer(cq)).data().count;
+    }catch(e){ counts[d.id] = null; }
+  }));
+
+  render({ u, profile, decks, active, words, counts });
+}
+
+function greeting(name){
+  const h = new Date().getHours();
+  const g = h<12 ? T.morning : (h<18 ? T.afternoon : T.evening);
+  return `${g}, ${esc(name||'')} 👋`;
+}
+
+function render({ u, profile, decks, active, words, counts }){
+  // avatar
+  if(u.photoURL){ const a=document.getElementById('avatar-link'); a.innerHTML=`<img src="${esc(u.photoURL)}" class="w-full h-full object-cover" alt=""/>`; }
+
+  // deck chip (target lang of active deck)
+  const tgt = active.targetLang || 'en';
+  const chip = document.getElementById('deck-chip');
+  chip.className = chip.className.replace('hidden','flex');
+  chip.innerHTML = `<span class="font-label-sm text-label-sm">${FLAG[tgt]||''} ${badge(tgt)}</span>`;
+
+  // greeting
+  document.getElementById('greet').innerHTML =
+    `<h1 class="font-display-lg-mobile text-display-lg-mobile text-on-surface">${greeting(u.displayName||u.email)}</h1>
+     <p class="font-body-md text-body-md text-on-surface-variant mt-0.5">${T.boost}</p>`;
+
+  const due = words.filter(isDue).length;
+  const mastered = words.filter(isMastered).length;
+  const streak = (profile.streak)||0;
+  const pro = profile.plan==='pro';
+
+  // ── HERO ──
+  const hero = document.getElementById('hero');
+  if(words.length===0){
+    hero.className = "w-full rounded-xl p-unit-lg shadow-sm bg-gradient-to-br from-primary to-primary-container text-on-primary relative overflow-hidden";
+    hero.innerHTML =
+      `<h2 class="font-headline-md text-headline-md leading-tight">${T.empty_hero}</h2>
+       <p class="font-body-sm text-body-sm text-on-primary-container mt-1 mb-unit-md">${T.empty_hero_sub}</p>
+       <a href="/?go=add" class="inline-flex items-center justify-center gap-unit-xs bg-secondary-container text-on-primary font-label-lg text-label-lg font-bold px-unit-lg py-unit-sm rounded-xl active:translate-y-px">
+         <span class="material-symbols-outlined text-[20px]">add</span>${T.add_first}</a>`;
+  } else if(due>0){
+    const mins = Math.max(1, Math.round(due*0.25)); // ~15 карток ≈ 4 хв
+    hero.className = "w-full rounded-xl p-unit-lg shadow-sm bg-gradient-to-br from-primary to-primary-container text-on-primary relative overflow-hidden";
+    hero.innerHTML =
+      `<div class="flex items-center justify-between">
+         <span class="font-label-sm text-label-sm bg-on-primary/15 px-unit-sm py-0.5 rounded-full tracking-wide">${T.due_deck}</span>
+         <span class="flex items-center gap-1 font-label-md text-label-md text-on-primary-container"><span class="material-symbols-outlined text-[16px]">schedule</span>~${mins} ${T.min}</span>
+       </div>
+       <div class="font-display-lg-mobile text-display-lg-mobile mt-unit-sm leading-none">${T.cards_due(due)}</div>
+       <a href="/?go=study" class="mt-unit-md w-full flex items-center justify-center gap-unit-xs bg-secondary-container text-on-primary font-label-lg text-label-lg font-bold py-unit-sm rounded-xl active:translate-y-px">
+         ${T.start_review}<span class="material-symbols-outlined text-[20px]">arrow_forward</span></a>`;
+  } else {
+    hero.className = "w-full rounded-xl p-unit-lg shadow-sm bg-surface-container-lowest border border-outline-variant/40";
+    hero.innerHTML =
+      `<div class="flex items-start gap-unit-sm">
+         <span class="material-symbols-outlined text-secondary-container text-[28px]" style="font-variation-settings:'FILL' 1">task_alt</span>
+         <div><h2 class="font-headline-sm text-headline-sm text-on-surface">${T.caught_up}</h2>
+         <p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">${T.caught_sub}</p></div>
+       </div>
+       <a href="/?go=game" class="mt-unit-md w-full flex items-center justify-center gap-unit-xs bg-primary text-on-primary font-label-lg text-label-lg font-bold py-unit-sm rounded-xl active:translate-y-px">
+         <span class="material-symbols-outlined text-[20px]">bolt</span>${T.practice}</a>`;
+  }
+
+  // ── LIBRARY STATS ──
+  const memPct = words.length ? Math.round(memoryScore(words)/(words.length*5)*100) : 0;
+  const limitLine = pro
+    ? `<span class="font-label-sm text-label-sm text-primary font-semibold">${T.pro_plan}</span>`
+    : (()=>{ const c=(profile.wordCount)||0, pct=Math.min(100,Math.round(c/FREE_LIMIT*100));
+        return `<div class="mt-unit-sm">
+          <div class="flex items-center justify-between mb-1"><span class="font-label-sm text-label-sm text-on-surface-variant">${T.free_left(c,FREE_LIMIT)}</span><span class="font-label-sm text-label-sm text-on-surface-variant">${pct}%</span></div>
+          <div class="w-full h-2 bg-surface-container rounded-full overflow-hidden"><div class="h-full ${pct>=80?'bg-secondary':'bg-primary'} rounded-full" style="width:${pct}%"></div></div></div>`; })();
+  document.getElementById('stats').innerHTML =
+    `<div class="flex items-center justify-between">
+       <h2 class="font-title-md text-title-md text-on-surface">${T.library}</h2>
+       <span class="flex items-center gap-1 bg-secondary-fixed px-unit-sm py-1 rounded-full">
+         <span class="text-[14px] leading-none">🔥</span>
+         <span class="font-label-md text-label-md text-on-secondary-fixed font-bold">${streak>0?T.streak_d(streak):'0'}</span></span>
+     </div>
+     <div class="grid grid-cols-3 gap-unit-xs mt-unit-md">
+       ${statCell(words.length, T.total, 'primary')}
+       ${statCell(mastered, T.mastered, 'secondary')}
+       ${statCell(memPct+'%', T.mem, 'on-surface')}
+     </div>
+     ${limitLine}`;
+
+  // ── DECKS ──
+  const deckRow = (d, isActive)=>{
+    const tg=d.targetLang||'en', nv=d.nativeLang||'uk';
+    const nm = (d.isDefault||d.id===u.uid) ? (L==='en'?'My dictionary':'Мій словник') : (d.name||'—');
+    const cnt = counts[d.id];
+    return `<a href="/${isActive?'?go=dict':''}" class="w-full p-unit-md rounded-xl flex items-center justify-between ${isActive?'bg-surface-container-low':'bg-surface-container-lowest border border-outline-variant/40'}">
+      <div class="flex items-center gap-unit-sm min-w-0">
+        <span class="text-xl shrink-0">${FLAG[tg]||'📘'}</span>
+        <div class="flex flex-col min-w-0">
+          <span class="font-label-lg text-label-lg text-on-surface font-bold truncate">${esc(nm)}</span>
+          <span class="font-body-sm text-body-sm text-on-surface-variant">${badge(tg)} → ${badge(nv)}${cnt!=null?' · '+T.words_n(cnt):''}</span>
+        </div>
+      </div>
+      ${isActive?'<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings:\'FILL\' 1">check_circle</span>':'<span class="material-symbols-outlined text-outline text-[20px]">chevron_right</span>'}
+    </a>`;
+  };
+  const others = decks.filter(d=>d.id!==active.id);
+  document.getElementById('decks').innerHTML =
+    `<div class="flex items-center justify-between">
+       <h2 class="font-title-md text-title-md text-on-surface">${T.decks_h}</h2>
+       <a href="/" class="font-label-sm text-label-sm text-primary font-semibold">${T.switch}</a>
+     </div>
+     ${deckRow(active, true)}
+     ${others.length?`<div class="font-label-sm text-label-sm text-on-surface-variant pt-unit-2xs">${T.other_decks}</div>`+others.map(d=>deckRow(d,false)).join(''):''}`;
+
+  // ── QUICK ACTIONS ──
+  document.getElementById('quick').innerHTML =
+    `<div class="grid grid-cols-3 gap-unit-sm">
+       ${quickTile('/?go=add','add','primary',T.q_add,T.q_add_s)}
+       ${quickTile('/?go=study','style','secondary-container',T.q_review,T.q_review_s)}
+       ${quickTile('/?go=game','bolt','tertiary',T.q_game,T.q_game_s)}
+     </div>`;
+
+  // ── RECENT WORDS ──
+  const rec = words.slice(0,5);
+  const recBody = rec.length ? rec.map(w=>{
+    const nv = (active.nativeLang||'uk');
+    const tr = (w.tr&&(w.tr[nv]||w.tr.uk||Object.values(w.tr)[0]))||'';
+    const pct = Math.round(Math.min(5,Math.max(0,w.box||0))/5*100);
+    return `<div class="flex items-center gap-unit-sm p-unit-sm rounded-lg bg-surface-container-lowest border border-outline-variant/30">
+      <button data-speak="${esc(w.word)}" class="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-[18px]">volume_up</span></button>
+      <div class="flex flex-col min-w-0 flex-1">
+        <div class="flex items-center gap-unit-xs min-w-0"><span class="font-label-lg text-label-lg text-on-surface font-bold truncate">${esc(w.word)}</span>${w.ipa?`<span class="font-body-sm text-body-sm text-on-surface-variant truncate">${esc(w.ipa)}</span>`:''}</div>
+        <span class="font-body-sm text-body-sm text-on-surface-variant truncate">${esc(tr)||'—'}</span>
+      </div>
+      <div class="text-right shrink-0 w-14">
+        <span class="font-label-lg text-label-lg ${pct>=80?'text-secondary':'text-primary'} font-bold">${pct}%</span>
+        <div class="w-full h-1.5 bg-surface-container rounded-full overflow-hidden mt-1"><div class="h-full ${pct>=80?'bg-secondary':'bg-primary'} rounded-full" style="width:${pct}%"></div></div>
+      </div>
+    </div>`;
+  }).join('') : `<p class="font-body-sm text-body-sm text-on-surface-variant p-unit-sm">${T.recent_empty}</p>`;
+  document.getElementById('recent').innerHTML =
+    `<div class="flex items-center justify-between mb-unit-sm">
+       <h2 class="font-title-md text-title-md text-on-surface">${T.recent_h}</h2>
+       <a href="/?go=dict" class="font-label-sm text-label-sm text-primary font-semibold">${T.view_bank}</a>
+     </div>
+     <div class="space-y-unit-xs">${recBody}</div>`;
+
+  // локальна озвучка (Web Speech) — той самий безкоштовний примітив, що в застосунку
+  document.getElementById('recent').addEventListener('click', e=>{
+    const b=e.target.closest('[data-speak]'); if(!b) return;
+    try{ const u2=new SpeechSynthesisUtterance(b.getAttribute('data-speak')); u2.lang=(active.targetLang||'en'); speechSynthesis.speak(u2); }catch(_){}
+  });
+}
+
+function statCell(val,label,color){
+  return `<div class="bg-surface-container-low rounded-lg p-unit-sm flex flex-col items-center text-center">
+    <span class="font-headline-sm text-headline-sm text-${color} font-bold">${val}</span>
+    <span class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">${label}</span></div>`;
+}
+function quickTile(href,icon,color,title,sub){
+  return `<a href="${href}" class="bg-surface-container-lowest border border-outline-variant/40 rounded-xl p-unit-md flex flex-col items-center text-center gap-unit-2xs active:translate-y-px shadow-sm">
+    <span class="w-10 h-10 rounded-full bg-${color}/10 text-${color} flex items-center justify-center"><span class="material-symbols-outlined text-[22px]">${icon}</span></span>
+    <span class="font-label-lg text-label-lg text-on-surface font-semibold mt-1">${title}</span>
+    <span class="font-label-sm text-label-sm text-on-surface-variant">${sub}</span></a>`;
+}
+
+function renderSignedOut(){
+  document.querySelector('main .max-w-\\[520px\\]').innerHTML =
+    `<div class="pt-unit-3xl flex flex-col items-center text-center gap-unit-md">
+       <div class="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center"><span class="material-symbols-outlined text-[32px]">lock</span></div>
+       <h1 class="font-headline-sm text-headline-sm text-on-surface">${T.signin_h}</h1>
+       <p class="font-body-md text-body-md text-on-surface-variant max-w-[300px]">${T.signin_b}</p>
+       <button id="do-signin" class="inline-flex items-center gap-unit-xs bg-primary text-on-primary font-label-lg text-label-lg font-bold px-unit-lg py-unit-sm rounded-xl active:translate-y-px">
+         <span class="material-symbols-outlined text-[20px]">login</span>${T.signin_btn}</button>
+       <p id="signin-note" class="font-body-sm text-body-sm text-error hidden max-w-[320px]"></p>
+       <a href="/" class="font-label-sm text-label-sm text-primary font-semibold underline">${T.open_app}</a>
+     </div>`;
+  const b=document.getElementById('do-signin');
+  if(b) b.onclick=async()=>{
+    try{ await signInWithPopup(auth, provider); }   // успіх → onAuthStateChanged сам покличе load()
+    catch(e){ const n=document.getElementById('signin-note'); if(n){ n.textContent=T.signin_err; n.classList.remove('hidden'); } console.error(e); }
+  };
+}
+function renderError(){
+  document.querySelector('main .max-w-\\[520px\\]').innerHTML =
+    `<div class="pt-unit-3xl text-center text-on-surface-variant"><p class="font-body-md text-body-md">Не вдалося завантажити дані. Спробуй оновити сторінку.</p></div>`;
+}
+</script>
+</body>
+</html>
