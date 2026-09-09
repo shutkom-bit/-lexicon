@@ -779,7 +779,7 @@ const I18N={
   "game.your_record": "твій рекорд: {n}",
   "game.too_few_title": "Замало слів для гри",
   "game.title": "Гра на швидкість",
-  "game.intro": "За {sec} секунд обери якнайбільше правильних перекладів. Серія (🔥) підвищує азарт, а правильні відповіді зараховуються у твій прогрес.",
+  "game.intro": "За {sec} секунд обери якнайбільше правильних перекладів. Серія підвищує азарт, а правильні відповіді зараховуються у твій прогрес.",
   "game.record_intro": "🏆 Твій рекорд: {n}",
   "game.start": "Почати ({sec} сек)",
   "nav.about": "Про застосунок",
@@ -985,7 +985,7 @@ const I18N={
   "game.your_record": "your record: {n}",
   "game.too_few_title": "Not enough words for a game",
   "game.title": "Speed game",
-  "game.intro": "In {sec} seconds, pick as many correct translations as you can. A streak (🔥) raises the stakes, and correct answers count toward your progress.",
+  "game.intro": "In {sec} seconds, pick as many correct translations as you can. A streak raises the stakes, and correct answers count toward your progress.",
   "game.record_intro": "🏆 Your record: {n}",
   "game.start": "Start ({sec} sec)",
   "nav.about": "About",
@@ -1866,7 +1866,7 @@ function gameNext(){
   const wrong=pool.filter(x=>x.id!==w.id).sort(()=>Math.random()-.5).slice(0,3);
   const opts=[w,...wrong].sort(()=>Math.random()-.5);
   document.getElementById('game-body').innerHTML=`
-    <div class="game-hud"><div class="g-score">${gScore}<small>${t('game.points_short')}</small></div><div class="g-streak">${gStreak>1?'🔥 '+t('game.streak')+' '+gStreak:''}</div></div>
+    <div class="game-hud"><div class="g-score">${gScore}<small>${t('game.points_short')}</small></div><div class="g-streak">${gStreak>1?t('game.streak')+' '+gStreak:''}</div></div>
     <div class="g-timerbar"><i id="g-bar" style="width:100%"></i></div>
     <div class="q-word">${esc(w.word)}</div>
     <div class="q-sub">${t('quiz.choose_tr',{lang:langInst(gameLang)})}</div>
@@ -1957,7 +1957,7 @@ function renderProgress(){
   const due=words.filter(isDue).length;
   const best=(profile&&profile.bestScore)||0;
   body.innerHTML=`
-    <div class="prog-streak"><div class="ps-num">🔥 ${streak}</div><div class="ps-lbl">${tp('progress.days',streak)} ${t('progress.in_a_row')}</div></div>
+    <div class="prog-streak"><div class="ps-num">${streak}</div><div class="ps-lbl">${tp('progress.days',streak)} ${t('progress.in_a_row')}</div></div>
     <div class="prog-donut-wrap">
       <svg viewBox="0 0 180 180" class="prog-donut">${segs}<text x="90" y="86" text-anchor="middle" class="pd-big">${masteredPct}%</text><text x="90" y="106" text-anchor="middle" class="pd-sub">${t('stats.mastered')}</text></svg>
       <div class="prog-legend">${cats.map(c=>`<div class="pl-row"><span class="pl-dot" style="background:${c.color}"></span><span class="pl-lbl">${c.label}</span><span class="pl-val">${c.val}</span></div>`).join('')}</div>
@@ -2039,7 +2039,7 @@ document.getElementById('deck-menu').onclick=e=>{
 };
 document.addEventListener('click',e=>{ if(!e.target.closest('.deckbar')) toggleDeckMenu(false); });
 
-function fillLangSelect(sel,selected){ sel.innerHTML=LANGS.map(l=>`<option value="${l.code}"${l.code===selected?' selected':''}>${l.label}</option>`).join(''); }
+function fillLangSelect(sel,selected){ sel.innerHTML=LANGS.map(l=>`<option value="${l.code}"${l.code===selected?' selected':''}>${langLabel(l.code)}</option>`).join(''); }
 function deckModalLangs(){
   const t=document.getElementById('deck-target').value;
   const n=document.getElementById('deck-native').value;
