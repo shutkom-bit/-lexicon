@@ -13,15 +13,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    /* Освіжена палітра (кобальт + корал), гілка ui-redesign. Fraunces для заголовків лишаємо.
-       Повернути старий вигляд = відновити цей блок. */
-    --paper:#f8f9ff; --panel:#FFFFFF;
-    --ink:#121c2a; --ink-soft:#434655; --faint:#747686;
-    --line:#c4c5d7; --line-2:#e6eeff;
-    --accent:#1d4ed8; --accent-ink:#0037b0;
-    --learned:#10b981; --due:#ea580c;
+    --paper:#FBFAF7; --panel:#FFFFFF;
+    --ink:#161B33; --ink-soft:#565D7C; --faint:#8A90A8;
+    --line:#E8E4DB; --line-2:#F1EEE7;
+    --accent:#5B4FE0; --accent-ink:#3A2FB0;
+    --learned:#2E7D5B; --due:#C2703D;
     --uk:#3A6BD6; --hu:#C24D63;
-    --shadow:0 1px 3px rgba(15,23,42,.05), 0 10px 20px -6px rgba(15,23,42,.08);
+    --shadow:0 1px 2px rgba(22,27,51,.04), 0 8px 24px rgba(22,27,51,.06);
   }
   *{box-sizing:border-box} html,body{margin:0}
   body{background:var(--paper);color:var(--ink);font-family:'Inter',system-ui,sans-serif;font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
@@ -30,9 +28,10 @@
   #login{display:none;min-height:100vh}
   .land{max-width:960px;margin:0 auto;padding:0 20px}
   .hero{text-align:center;padding:56px 0 40px}
-  .lbrand{display:inline-flex;align-items:baseline;gap:10px;margin-bottom:22px}
+  .lbrand{display:inline-flex;align-items:center;gap:10px;margin-bottom:22px}
   .lbrand .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);transform:translateY(-5px)}
   .lbrand .name{font-family:'Fraunces',serif;font-weight:600;font-size:26px;letter-spacing:-.01em}
+  .logo-ico{display:block;flex:none}
   .hero h1{font-family:'Fraunces',serif;font-weight:600;font-size:46px;line-height:1.08;letter-spacing:-.02em;margin:0 auto;max-width:660px}
   .hero h1 em{font-style:normal;color:var(--accent)}
   .hero .sub{color:var(--ink-soft);font-size:18px;max-width:540px;margin:18px auto 30px;line-height:1.55}
@@ -61,7 +60,7 @@
   .feat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;padding:24px 0}
   .fcard{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px;box-shadow:var(--shadow);transition:transform .15s,box-shadow .15s}
   .fcard:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(22,27,51,.1)}
-  .fcard .ficon{width:42px;height:42px;border-radius:11px;background:rgba(29,78,216,.1);color:var(--accent);display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+  .fcard .ficon{width:42px;height:42px;border-radius:11px;background:rgba(91,79,224,.1);color:var(--accent);display:flex;align-items:center;justify-content:center;margin-bottom:14px}
   .fcard .ficon svg{width:22px;height:22px}
   .fcard h3{font-family:'Fraunces',serif;font-size:19px;font-weight:600;margin:0 0 6px}
   .fcard p{color:var(--ink-soft);font-size:14px;line-height:1.55;margin:0}
@@ -98,13 +97,13 @@
   /* header */
   #app{display:none}
   header{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px}
-  .brand{display:flex;align-items:baseline;gap:10px}
+  .brand{display:flex;align-items:center;gap:10px}
   .brand h1{font-family:'Fraunces',serif;font-weight:600;font-size:30px;letter-spacing:-.01em;margin:0}
   .brand .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);transform:translateY(-3px)}
   .brand small{color:var(--faint);font-size:12.5px;letter-spacing:.04em;text-transform:uppercase}
   .usermenu{display:flex;align-items:center;gap:12px}
   .plan-chip{font-size:12px;font-weight:500;padding:5px 11px;border-radius:20px;background:var(--line-2);color:var(--ink-soft)}
-  .plan-chip.pro{background:rgba(29,78,216,.12);color:var(--accent)}
+  .plan-chip.pro{background:rgba(91,79,224,.12);color:var(--accent)}
   .uchip{display:flex;align-items:center;gap:9px}
   .uchip img{width:30px;height:30px;border-radius:50%;border:1px solid var(--line)}
   .uchip .uname{font-size:13.5px;color:var(--ink-soft);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -150,7 +149,7 @@
   .addbox{padding:22px}
   .addbox .row{display:flex;gap:10px;flex-wrap:wrap}
   input[type=text]{font-family:inherit;font-size:15px;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:12px 14px;outline:none;transition:border .15s,box-shadow .15s}
-  input[type=text]:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(29,78,216,.12)}
+  input[type=text]:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(91,79,224,.12)}
   #w-word{flex:2;min-width:180px;font-family:'Fraunces',serif;font-size:17px}
   #w-topic{flex:1;min-width:130px}
   .btn{font-family:inherit;font-size:14px;font-weight:500;border:none;border-radius:10px;padding:12px 20px;cursor:pointer;transition:transform .08s,background .15s}
@@ -177,7 +176,7 @@
   .lang.hu{background:rgba(194,77,99,.12);color:var(--hu)}
   /* deck creation: language pair selects */
   .modal select{font-family:inherit;font-size:15px;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:11px 12px;outline:none;width:100%;cursor:pointer;transition:border .15s,box-shadow .15s}
-  .modal select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(29,78,216,.12)}
+  .modal select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(91,79,224,.12)}
   .deck-lang-row{display:flex;align-items:flex-end;gap:10px;margin-top:16px;text-align:left}
   .deck-lang-row .dl-field{flex:1;min-width:0}
   .deck-lang-row .dl-lbl{font-size:12px;color:var(--faint);margin:0 0 5px 2px;font-weight:500}
@@ -219,7 +218,7 @@
   .flash .fex{color:var(--faint);font-style:italic;font-size:14px;margin-top:10px;max-width:380px}
   .grade{display:flex;gap:10px;width:100%;max-width:520px}
   .grade .btn{flex:1}
-  .btn-again{background:#ffdbce;color:var(--due)} .btn-again:hover{background:#ffb599}
+  .btn-again{background:#FBEEE6;color:var(--due)} .btn-again:hover{background:#F6E0D2}
   .btn-good{background:#E6F2EC;color:var(--learned)} .btn-good:hover{background:#D6ECE0}
   .progress{width:100%;max-width:520px;height:5px;background:var(--line-2);border-radius:4px;overflow:hidden}
   .progress i{display:block;height:100%;background:var(--accent);transition:width .3s}
@@ -243,7 +242,7 @@
   .opt{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px;text-align:left;font-family:inherit;font-size:15px;color:var(--ink);cursor:pointer;transition:border .12s,background .12s}
   .opt:hover{border-color:var(--accent)}
   .opt.correct{border-color:var(--learned);background:#E6F2EC;color:var(--learned)}
-  .opt.wrong{border-color:var(--due);background:#ffdbce;color:var(--due)}
+  .opt.wrong{border-color:var(--due);background:#FBEEE6;color:var(--due)}
   .opt:disabled{cursor:default}
   .empty{text-align:center;padding:48px 20px;color:var(--faint);min-height:44vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
   .empty .big{font-family:'Fraunces',serif;font-size:22px;color:var(--ink-soft);margin-bottom:8px}
@@ -337,7 +336,7 @@
   @media (max-width:640px){ .land-top{padding:10px 0 0} .lang-switch button{padding:7px 12px;font-size:13px} }
 
   /* Daily 60 */
-  .daily-card{background:linear-gradient(135deg,#eff4ff,#f8f9ff);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:16px 18px;margin-bottom:16px}
+  .daily-card{background:linear-gradient(135deg,#efeaff,#fbfbfe);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:16px 18px;margin-bottom:16px}
   .daily-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
   .daily-metric b{font-family:'Fraunces',serif;font-size:30px;font-weight:600;line-height:1;color:var(--accent);display:block}
   .daily-metric span{font-size:11px;color:var(--faint);text-transform:uppercase;letter-spacing:.03em}
@@ -358,7 +357,7 @@
  <div class="land">
   <div class="land-top"><div class="lang-switch" id="lang-switch-land"></div></div>
   <section class="hero">
-    <div class="lbrand rise d1"><span class="dot"></span><span class="name">Lexicon</span></div>
+    <div class="lbrand rise d1"><svg class="logo-ico" width="30" height="30" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="120" height="120" rx="28" fill="#2563EB"/><path d="M32 38C32 34.6863 34.6863 32 38 32H76C82.6274 32 88 37.3726 88 44V80C88 83.3137 85.3137 86 82 86H44C37.3726 86 32 80.6274 32 74V38Z" fill="white" fill-opacity="0.15"/><path d="M38 36H56C62.6274 36 68 41.3726 68 48V84C68 84 61 82 54 82H38V36Z" fill="white" fill-opacity="0.95"/><path d="M68 48C68 41.3726 73.3726 36 80 36H82V82H68V48Z" fill="white" fill-opacity="0.75"/><circle cx="84" cy="34" r="7" fill="#F97316"/><path d="M44 48H60M44 58H58M44 68H54" stroke="#2563EB" stroke-width="3" stroke-linecap="round"/></svg><span class="name">Lexicon</span></div>
     <h1 class="rise d1" data-i18n-html="land.h1">Вчи слова зі <em>свого</em> життя, а не з чужого списку</h1>
     <p class="sub rise d2" data-i18n="land.sub">Побачив нове слово — у статті, фільмі чи розмові — додаєш його за секунду (навіть просто з Telegram), а Lexicon перетворює його на навчання: переклад і приклад від AI, розумні повтори, тест і гра на швидкість.</p>
     <div class="cta-row rise d3">
@@ -427,7 +426,7 @@
 <!-- APP -->
 <div id="app"><div class="wrap">
   <header>
-    <div class="brand"><span class="dot"></span><h1>Lexicon</h1><small data-i18n="app.tagline">тренажер словника</small></div>
+    <div class="brand"><svg class="logo-ico" width="30" height="30" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="120" height="120" rx="28" fill="#2563EB"/><path d="M32 38C32 34.6863 34.6863 32 38 32H76C82.6274 32 88 37.3726 88 44V80C88 83.3137 85.3137 86 82 86H44C37.3726 86 32 80.6274 32 74V38Z" fill="white" fill-opacity="0.15"/><path d="M38 36H56C62.6274 36 68 41.3726 68 48V84C68 84 61 82 54 82H38V36Z" fill="white" fill-opacity="0.95"/><path d="M68 48C68 41.3726 73.3726 36 80 36H82V82H68V48Z" fill="white" fill-opacity="0.75"/><circle cx="84" cy="34" r="7" fill="#F97316"/><path d="M44 48H60M44 58H58M44 68H54" stroke="#2563EB" stroke-width="3" stroke-linecap="round"/></svg><h1>Lexicon</h1><small data-i18n="app.tagline">тренажер словника</small></div>
     <div class="usermenu">
       <div class="lang-switch" id="lang-switch-app"></div>
       <span class="plan-chip" id="plan-chip">Free</span>
@@ -779,7 +778,7 @@ const I18N={
   "game.your_record": "твій рекорд: {n}",
   "game.too_few_title": "Замало слів для гри",
   "game.title": "Гра на швидкість",
-  "game.intro": "За {sec} секунд обери якнайбільше правильних перекладів. Серія підвищує азарт, а правильні відповіді зараховуються у твій прогрес.",
+  "game.intro": "За {sec} секунд обери якнайбільше правильних перекладів. Серія (🔥) підвищує азарт, а правильні відповіді зараховуються у твій прогрес.",
   "game.record_intro": "🏆 Твій рекорд: {n}",
   "game.start": "Почати ({sec} сек)",
   "nav.about": "Про застосунок",
@@ -985,7 +984,7 @@ const I18N={
   "game.your_record": "your record: {n}",
   "game.too_few_title": "Not enough words for a game",
   "game.title": "Speed game",
-  "game.intro": "In {sec} seconds, pick as many correct translations as you can. A streak raises the stakes, and correct answers count toward your progress.",
+  "game.intro": "In {sec} seconds, pick as many correct translations as you can. A streak (🔥) raises the stakes, and correct answers count toward your progress.",
   "game.record_intro": "🏆 Your record: {n}",
   "game.start": "Start ({sec} sec)",
   "nav.about": "About",
@@ -1866,7 +1865,7 @@ function gameNext(){
   const wrong=pool.filter(x=>x.id!==w.id).sort(()=>Math.random()-.5).slice(0,3);
   const opts=[w,...wrong].sort(()=>Math.random()-.5);
   document.getElementById('game-body').innerHTML=`
-    <div class="game-hud"><div class="g-score">${gScore}<small>${t('game.points_short')}</small></div><div class="g-streak">${gStreak>1?t('game.streak')+' '+gStreak:''}</div></div>
+    <div class="game-hud"><div class="g-score">${gScore}<small>${t('game.points_short')}</small></div><div class="g-streak">${gStreak>1?'🔥 '+t('game.streak')+' '+gStreak:''}</div></div>
     <div class="g-timerbar"><i id="g-bar" style="width:100%"></i></div>
     <div class="q-word">${esc(w.word)}</div>
     <div class="q-sub">${t('quiz.choose_tr',{lang:langInst(gameLang)})}</div>
@@ -1957,7 +1956,7 @@ function renderProgress(){
   const due=words.filter(isDue).length;
   const best=(profile&&profile.bestScore)||0;
   body.innerHTML=`
-    <div class="prog-streak"><div class="ps-num">${streak}</div><div class="ps-lbl">${tp('progress.days',streak)} ${t('progress.in_a_row')}</div></div>
+    <div class="prog-streak"><div class="ps-num">🔥 ${streak}</div><div class="ps-lbl">${tp('progress.days',streak)} ${t('progress.in_a_row')}</div></div>
     <div class="prog-donut-wrap">
       <svg viewBox="0 0 180 180" class="prog-donut">${segs}<text x="90" y="86" text-anchor="middle" class="pd-big">${masteredPct}%</text><text x="90" y="106" text-anchor="middle" class="pd-sub">${t('stats.mastered')}</text></svg>
       <div class="prog-legend">${cats.map(c=>`<div class="pl-row"><span class="pl-dot" style="background:${c.color}"></span><span class="pl-lbl">${c.label}</span><span class="pl-val">${c.val}</span></div>`).join('')}</div>
@@ -2039,7 +2038,7 @@ document.getElementById('deck-menu').onclick=e=>{
 };
 document.addEventListener('click',e=>{ if(!e.target.closest('.deckbar')) toggleDeckMenu(false); });
 
-function fillLangSelect(sel,selected){ sel.innerHTML=LANGS.map(l=>`<option value="${l.code}"${l.code===selected?' selected':''}>${langLabel(l.code)}</option>`).join(''); }
+function fillLangSelect(sel,selected){ sel.innerHTML=LANGS.map(l=>`<option value="${l.code}"${l.code===selected?' selected':''}>${l.label}</option>`).join(''); }
 function deckModalLangs(){
   const t=document.getElementById('deck-target').value;
   const n=document.getElementById('deck-native').value;
