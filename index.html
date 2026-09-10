@@ -1162,6 +1162,23 @@ let unsubWords=null, unsubProfile=null, unsubDecks=null;
 
 const isDue=w=>(w.due||0)<=Date.now();
 const isMastered=w=>(w.box||0)>=5;
+/* ── SRS "стіна": ліміт нових карток на день ──
+   Слово ніколи не проходило тренування, доки box===0 — це і є "нове".
+   introduced проставляється один раз, при першому оцінюванні (див. schedFields),
+   і дозволяє порахувати, скільки нового вже показано СЬОГОДНІ, навіть якщо
+   вкладку "Тренування" відкривали кілька разів за день. */
+const NEW_PER_DAY=10;
+const isNewCard=w=>(w.box||0)===0;
+function sameDay(a,b){ const x=new Date(a), y=new Date(b); return x.getFullYear()===y.getFullYear()&&x.getMonth()===y.getMonth()&&x.getDate()===y.getDate(); }
+function newIntroducedToday(){ const now=Date.now(); return words.filter(w=>w.introduced&&sameDay(w.introduced,now)).length; }
+function newQuota(){ return Math.max(0, NEW_PER_DAY-newIntroducedToday()); }
+/* Скільки карток реально попаде в чергу тренування "на сьогодні" — це і є число,
+   яке варто показувати як "на повтор" (замість лякаючого сирого бэклогу нових). */
+function dueCountForBadge(){
+  const reviews=words.filter(w=>!isNewCard(w)&&isDue(w)).length;
+  const freshAvail=words.filter(isNewCard).length;
+  return reviews+Math.min(freshAvail, newQuota());
+}
 const esc=s=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const trOf=(w,l)=>(w.tr&&w.tr[l])||'';
 /* Active deck language pair (with legacy-safe defaults en→uk). */
@@ -1218,7 +1235,7 @@ function speak(text){
   }catch(e){ console.error(e); }
 }
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2600);}
-function schedFields(w,ok){const box=ok?Math.min(5,(w.box||0)+1):1;return {box, reps:(w.reps||0)+(ok?1:0), lapses:(w.lapses||0)+(ok?0:1), due:Date.now()+(INTERVALS[box]??16)*86400000, last:Date.now()};}
+function schedFields(w,ok){const box=ok?Math.min(5,(w.box||0)+1):1;return {box, reps:(w.reps||0)+(ok?1:0), lapses:(w.lapses||0)+(ok?0:1), due:Date.now()+(INTERVALS[box]??16)*86400000, last:Date.now(), introduced:w.introduced||Date.now()};}
 
 /* ── AUTH ── */
 async function signInGoogle(){
@@ -1647,7 +1664,7 @@ function refreshPlanUI(){
 }
 
 function refreshStats(){
-  const due=words.filter(isDue).length, mastered=words.filter(isMastered).length;
+  const due=dueCountForBadge(), mastered=words.filter(isMastered).length;
   document.getElementById('s-total').textContent=words.length;
   document.getElementById('s-due').textContent=due;
   document.getElementById('s-mastered').textContent=mastered;
@@ -1780,7 +1797,15 @@ function renderDict(){
 
 /* ── STUDY ── */
 let queue=[], qi=0, flipped=false;
-function startStudy(all){ queue=(all?words.slice():words.filter(isDue)).sort((a,b)=>(a.due||0)-(b.due||0)); qi=0; flipped=false; renderStudy(); }
+function startStudy(all){
+  if(all){ queue=words.slice().sort((a,b)=>(a.due||0)-(b.due||0)); }
+  else{
+    const reviews=words.filter(w=>!isNewCard(w)&&isDue(w)).sort((a,b)=>(a.due||0)-(b.due||0));
+    const fresh=words.filter(isNewCard).sort((a,b)=>(a.created||0)-(b.created||0)).slice(0,newQuota());
+    queue=reviews.concat(fresh);
+  }
+  qi=0; flipped=false; renderStudy();
+}
 function renderStudy(){
   const body=document.getElementById('study-body');
   if(!queue.length){ body.innerHTML=`<div class="empty"><div class="big">${t('study.empty_title')}</div>${words.length?t('study.all_done'):t('study.add_first')}</div>${words.length?`<div class="center" style="margin-top:16px"><button class="btn btn-primary" onclick="startStudy(true)">${t('study.repeat_all',{n:words.length})}</button></div>`:''}`; return; }
@@ -1958,7 +1983,7 @@ function renderProgress(){
     off+=len; return s;
   }).join('');
   const streak=(profile&&profile.streak)||0;
-  const due=words.filter(isDue).length;
+  const due=dueCountForBadge();
   const best=(profile&&profile.bestScore)||0;
   body.innerHTML=`
     <div class="prog-streak"><div class="ps-num">${streak}</div><div class="ps-lbl">${tp('progress.days',streak)} ${t('progress.in_a_row')}</div></div>
