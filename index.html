@@ -1103,6 +1103,18 @@ function applyI18n(root){
   root.querySelectorAll('[data-i18n="nav.terms"]').forEach(el=>el.setAttribute('href', uiLang==='en'?'/terms-en.html':'/terms.html'));
   document.documentElement.lang=uiLang;
   document.title=t('doc.title');
+  updateAddPlaceholder();
+}
+/* Плейсхолдер поля "додати слово" мав жорстко "English word or phrase…" незалежно від того,
+   яку мову вивчають у поточному наборі (deckTarget). Тепер підставляємо назву реальної
+   цільової мови набору, обома мовами інтерфейсу. */
+function updateAddPlaceholder(){
+  const el=document.getElementById('w-word'); if(!el) return;
+  const code=deckTarget();
+  const l=LANGS.find(x=>x.code===code);
+  const inst=l?(l.inst[uiLang]||l.inst.uk):'';
+  const ph=uiLang==='uk' ? `Слово чи фраза ${inst}…` : `Word or phrase in ${l?l.name.en:'English'}…`;
+  el.setAttribute('placeholder', ph);
 }
 function tp(base,n){
   let cat;
@@ -1206,30 +1218,33 @@ const speakBtn=word=>`<button class="spk" data-speak="${esc(word)}" title="${t('
 let _voices=[];
 function loadVoices(){ try{ _voices=window.speechSynthesis.getVoices()||[]; }catch(e){ _voices=[]; } }
 if('speechSynthesis' in window){ loadVoices(); window.speechSynthesis.onvoiceschanged=loadVoices; }
-function pickEnVoice(){
+/* BCP-47 теги для TTS (2-літерний код словника → повний тег голосу браузера). */
+const LANG_BCP47={en:'en-US', uk:'uk-UA', hu:'hu-HU', fr:'fr-FR', es:'es-ES', it:'it-IT', pl:'pl-PL', de:'de-DE'};
+function pickVoiceForLang(code){
   if(!_voices.length) loadVoices();
-  const en=_voices.filter(v=>/^en(-|_|$)/i.test(v.lang));
-  if(!en.length) return null;
-  // Prefer higher-quality voices: enhanced/premium/natural/neural, then known good names.
+  const prefix=((LANG_BCP47[code]||code||'en')+'').split('-')[0];
+  const matches=_voices.filter(v=>new RegExp('^'+prefix+'(-|_|$)','i').test(v.lang));
+  if(!matches.length) return null;
+  // Prefer higher-quality voices: enhanced/premium/natural/neural, then local (no lag).
   const score=v=>{
     const n=(v.name+' '+(v.voiceURI||'')).toLowerCase();
     let s=0;
     if(/enhanced|premium|natural|neural/.test(n)) s+=100;
-    if(/siri|google|ava|samantha|serena|allison|zoe|nathan|aaron/.test(n)) s+=40;
-    if(/en-us/i.test(v.lang)) s+=10;
-    if(/en-gb/i.test(v.lang)) s+=8;
-    if(v.localService) s+=2; // local = no lag, still fine
+    if(v.localService) s+=2;
     return s;
   };
-  return en.slice().sort((a,b)=>score(b)-score(a))[0];
+  return matches.slice().sort((a,b)=>score(b)-score(a))[0];
 }
-function speak(text){
+/* Озвучує текст мовою словника (targetLang активного набору), якщо lang не передано явно —
+   інакше диктор читав би угорське/французьке слово за англійськими правилами вимови. */
+function speak(text, lang){
   try{
     if(!('speechSynthesis' in window)){ toast(t('speak.unsupported')); return; }
+    const code=lang||deckTarget();
     window.speechSynthesis.cancel();
     const u=new SpeechSynthesisUtterance(text);
-    const v=pickEnVoice();
-    if(v){ u.voice=v; u.lang=v.lang; } else { u.lang='en-US'; }
+    const v=pickVoiceForLang(code);
+    if(v){ u.voice=v; u.lang=v.lang; } else { u.lang=LANG_BCP47[code]||'en-US'; }
     u.rate=0.95; u.pitch=1;
     window.speechSynthesis.speak(u);
   }catch(e){ console.error(e); }
@@ -1384,6 +1399,7 @@ function setActiveDeck(id){
 function deckDisplayName(d){ if(!d) return t('deck.default_name'); if(d.isDefault||d.id===(user&&user.uid)) return t('deck.default_name'); return d.name||t('deck.untitled'); }
 function renderDeckSwitcher(){
   const active=decks.find(d=>d.id===activeDeckId);
+  updateAddPlaceholder();
   const nameEl=document.getElementById('deck-name');
   if(nameEl) nameEl.textContent=active?deckDisplayName(active):t('deck.default_name');
   const pairEl=document.getElementById('deck-pair');
