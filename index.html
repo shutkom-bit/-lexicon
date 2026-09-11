@@ -1216,7 +1216,7 @@ function langSeg(id,current,natives){
     `</div></div>`;
 }
 const SPK_SVG='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 10v4h4l5 5V5L7 10H3zm13.5 2a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12zM14 3.23v2.06a7 7 0 0 1 0 13.42v2.06a9 9 0 0 0 0-17.54z"/></svg>';
-const speakBtn=word=>`<button class="spk" data-speak="${esc(word)}" title="${t('a11y.listen')}" aria-label="${t('a11y.listen')}">${SPK_SVG}</button>`;
+const speakBtn=(word,id)=>`<button class="spk" data-speak="${esc(word)}" data-speak-id="${esc(id||'')}" title="${t('a11y.listen')}" aria-label="${t('a11y.listen')}">${SPK_SVG}</button>`;
 let _voices=[];
 function loadVoices(){ try{ _voices=window.speechSynthesis.getVoices()||[]; }catch(e){ _voices=[]; } }
 if('speechSynthesis' in window){ loadVoices(); window.speechSynthesis.onvoiceschanged=loadVoices; }
@@ -1252,6 +1252,31 @@ function speak(text, lang){
   }catch(e){ console.error(e); }
 }
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2600);}
+/* Програє base64-MP3, отриманий з /api/tts або вже закешований у документі слова. */
+function playBase64Audio(b64){
+  try{ new Audio('data:audio/mp3;base64,'+b64).play(); }catch(e){ console.error(e); }
+}
+/* Реалістичне озвучення через Google Cloud TTS (бекенд /api/tts), з кешем на слово:
+   раз згенероване аудіо зберігається в документі слова (поле audio) і надалі
+   програється без нового запиту. Якщо TTS недоступний — тихий фолбек на
+   браузерний speak() (той самий, що був раніше), щоб кнопка ніколи не мовчала. */
+async function speakSmart(text, wordId){
+  const w=wordId?words.find(x=>x.id===wordId):null;
+  if(w && w.audio){ playBase64Audio(w.audio); return; }
+  if(!user){ speak(text); return; }
+  try{
+    const token=await user.getIdToken();
+    const r=await fetch('/api/tts',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({word:text,lang:deckTarget()})});
+    if(!r.ok) throw new Error('tts '+r.status);
+    const data=await r.json();
+    if(!data.audioContent) throw new Error('tts: no audio');
+    playBase64Audio(data.audioContent);
+    if(w && wordId){ updateDoc(doc(db,'decks',activeDeckId,'words',wordId),{audio:data.audioContent}).catch(()=>{}); }
+  }catch(e){
+    console.error(e);
+    speak(text);
+  }
+}
 function schedFields(w,ok){const box=ok?Math.min(5,(w.box||0)+1):1;return {box, reps:(w.reps||0)+(ok?1:0), lapses:(w.lapses||0)+(ok?0:1), due:Date.now()+(INTERVALS[box]??16)*86400000, last:Date.now(), introduced:w.introduced||Date.now()};}
 
 /* ── AUTH ── */
@@ -1788,7 +1813,7 @@ function renderEntryInner(w){
   const trLines=deckNatives().map(code=>{const v=trOf(w,code);return v?`<div class="tr"><span class="lang ${code}">${langBadge(code)}</span><span>${esc(v)}</span></div>`:'';}).join('');
   return `<div class="entry">
     <div class="head">
-      <div><span class="headword">${esc(w.word)}</span>${speakBtn(w.word)}${w.ipa?`<span class="ipa">${esc(w.ipa)}</span>`:''}${w.pos?`<span class="pos">${esc(w.pos)}</span>`:''}</div>
+      <div><span class="headword">${esc(w.word)}</span>${speakBtn(w.word,w.id)}${w.ipa?`<span class="ipa">${esc(w.ipa)}</span>`:''}${w.pos?`<span class="pos">${esc(w.pos)}</span>`:''}</div>
       ${trLines}
       ${w.def?`<div class="def">${esc(w.def)}</div>`:''}
       ${w.ex?`<div class="ex">${esc(w.ex)}</div>`:''}
@@ -1829,7 +1854,7 @@ function renderStudy(){
   if(!queue.length){ body.innerHTML=`<div class="empty"><div class="big">${t('study.empty_title')}</div>${words.length?t('study.all_done'):t('study.add_first')}</div>${words.length?`<div class="center" style="margin-top:16px"><button class="btn btn-primary" onclick="startStudy(true)">${t('study.repeat_all',{n:words.length})}</button></div>`:''}`; return; }
   if(qi>=queue.length){ body.innerHTML=`<div class="empty"><div class="big">${t('study.session_done')}</div>${t('study.session_count',{n:queue.length})}</div><div class="center"><button class="btn btn-ghost" onclick="startStudy()">${t('study.again')}</button></div>`; refreshStats(); return; }
   const w=queue[qi], nat=deckNatives();
-  const front=`<div class="fw">${esc(w.word)}</div>${w.ipa?`<div class="fipa">${esc(w.ipa)}</div>`:''}<div style="margin-top:12px">${speakBtn(w.word)}</div><div class="flip-hint">${t('study.flip_hint')}</div>`;
+  const front=`<div class="fw">${esc(w.word)}</div>${w.ipa?`<div class="fipa">${esc(w.ipa)}</div>`:''}<div style="margin-top:12px">${speakBtn(w.word,w.id)}</div><div class="flip-hint">${t('study.flip_hint')}</div>`;
   const trBack=nat.map((code,i)=>{const v=trOf(w,code); if(i===0) return `<div class="ftr"><span class="lang ${code}">${langBadge(code)}</span>${esc(v||'—')}</div>`; return v?`<div class="ftr" style="font-size:22px;margin-top:8px"><span class="lang ${code}">${langBadge(code)}</span>${esc(v)}</div>`:'';}).join('');
   const back=`${trBack}${w.pos?`<div class="fpos">${esc(w.pos)}</div>`:''}${w.def?`<div class="fdef">${esc(w.def)}</div>`:''}${w.ex?`<div class="fex">${esc(w.ex)}</div>`:''}`;
   body.innerHTML=`<div class="stage">
@@ -1841,7 +1866,7 @@ function renderStudy(){
       <button class="btn btn-good" data-grade="1">${t('study.know')}</button>
     </div></div>`;
   document.getElementById('flash').onclick=()=>{ if(!flipped){ flipped=true; renderStudy(); } };
-  const fspk=document.querySelector('#flash .spk'); if(fspk) fspk.onclick=(e)=>{ e.stopPropagation(); speak(w.word); };
+  const fspk=document.querySelector('#flash .spk'); if(fspk) fspk.onclick=(e)=>{ e.stopPropagation(); speakSmart(w.word,w.id); };
   document.querySelectorAll('#grade [data-grade]').forEach(b=>b.onclick=async()=>{
     const ok=b.dataset.grade==='1';
     const w=queue[qi], f=schedFields(w,ok); Object.assign(w,f);
@@ -2050,7 +2075,7 @@ document.getElementById('dict-list').addEventListener('click',async e=>{
 // Speaker buttons anywhere except the flashcard (which has its own handler)
 document.addEventListener('click',e=>{
   const b=e.target.closest('.spk[data-speak]');
-  if(b && !b.closest('#flash')) speak(b.getAttribute('data-speak'));
+  if(b && !b.closest('#flash')) speakSmart(b.getAttribute('data-speak'), b.getAttribute('data-speak-id'));
 });
 
 /* ── Connect Telegram ── */
