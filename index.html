@@ -1109,12 +1109,14 @@ function applyI18n(root){
    яку мову вивчають у поточному наборі (deckTarget). Тепер підставляємо назву реальної
    цільової мови набору, обома мовами інтерфейсу. */
 function updateAddPlaceholder(){
-  const el=document.getElementById('w-word'); if(!el) return;
-  const code=deckTarget();
-  const l=LANGS.find(x=>x.code===code);
-  const inst=l?(l.inst[uiLang]||l.inst.uk):'';
-  const ph=uiLang==='uk' ? `Слово чи фраза ${inst}…` : `Word or phrase in ${l?l.name.en:'English'}…`;
-  el.setAttribute('placeholder', ph);
+  try{
+    const el=document.getElementById('w-word'); if(!el) return;
+    const code=deckTarget();
+    const l=LANGS.find(x=>x.code===code);
+    const inst=l?(l.inst[uiLang]||l.inst.uk):'';
+    const ph=uiLang==='uk' ? `Слово чи фраза ${inst}…` : `Word or phrase in ${l?l.name.en:'English'}…`;
+    el.setAttribute('placeholder', ph);
+  }catch(e){ /* виклик до оголошення deckTarget на самому старті сторінки — оновиться пізніше */ }
 }
 function tp(base,n){
   let cat;
