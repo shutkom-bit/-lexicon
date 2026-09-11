@@ -204,6 +204,13 @@
   .tag{font-size:11px;letter-spacing:.03em;text-transform:uppercase;color:var(--faint)}
   .tag.due{color:var(--due)}
   .del{background:none;border:none;color:var(--faint);cursor:pointer;font-size:12px;padding:2px 4px} .del:hover{color:var(--due)}
+  .conj-btn{background:none;border:none;color:var(--faint);cursor:pointer;font-size:12px;padding:2px 4px}
+  .conj-btn:hover{color:var(--accent)}
+  .conj-tense{margin-bottom:16px}
+  .conj-tense h4{margin:0 0 6px;font-size:14px;color:var(--ink-soft)}
+  .conj-row{display:flex;gap:10px;padding:4px 0;font-size:14px;border-bottom:1px solid var(--line)}
+  .conj-row .subj{flex:none;width:40%;color:var(--faint)}
+  .conj-row .form{flex:1;font-weight:600}
   .group-h{font-family:'Fraunces',serif;font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);padding:16px 20px 6px}
   .dict-controls{display:flex;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap}
   .searchbar{flex:1;min-width:200px} .searchbar input{width:100%}
@@ -609,7 +616,15 @@
   </div>
 </div>
 
-<!-- PAYWALL -->
+<!-- VERB CONJUGATION (9 tenses, English only) -->
+<div class="modal-bg" id="conj-modal">
+  <div class="modal" style="max-width:520px;text-align:left;max-height:80vh;overflow:auto">
+    <h2 id="conj-title" data-i18n="conj.title">Відмінювання дієслова</h2>
+    <div id="conj-body"></div>
+    <button class="btn btn-ghost" id="conj-close" style="width:100%;margin-top:14px" data-i18n="common.close">Закрити</button>
+  </div>
+</div>
+
 <div class="modal-bg" id="paywall">
   <div class="modal">
     <h2 data-i18n="pw.title">Ліміт вичерпано</h2>
@@ -758,6 +773,19 @@ const I18N={
   "pos.other": "Інше",
   "entry.in_progress": "у процесі",
   "entry.new": "нове",
+  "conj.button": "Відмінювання",
+  "conj.title": "Відмінювання дієслова",
+  "conj.loading": "Завантажую таблицю…",
+  "conj.error": "Не вдалося завантажити. Спробуй ще раз.",
+  "tense.present_simple": "Теперішній простий",
+  "tense.present_continuous": "Теперішній тривалий",
+  "tense.present_perfect": "Теперішній доконаний",
+  "tense.past_simple": "Минулий простий",
+  "tense.past_continuous": "Минулий тривалий",
+  "tense.past_perfect": "Минулий доконаний",
+  "tense.future_simple": "Майбутній простий",
+  "tense.future_continuous": "Майбутній тривалий",
+  "tense.future_perfect": "Майбутній доконаний",
   "entry.delete": "видалити",
   "dict.not_found": "Нічого не знайдено",
   "dict.empty": "Словник порожній",
@@ -965,6 +993,19 @@ const I18N={
   "pos.other": "Other",
   "entry.in_progress": "in progress",
   "entry.new": "new",
+  "conj.button": "Conjugation",
+  "conj.title": "Verb conjugation",
+  "conj.loading": "Loading the table…",
+  "conj.error": "Couldn't load it. Try again.",
+  "tense.present_simple": "Present Simple",
+  "tense.present_continuous": "Present Continuous",
+  "tense.present_perfect": "Present Perfect",
+  "tense.past_simple": "Past Simple",
+  "tense.past_continuous": "Past Continuous",
+  "tense.past_perfect": "Past Perfect",
+  "tense.future_simple": "Future Simple",
+  "tense.future_continuous": "Future Continuous",
+  "tense.future_perfect": "Future Perfect",
   "entry.delete": "delete",
   "dict.not_found": "Nothing found",
   "dict.empty": "Dictionary is empty",
@@ -1630,6 +1671,42 @@ const CONSENT_VERSION=1;
 function openAbout(){ document.getElementById('about-modal').classList.add('show'); }
 function closeAbout(){ document.getElementById('about-modal').classList.remove('show'); }
 
+/* ── VERB CONJUGATION (9 tenses, English only) ──
+   Генерується за вимогою (клік по кнопці), а не автоматично при додаванні
+   слова — щоб не платити AI-запитом за дієслова, які ніхто не відкриє.
+   Результат кешується в документі слова (поле conjugation) — надалі
+   відкривається миттєво, без нового запиту. */
+const TENSE_IDS=['present_simple','present_continuous','present_perfect','past_simple','past_continuous','past_perfect','future_simple','future_continuous','future_perfect'];
+function renderConjugationBody(tenses){
+  return TENSE_IDS.map(id=>{
+    const rows=(tenses&&tenses[id])||[];
+    if(!rows.length) return '';
+    const rowsHtml=rows.map(r=>`<div class="conj-row"><span class="subj">${esc(r.subject)}</span><span class="form">${esc(r.form)}</span></div>`).join('');
+    return `<div class="conj-tense"><h4>${t('tense.'+id)}</h4>${rowsHtml}</div>`;
+  }).join('');
+}
+function closeConjugation(){ document.getElementById('conj-modal').classList.remove('show'); }
+async function openConjugation(wordId){
+  const w=words.find(x=>x.id===wordId); if(!w) return;
+  const modal=document.getElementById('conj-modal'), body=document.getElementById('conj-body');
+  document.getElementById('conj-title').textContent=t('conj.title')+': '+w.word;
+  modal.classList.add('show');
+  if(w.conjugation){ body.innerHTML=renderConjugationBody(w.conjugation); return; }
+  body.innerHTML=`<div class="hint">${t('conj.loading')}</div>`;
+  try{
+    const token=await user.getIdToken();
+    const r=await fetch('/api/conjugate',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({word:w.word})});
+    if(!r.ok) throw new Error('conjugate '+r.status);
+    const data=await r.json();
+    if(!data.tenses) throw new Error('conjugate: no tenses');
+    body.innerHTML=renderConjugationBody(data.tenses);
+    updateDoc(doc(db,'decks',activeDeckId,'words',wordId),{conjugation:data.tenses}).catch(()=>{});
+  }catch(e){
+    console.error(e);
+    body.innerHTML=`<div class="hint">${t('conj.error')}</div>`;
+  }
+}
+
 function maybeShowConsent(){
   if(profile && Number(profile.consentVersion||0) >= CONSENT_VERSION) return;
   const m=document.getElementById('consent-modal');
@@ -1815,6 +1892,7 @@ function renderEntryInner(w){
     :'<span class="tag">'+t('entry.in_progress')+'</span>';
   const delBtn=w.id==='preview'?'':`<button class="del" data-del="${w.id}">${t('entry.delete')}</button>`;
   const favBtn=w.id==='preview'?'':`<button class="fav ${w.fav?'on':''}" data-fav="${w.id}" title="${t('fav.add')}">${w.fav?'\u2605':'\u2606'}</button>`;
+  const conjBtn=(w.id!=='preview' && w.pos_group==='verb' && deckTarget()==='en')?`<button class="conj-btn" data-conj="${w.id}">${t('conj.button')}</button>`:'';
   const trLines=deckNatives().map(code=>{const v=trOf(w,code);return v?`<div class="tr"><span class="lang ${code}">${langBadge(code)}</span><span>${esc(v)}</span></div>`:'';}).join('');
   return `<div class="entry">
     <div class="head">
@@ -1823,7 +1901,7 @@ function renderEntryInner(w){
       ${w.def?`<div class="def">${esc(w.def)}</div>`:''}
       ${w.ex?`<div class="ex">${esc(w.ex)}</div>`:''}
     </div>
-    <div class="side"><div class="box-pips">${pips(w.box)}</div>${favBtn}${tag}${delBtn}</div>
+    <div class="side"><div class="box-pips">${pips(w.box)}</div>${favBtn}${tag}${conjBtn}${delBtn}</div>
   </div>`;
 }
 function renderDict(){
@@ -2155,6 +2233,9 @@ document.getElementById('join-modal').addEventListener('click',e=>{ if(e.target.
 document.getElementById('about-link').onclick=e=>{ e.preventDefault(); openAbout(); };
 document.getElementById('about-close').onclick=closeAbout;
 document.getElementById('about-modal').addEventListener('click',e=>{ if(e.target.id==='about-modal') closeAbout(); });
+document.getElementById('conj-close').onclick=closeConjugation;
+document.getElementById('conj-modal').addEventListener('click',e=>{ if(e.target.id==='conj-modal') closeConjugation(); });
+document.addEventListener('click',e=>{ const cb=e.target.closest('[data-conj]'); if(cb) openConjugation(cb.getAttribute('data-conj')); });
 document.getElementById('join-go').onclick=()=>joinByCode(document.getElementById('join-code').value);
 document.getElementById('join-code').addEventListener('keydown',e=>{ if(e.key==='Enter') joinByCode(e.target.value); });
 </script>
