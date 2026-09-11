@@ -757,6 +757,7 @@ const I18N={
   "pos.phrase": "Фрази та вирази",
   "pos.other": "Інше",
   "entry.in_progress": "у процесі",
+  "entry.new": "нове",
   "entry.delete": "видалити",
   "dict.not_found": "Нічого не знайдено",
   "dict.empty": "Словник порожній",
@@ -963,6 +964,7 @@ const I18N={
   "pos.phrase": "Phrases & expressions",
   "pos.other": "Other",
   "entry.in_progress": "in progress",
+  "entry.new": "new",
   "entry.delete": "delete",
   "dict.not_found": "Nothing found",
   "dict.empty": "Dictionary is empty",
@@ -1806,8 +1808,11 @@ async function doAdd(){
 /* ── DICTIONARY ── */
 function pips(box){let h='';for(let i=1;i<=5;i++){const c=box>=5?'m':(i<=box?'f':'');h+=`<span class="pip ${c}"></span>`;}return h;}
 function renderEntryInner(w){
-  const mastered=isMastered(w), due=isDue(w);
-  const tag=mastered?'<span class="tag" style="color:var(--learned)">'+t('stats.mastered')+'</span>':due?'<span class="tag due">'+t('stats.due')+'</span>':'<span class="tag">'+t('entry.in_progress')+'</span>';
+  const mastered=isMastered(w), isNew=isNewCard(w), due=!isNew&&isDue(w);
+  const tag=mastered?'<span class="tag" style="color:var(--learned)">'+t('stats.mastered')+'</span>'
+    :isNew?'<span class="tag">'+t('entry.new')+'</span>'
+    :due?'<span class="tag due">'+t('stats.due')+'</span>'
+    :'<span class="tag">'+t('entry.in_progress')+'</span>';
   const delBtn=w.id==='preview'?'':`<button class="del" data-del="${w.id}">${t('entry.delete')}</button>`;
   const favBtn=w.id==='preview'?'':`<button class="fav ${w.fav?'on':''}" data-fav="${w.id}" title="${t('fav.add')}">${w.fav?'\u2605':'\u2606'}</button>`;
   const trLines=deckNatives().map(code=>{const v=trOf(w,code);return v?`<div class="tr"><span class="lang ${code}">${langBadge(code)}</span><span>${esc(v)}</span></div>`:'';}).join('');
