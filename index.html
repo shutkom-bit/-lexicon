@@ -1695,7 +1695,7 @@ async function openConjugation(wordId){
   body.innerHTML=`<div class="hint">${t('conj.loading')}</div>`;
   try{
     const token=await user.getIdToken();
-    const ctrl=new AbortController(); const abortT=setTimeout(()=>ctrl.abort(),15000);
+    const ctrl=new AbortController(); const abortT=setTimeout(()=>ctrl.abort(),25000);
     let r;
     try{ r=await fetch('/api/conjugate',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({word:w.word}),signal:ctrl.signal}); }
     finally{ clearTimeout(abortT); }
