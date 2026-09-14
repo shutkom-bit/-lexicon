@@ -1695,7 +1695,10 @@ async function openConjugation(wordId){
   body.innerHTML=`<div class="hint">${t('conj.loading')}</div>`;
   try{
     const token=await user.getIdToken();
-    const r=await fetch('/api/conjugate',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({word:w.word})});
+    const ctrl=new AbortController(); const abortT=setTimeout(()=>ctrl.abort(),15000);
+    let r;
+    try{ r=await fetch('/api/conjugate',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({word:w.word}),signal:ctrl.signal}); }
+    finally{ clearTimeout(abortT); }
     if(!r.ok) throw new Error('conjugate '+r.status);
     const data=await r.json();
     if(!data.tenses) throw new Error('conjugate: no tenses');
