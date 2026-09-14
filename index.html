@@ -374,7 +374,7 @@
     <p class="sub rise d2" data-i18n="land.sub">Побачив нове слово — у статті, фільмі чи розмові — додаєш його за секунду (навіть просто з Telegram), а Lexicon перетворює його на навчання: переклад і приклад від AI, розумні повтори, тест і гра на швидкість.</p>
     <div class="cta-row rise d3">
       <button class="gbtn" id="google-btn"><svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> <span data-i18n="land.cta_free">Почати безкоштовно з Google</span></button>
-      <span class="trust" data-i18n="land.trust">50 слів безкоштовно назавжди · без картки</span>
+      <span class="trust" data-i18n="land.trust">100 слів безкоштовно назавжди · без картки</span>
     </div>
     <div class="demo rise d4">
       <span class="demo-tag" data-i18n="land.demo_tag">приклад картки</span>
@@ -628,7 +628,7 @@
 <div class="modal-bg" id="paywall">
   <div class="modal">
     <h2 data-i18n="pw.title">Ліміт вичерпано</h2>
-    <p data-i18n-html="pw.body">Безкоштовно можна додати <b id="pw-limit">50</b> слів — назавжди. Ти вже їх додав.<br><span style="font-size:13px;color:var(--faint)">Видаляти слова можна скільки завгодно, але ліміт рахує всі колись додані слова.</span></p>
+    <p data-i18n-html="pw.body">Безкоштовно можна додати <b id="pw-limit">100</b> слів — назавжди. Ти вже їх додав.<br><span style="font-size:13px;color:var(--faint)">Видаляти слова можна скільки завгодно, але ліміт рахує всі колись додані слова.</span></p>
     <div class="price">€12.99 <small data-i18n="pw.once">разово, назавжди</small></div>
     <ul>
       <li data-i18n="pw.feat1">Безлімітна кількість слів</li>
@@ -662,7 +662,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
-const FREE_LIMIT = 50;
+const FREE_LIMIT = 100;
 const INTERVALS=[0,1,2,4,8,16];
 const POS_ORDER=['verb','noun','adjective','adverb','phrase','other'];
 function posLabel(k){ return t('pos.'+k); }
@@ -687,7 +687,7 @@ const I18N={
  "uk": {
   "land.h1": "Вчи слова зі <em>свого</em> життя, а не з чужого списку",
   "land.sub": "Побачив нове слово — у статті, фільмі чи розмові — додаєш його за секунду (навіть просто з Telegram), а Lexicon перетворює його на навчання: переклад і приклад від AI, розумні повтори, тест і гра на швидкість.",
-  "land.trust": "50 слів безкоштовно назавжди · без картки",
+  "land.trust": "100 слів безкоштовно назавжди · без картки",
   "land.demo_tag": "приклад картки",
   "land.f1_h": "AI розуміє слово",
   "land.f1_p": "Вводиш слово — і AI миттєво дає переклад, транскрипцію, частину мови та приклад речення. Розпізнає навіть ідіоми та стійкі вирази.",
@@ -855,7 +855,7 @@ const I18N={
   "consent.check_label": "Я прочитав(ла) і приймаю Політику приватності та Умови.",
   "consent.accept": "Погоджуюсь і продовжити",
   "pw.title": "Ліміт вичерпано",
-  "pw.body": "Безкоштовно можна додати <b id=\"pw-limit\">50</b> слів — назавжди. Ти вже їх додав.<br><span style=\"font-size:13px;color:var(--faint)\">Видаляти слова можна скільки завгодно, але ліміт рахує всі колись додані слова.</span>",
+  "pw.body": "Безкоштовно можна додати <b id=\"pw-limit\">100</b> слів — назавжди. Ти вже їх додав.<br><span style=\"font-size:13px;color:var(--faint)\">Видаляти слова можна скільки завгодно, але ліміт рахує всі колись додані слова.</span>",
   "pw.once": "разово, назавжди",
   "pw.feat1": "Безлімітна кількість слів",
   "pw.feat2": "Усі мови перекладу",
@@ -909,7 +909,7 @@ const I18N={
   "land.h1": "Learn the words from <em>your</em> life, not someone else’s list",
   "land.sub": "Spot a new word — in an article, a film or a conversation — add it in a second (even straight from Telegram), and Lexicon turns it into learning: an AI translation and example, smart repetition, a quiz and a speed game.",
   "land.cta_free": "Start free with Google",
-  "land.trust": "50 words free forever · no card",
+  "land.trust": "100 words free forever · no card",
   "land.demo_tag": "example card",
   "land.f1_h": "AI understands the word",
   "land.f1_p": "Type a word and AI instantly gives the translation, pronunciation, part of speech and an example sentence. It even recognises idioms and set phrases.",
@@ -1074,7 +1074,7 @@ const I18N={
   "consent.check_label": "I have read and accept the Privacy Policy and Terms.",
   "consent.accept": "Agree and continue",
   "pw.title": "Limit reached",
-  "pw.body": "You can add <b id=\"pw-limit\">50</b> words for free — forever. You’ve already added them.<br><span style=\"font-size:13px;color:var(--faint)\">You can delete words freely, but the limit counts every word ever added.</span>",
+  "pw.body": "You can add <b id=\"pw-limit\">100</b> words for free — forever. You’ve already added them.<br><span style=\"font-size:13px;color:var(--faint)\">You can delete words freely, but the limit counts every word ever added.</span>",
   "pw.once": "one-time, forever",
   "pw.feat1": "Unlimited words",
   "pw.feat2": "All translation languages",
@@ -1859,7 +1859,7 @@ async function doAdd(){
     d={word,ipa:'',pos:'',pos_group:'other',tr:{},definition:'',example:'',topic:topic||'General'}; toast(t('add.ai_unavailable'));
   }
   // Дубль після лематизації AI (напр. ввели «running», а в наборі вже є «run»).
-  // Важливо: тут ловимо ДО списання ліміту, щоб дубль не з'їдав слот із 50.
+  // Важливо: тут ловимо ДО списання ліміту, щоб дубль не з'їдав слот зі 100.
   const dupPost=findDuplicate(d.word||word);
   if(dupPost){
     const p=document.getElementById('preview'); p.className='preview show';
