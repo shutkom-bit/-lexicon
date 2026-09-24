@@ -792,6 +792,10 @@ const I18N={
   "pos.other": "Інше",
   "entry.in_progress": "у процесі",
   "entry.new": "нове",
+  "entry.translate_failed": "AI зараз недоступний — слово збережено без перекладу.",
+  "entry.retry_translate": "Спробувати переклад ще раз",
+  "entry.retrying": "Пробую ще раз…",
+  "entry.retry_ok": "Переклад додано",
   "conj.button": "Відмінювання",
   "conj.title": "Відмінювання дієслова",
   "conj.loading": "Завантажую таблицю…",
@@ -1019,6 +1023,10 @@ const I18N={
   "pos.other": "Other",
   "entry.in_progress": "in progress",
   "entry.new": "new",
+  "entry.translate_failed": "AI is unavailable right now — word saved without translation.",
+  "entry.retry_translate": "Retry translation",
+  "entry.retrying": "Retrying…",
+  "entry.retry_ok": "Translation added",
   "conj.button": "Conjugation",
   "conj.title": "Verb conjugation",
   "conj.loading": "Loading the table…",
@@ -1719,6 +1727,23 @@ function renderCryptoRows(){
 function openCrypto(){ renderCryptoRows(); document.getElementById('crypto-modal').classList.add('show'); }
 function closeCrypto(){ document.getElementById('crypto-modal').classList.remove('show'); }
 
+/* Повторна спроба перекладу для слова, яке зберіглось без нього (translateFailed) —
+   людина не мусить видаляти й вводити слово наново через тимчасову недоступність AI. */
+async function retryTranslate(wordId){
+  const w=words.find(x=>x.id===wordId); if(!w) return;
+  toast(t('entry.retrying'));
+  try{
+    const d=await enrich(w.word, w.topic||'General');
+    const updated={
+      ipa:d.ipa||'', pos:d.pos||'', pos_group:(POS_ORDER.includes(d.pos_group)?d.pos_group:'other'),
+      tr:(d.tr&&typeof d.tr==='object')?d.tr:{}, def:d.definition||'', ex:d.example||'',
+      translateFailed:false
+    };
+    await updateDoc(doc(db,'decks',activeDeckId,'words',wordId), updated);
+    toast(t('entry.retry_ok'));
+  }catch(e){ console.error(e); toast(t('add.ai_unavailable')); }
+}
+
 function openAbout(){ document.getElementById('about-modal').classList.add('show'); }
 function closeAbout(){ document.getElementById('about-modal').classList.remove('show'); }
 
@@ -1916,7 +1941,7 @@ async function doAdd(){
   try{ d=await enrich(word,topic); }
   catch(e){
     if(e.limit){ btn.disabled=false; btn.textContent=t('add.btn'); showPaywall(); return; }
-    d={word,ipa:'',pos:'',pos_group:'other',tr:{},definition:'',example:'',topic:topic||'General'}; toast(t('add.ai_unavailable'));
+    d={word,ipa:'',pos:'',pos_group:'other',tr:{},definition:'',example:'',topic:topic||'General',translateFailed:true}; toast(t('add.ai_unavailable'));
   }
   // Дубль після лематизації AI (напр. ввели «running», а в наборі вже є «run»).
   // Важливо: тут ловимо ДО списання ліміту, щоб дубль не з'їдав слот зі 100.
@@ -1930,7 +1955,8 @@ async function doAdd(){
   const entry={
     word:d.word||word, topic:finalTopic, ipa:d.ipa||'', pos:d.pos||'', pos_group:(POS_ORDER.includes(d.pos_group)?d.pos_group:'other'),
     tr:(d.tr&&typeof d.tr==='object')?d.tr:{}, def:d.definition||'', ex:d.example||'',
-    ownerUid:user.uid, box:0, due:Date.now(), reps:0, lapses:0, created:Date.now()
+    ownerUid:user.uid, box:0, due:Date.now(), reps:0, lapses:0, created:Date.now(),
+    ...(d.translateFailed?{translateFailed:true}:{})
   };
   try{
     await addDoc(collection(db,'decks',activeDeckId,'words'), entry);
@@ -1953,6 +1979,8 @@ function renderEntryInner(w){
   const delBtn=w.id==='preview'?'':`<button class="del" data-del="${w.id}">${t('entry.delete')}</button>`;
   const favBtn=w.id==='preview'?'':`<button class="fav ${w.fav?'on':''}" data-fav="${w.id}" title="${t('fav.add')}">${w.fav?'\u2605':'\u2606'}</button>`;
   const conjBtn=(w.id!=='preview' && w.pos_group==='verb' && deckTarget()==='en')?`<button class="conj-btn" data-conj="${w.id}">${t('conj.button')}</button>`:'';
+  const retryBtn=(w.id!=='preview' && w.translateFailed)?`<button class="conj-btn" style="color:var(--due)" data-retry="${w.id}">${t('entry.retry_translate')}</button>`:'';
+  const failNote=w.translateFailed?`<div class="hint" style="color:var(--due);margin-top:4px">${t('entry.translate_failed')}</div>`:'';
   const trLines=deckNatives().map(code=>{const v=trOf(w,code);return v?`<div class="tr"><span class="lang ${code}">${langBadge(code)}</span><span>${esc(v)}</span></div>`:'';}).join('');
   return `<div class="entry">
     <div class="head">
@@ -1960,8 +1988,9 @@ function renderEntryInner(w){
       ${trLines}
       ${w.def?`<div class="def">${esc(w.def)}</div>`:''}
       ${w.ex?`<div class="ex">${esc(w.ex)}</div>`:''}
+      ${failNote}
     </div>
-    <div class="side"><div class="box-pips">${pips(w.box)}</div>${favBtn}${tag}${conjBtn}${delBtn}</div>
+    <div class="side"><div class="box-pips">${pips(w.box)}</div>${favBtn}${tag}${conjBtn}${retryBtn}${delBtn}</div>
   </div>`;
 }
 function renderDict(){
@@ -2296,6 +2325,7 @@ document.getElementById('about-modal').addEventListener('click',e=>{ if(e.target
 document.getElementById('conj-close').onclick=closeConjugation;
 document.getElementById('conj-modal').addEventListener('click',e=>{ if(e.target.id==='conj-modal') closeConjugation(); });
 document.addEventListener('click',e=>{ const cb=e.target.closest('[data-conj]'); if(cb) openConjugation(cb.getAttribute('data-conj')); });
+document.addEventListener('click',e=>{ const rb=e.target.closest('[data-retry]'); if(rb) retryTranslate(rb.getAttribute('data-retry')); });
 document.getElementById('pw-crypto-open').onclick=()=>{ document.getElementById('paywall').classList.remove('show'); openCrypto(); };
 document.getElementById('crypto-close').onclick=closeCrypto;
 document.getElementById('crypto-modal').addEventListener('click',e=>{ if(e.target.id==='crypto-modal') closeCrypto(); });
