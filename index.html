@@ -163,6 +163,14 @@
   .btn-primary:disabled{opacity:.55;cursor:wait}
   .btn-ghost{background:var(--line-2);color:var(--ink-soft)} .btn-ghost:hover{background:var(--line)}
   .hint{color:var(--faint);font-size:12.5px;margin-top:12px}
+  .link-btn{display:block;width:100%;background:none;border:none;color:var(--accent);font-size:14px;font-weight:600;cursor:pointer;padding:12px 0 4px;text-align:center}
+  .link-btn:hover{color:var(--accent-ink);text-decoration:underline}
+  .crypto-row{border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-top:12px}
+  .crypto-row .cr-label{font-weight:700;font-size:15px;color:var(--ink)}
+  .crypto-row .cr-net{color:var(--faint);font-size:12.5px;margin-left:6px}
+  .crypto-row .cr-addr{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;color:var(--ink-soft);word-break:break-all;margin-top:6px}
+  .crypto-row .cr-copy{margin-top:10px;background:var(--line-2);border:none;border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;color:var(--accent-ink);cursor:pointer}
+  .crypto-row .cr-copy:hover{background:var(--accent);color:#fff}
   .limit-meter{margin-top:14px;display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--ink-soft)}
   .limit-meter .bar{flex:1;height:6px;background:var(--line-2);border-radius:4px;overflow:hidden;max-width:220px}
   .limit-meter .bar i{display:block;height:100%;background:var(--accent);transition:width .3s}
@@ -637,7 +645,18 @@
       <li data-i18n="pw.feat4">Повна аналітика прогресу</li>
     </ul>
     <button class="btn btn-primary" id="pw-buy" style="width:100%" disabled data-i18n="pw.buy">Оформити Pro — скоро</button>
+    <button class="link-btn" id="pw-crypto-open" data-i18n="pw.crypto_link">Хочеш зараз? Передоплати криптовалютою →</button>
     <button class="close" id="pw-close" data-i18n="pw.dismiss">Поки продовжу безкоштовно</button>
+  </div>
+</div>
+
+<!-- CRYPTO PREPAYMENT -->
+<div class="modal-bg" id="crypto-modal">
+  <div class="modal" style="max-width:460px;text-align:left">
+    <h2 data-i18n="crypto.title">Передоплата Pro криптовалютою</h2>
+    <p class="hint" style="margin-top:-4px" data-i18n="crypto.note">Оплата поки не автоматична: після переказу напиши нам на пошту з хешем транзакції — активуємо Pro вручну протягом доби.</p>
+    <div id="crypto-rows"></div>
+    <button class="close" id="crypto-close" data-i18n="common.close">Закрити</button>
   </div>
 </div>
 
@@ -863,6 +882,11 @@ const I18N={
   "pw.feat4": "Повна аналітика прогресу",
   "pw.buy": "Оформити Pro — скоро",
   "pw.dismiss": "Поки продовжу безкоштовно",
+  "pw.crypto_link": "Хочеш зараз? Передоплати криптовалютою →",
+  "crypto.title": "Передоплата Pro криптовалютою",
+  "crypto.note": "Оплата поки не автоматична: після переказу напиши нам на пошту з хешем транзакції — активуємо Pro вручну протягом доби.",
+  "crypto.copy": "Копіювати",
+  "crypto.copied": "Адресу скопійовано",
   "deckm.add_second": "Додати другу мову перекладу",
   "about.social_lead": "Ми в соцмережах:",
   "catalog.load_failed": "Не вдалось завантажити набори.",
@@ -1082,6 +1106,11 @@ const I18N={
   "pw.feat4": "Full progress analytics",
   "pw.buy": "Get Pro — soon",
   "pw.dismiss": "Keep using the free plan for now",
+  "pw.crypto_link": "Want it now? Prepay with crypto →",
+  "crypto.title": "Prepay Pro with crypto",
+  "crypto.note": "Payment isn't automatic yet: after sending, email us the transaction hash — we'll activate Pro manually within a day.",
+  "crypto.copy": "Copy",
+  "crypto.copied": "Address copied",
   "deckm.add_second": "Add a second translation language",
   "about.social_lead": "Find us on:",
   "catalog.load_failed": "Couldn’t load the sets.",
@@ -1668,6 +1697,24 @@ function closeJoinModal(){ document.getElementById('join-modal').classList.remov
 
 /* ── About + consent ── */
 const CONSENT_VERSION=1;
+/* ── Крипто-передоплата Pro ──
+   Реальні адреси власника. */
+const CRYPTO_WALLETS=[
+  {code:'BTC',  net:{uk:'Bitcoin', en:'Bitcoin'},              addr:'13ZBgq64tcbLMRZcdwvawyy8vouBBEHFwC'},
+  {code:'USDT', net:{uk:'Tether, ERC-20', en:'Tether, ERC-20'}, addr:'0x3e4111969a3d5f1fe793be33ea8fb6b8268e4cc8'}
+];
+function renderCryptoRows(){
+  const el=document.getElementById('crypto-rows'); if(!el) return;
+  el.innerHTML=CRYPTO_WALLETS.map((w,i)=>`
+    <div class="crypto-row">
+      <span class="cr-label">${esc(w.code)}</span><span class="cr-net">${esc(w.net[uiLang]||w.net.uk)}</span>
+      <div class="cr-addr">${esc(w.addr)}</div>
+      <button class="cr-copy" data-copy-idx="${i}">${t('crypto.copy')}</button>
+    </div>`).join('');
+}
+function openCrypto(){ renderCryptoRows(); document.getElementById('crypto-modal').classList.add('show'); }
+function closeCrypto(){ document.getElementById('crypto-modal').classList.remove('show'); }
+
 function openAbout(){ document.getElementById('about-modal').classList.add('show'); }
 function closeAbout(){ document.getElementById('about-modal').classList.remove('show'); }
 
@@ -2239,6 +2286,14 @@ document.getElementById('about-modal').addEventListener('click',e=>{ if(e.target
 document.getElementById('conj-close').onclick=closeConjugation;
 document.getElementById('conj-modal').addEventListener('click',e=>{ if(e.target.id==='conj-modal') closeConjugation(); });
 document.addEventListener('click',e=>{ const cb=e.target.closest('[data-conj]'); if(cb) openConjugation(cb.getAttribute('data-conj')); });
+document.getElementById('pw-crypto-open').onclick=()=>{ document.getElementById('paywall').classList.remove('show'); openCrypto(); };
+document.getElementById('crypto-close').onclick=closeCrypto;
+document.getElementById('crypto-modal').addEventListener('click',e=>{ if(e.target.id==='crypto-modal') closeCrypto(); });
+document.addEventListener('click',e=>{
+  const cb=e.target.closest('[data-copy-idx]'); if(!cb) return;
+  const addr=CRYPTO_WALLETS[+cb.getAttribute('data-copy-idx')].addr;
+  navigator.clipboard.writeText(addr).then(()=>toast(t('crypto.copied'))).catch(()=>{});
+});
 document.getElementById('join-go').onclick=()=>joinByCode(document.getElementById('join-code').value);
 document.getElementById('join-code').addEventListener('keydown',e=>{ if(e.key==='Enter') joinByCode(e.target.value); });
 </script>
