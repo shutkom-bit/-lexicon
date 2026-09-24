@@ -449,7 +449,7 @@
     <div class="brand"><svg class="logo-ico" width="30" height="30" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="120" height="120" rx="28" fill="#2563EB"/><path d="M32 38C32 34.6863 34.6863 32 38 32H76C82.6274 32 88 37.3726 88 44V80C88 83.3137 85.3137 86 82 86H44C37.3726 86 32 80.6274 32 74V38Z" fill="white" fill-opacity="0.15"/><path d="M38 36H56C62.6274 36 68 41.3726 68 48V84C68 84 61 82 54 82H38V36Z" fill="white" fill-opacity="0.95"/><path d="M68 48C68 41.3726 73.3726 36 80 36H82V82H68V48Z" fill="white" fill-opacity="0.75"/><circle cx="84" cy="34" r="7" fill="#F97316"/><path d="M44 48H60M44 58H58M44 68H54" stroke="#2563EB" stroke-width="3" stroke-linecap="round"/></svg><div class="brand-tt"><h1>Lexicon</h1><small data-i18n="app.tagline">тренажер словника</small></div></div>
     <div class="usermenu">
       <div class="lang-switch" id="lang-switch-app"></div>
-      <span class="plan-chip" id="plan-chip">Free</span>
+      <span class="plan-chip" id="plan-chip" style="cursor:pointer" title="Pro">Free</span>
       <div class="uchip"><img id="u-avatar" alt=""><span class="uname" id="u-name"></span></div>
       <button class="signout" id="signout-btn" data-i18n="app.signout">вийти</button>
     </div>
@@ -636,7 +636,7 @@
 <div class="modal-bg" id="paywall">
   <div class="modal">
     <h2 data-i18n="pw.title">Ліміт вичерпано</h2>
-    <p data-i18n-html="pw.body">Безкоштовно можна додати <b id="pw-limit">100</b> слів — назавжди. Ти вже їх додав.<br><span style="font-size:13px;color:var(--faint)">Видаляти слова можна скільки завгодно, але ліміт рахує всі колись додані слова.</span></p>
+    <p data-i18n-html="pw.body">Безкоштовно можна додати <b>100</b> слів — назавжди. Ти вже їх додав.<br><span style="font-size:13px;color:var(--faint)">Видаляти слова можна скільки завгодно, але ліміт рахує всі колись додані слова.</span></p>
     <div class="price">€12.99 <small data-i18n="pw.once">разово, назавжди</small></div>
     <ul>
       <li data-i18n="pw.feat1">Безлімітна кількість слів</li>
@@ -874,7 +874,9 @@ const I18N={
   "consent.check_label": "Я прочитав(ла) і приймаю Політику приватності та Умови.",
   "consent.accept": "Погоджуюсь і продовжити",
   "pw.title": "Ліміт вичерпано",
-  "pw.body": "Безкоштовно можна додати <b id=\"pw-limit\">100</b> слів — назавжди. Ти вже їх додав.<br><span style=\"font-size:13px;color:var(--faint)\">Видаляти слова можна скільки завгодно, але ліміт рахує всі колись додані слова.</span>",
+  "pw.title_early": "Перейти на Pro",
+  "pw.body": "Безкоштовно можна додати <b>{limit}</b> слів — назавжди. Ти вже їх додав.<br><span style=\"font-size:13px;color:var(--faint)\">Видаляти слова можна скільки завгодно, але ліміт рахує всі колись додані слова.</span>",
+  "pw.body_early": "Стань Pro-користувачем прямо зараз, не чекаючи ліміту у {limit} слів.<br><span style=\"font-size:13px;color:var(--faint)\">Безкоштовний план і далі доступний — тиснути не обов'язково.</span>",
   "pw.once": "разово, назавжди",
   "pw.feat1": "Безлімітна кількість слів",
   "pw.feat2": "Усі мови перекладу",
@@ -1098,7 +1100,9 @@ const I18N={
   "consent.check_label": "I have read and accept the Privacy Policy and Terms.",
   "consent.accept": "Agree and continue",
   "pw.title": "Limit reached",
-  "pw.body": "You can add <b id=\"pw-limit\">100</b> words for free — forever. You’ve already added them.<br><span style=\"font-size:13px;color:var(--faint)\">You can delete words freely, but the limit counts every word ever added.</span>",
+  "pw.title_early": "Go Pro",
+  "pw.body": "You can add <b>{limit}</b> words for free — forever. You’ve already added them.<br><span style=\"font-size:13px;color:var(--faint)\">You can delete words freely, but the limit counts every word ever added.</span>",
+  "pw.body_early": "Become a Pro user right now, without waiting for the {limit}-word limit.<br><span style=\"font-size:13px;color:var(--faint)\">The free plan stays available too — this isn't required.</span>",
   "pw.once": "one-time, forever",
   "pw.feat1": "Unlimited words",
   "pw.feat2": "All translation languages",
@@ -1828,7 +1832,7 @@ async function joinByCode(rawCode){
 function refreshPlanUI(){
   const chip=document.getElementById('plan-chip');
   const pro=profile&&profile.plan==='pro';
-  chip.textContent=pro?'Pro':'Free'; chip.classList.toggle('pro',pro);
+  chip.textContent=pro?'Pro':'Free'; chip.classList.toggle('pro',pro); chip.style.cursor=pro?'default':'pointer';
   const m=document.getElementById('limit-meter');
   if(pro){ m.innerHTML='<span>'+t('add.limit_pro')+'</span>'; return; }
   const c=(profile&&profile.wordCount)||0, pct=Math.min(100,c/FREE_LIMIT*100);
@@ -1877,7 +1881,13 @@ async function enrich(word, topic){
 }
 
 /* ── PAYWALL ── */
-function showPaywall(){ document.getElementById('pw-limit').textContent=FREE_LIMIT; document.getElementById('paywall').classList.add('show'); }
+function showPaywall(){
+  const atLimit=((profile&&profile.wordCount)||0)>=FREE_LIMIT;
+  document.querySelector('#paywall h2').textContent=t(atLimit?'pw.title':'pw.title_early');
+  document.querySelector('#paywall p[data-i18n-html="pw.body"]').innerHTML=t(atLimit?'pw.body':'pw.body_early',{limit:FREE_LIMIT});
+  document.getElementById('paywall').classList.add('show');
+}
+document.getElementById('plan-chip').onclick=()=>{ if(!(profile&&profile.plan==='pro')) showPaywall(); };
 document.getElementById('pw-close').onclick=()=>document.getElementById('paywall').classList.remove('show');
 
 /* ── ADD ── */
