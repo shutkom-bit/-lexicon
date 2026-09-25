@@ -695,7 +695,8 @@ const LANGS=[
   {code:'es',name:{uk:'Іспанська',en:'Spanish'},     inst:{uk:'іспанською',en:'Spanish'}},
   {code:'it',name:{uk:'Італійська',en:'Italian'},    inst:{uk:'італійською',en:'Italian'}},
   {code:'pl',name:{uk:'Польська',en:'Polish'},       inst:{uk:'польською',en:'Polish'}},
-  {code:'de',name:{uk:'Німецька',en:'German'},       inst:{uk:'німецькою',en:'German'}}
+  {code:'de',name:{uk:'Німецька',en:'German'},       inst:{uk:'німецькою',en:'German'}},
+  {code:'ru',name:{uk:'Російська',en:'Russian'},      inst:{uk:'російською',en:'Russian'}}
 ];
 const LANG_OK=c=>LANGS.some(l=>l.code===c);
 const langLabel=c=>{const l=LANGS.find(x=>x.code===c);return l?(l.name[uiLang]||l.name.uk):(c||'').toUpperCase();};
@@ -1305,7 +1306,7 @@ let _voices=[];
 function loadVoices(){ try{ _voices=window.speechSynthesis.getVoices()||[]; }catch(e){ _voices=[]; } }
 if('speechSynthesis' in window){ loadVoices(); window.speechSynthesis.onvoiceschanged=loadVoices; }
 /* BCP-47 теги для TTS (2-літерний код словника → повний тег голосу браузера). */
-const LANG_BCP47={en:'en-US', uk:'uk-UA', hu:'hu-HU', fr:'fr-FR', es:'es-ES', it:'it-IT', pl:'pl-PL', de:'de-DE'};
+const LANG_BCP47={en:'en-US', uk:'uk-UA', hu:'hu-HU', fr:'fr-FR', es:'es-ES', it:'it-IT', pl:'pl-PL', de:'de-DE', ru:'ru-RU'};
 function pickVoiceForLang(code){
   if(!_voices.length) loadVoices();
   const prefix=((LANG_BCP47[code]||code||'en')+'').split('-')[0];
