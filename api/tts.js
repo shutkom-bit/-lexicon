@@ -5,7 +5,7 @@
 
 const { getAdmin, synthesizeSpeech } = require('../lib/core');
 
-const LANG_OK = new Set(['en', 'uk', 'hu', 'fr', 'es', 'it', 'pl', 'de']);
+const LANG_OK = new Set(['en', 'uk', 'hu', 'fr', 'es', 'it', 'pl', 'de', 'ru']);
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') { res.status(405).json({ error: 'POST only' }); return; }
